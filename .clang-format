@@ -1,0 +1,5 @@
+---
+BasedOnStyle: Microsoft
+SortIncludes: Never
+SortUsingDeclarations: false
+ColumnLimit: 0

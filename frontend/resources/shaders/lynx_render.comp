@@ -1,0 +1,70 @@
+#version 450
+#extension GL_EXT_shader_explicit_arithmetic_types_int8 : enable
+#extension GL_EXT_shader_explicit_arithmetic_types_int16 : enable
+
+layout(local_size_x = 16, local_size_y = 16) in;
+
+layout(set = 0, binding = 0) readonly buffer ScreenBuffer
+{
+    uint8_t mPixels[80 * 102];
+    uint16_t mPalette[16];
+    uint8_t mRotation;
+}
+screenBuffer;
+
+layout(set = 0, binding = 1, rgba8) writeonly uniform image2D resultImage;
+
+ivec2 rotate(vec2 v, uint8_t r)
+{
+    if (r == 1) // LEFT
+    {
+        v -= vec2(80, 51);
+        v *= mat2(0, -1, 1, 0);
+        v += vec2(51, 80);
+    }
+    else if (r == 2) // RIGHT
+    {
+        v -= vec2(80, 51);
+        v *= mat2(0, 1, -1, 0);
+        v += vec2(51, 80);
+    }
+
+    return ivec2(v);
+}
+
+vec4 getColor(uint8_t pixel)
+{
+    uint16_t palette_entry = screenBuffer.mPalette[uint(pixel)];
+
+    uint8_t g = uint8_t(palette_entry >> 8);
+    uint8_t br = uint8_t(palette_entry & uint8_t(0xff));
+
+    float gf = smoothstep(0, 255, float((g << 4) | (g & uint8_t(0x0f))));
+    float rf = smoothstep(0, 255, float((br << 4) | (br & uint8_t(0x0f))));
+    float bf = smoothstep(0, 255, float((br >> 4) | (br & uint8_t(0xf0))));
+
+    return vec4(rf, gf, bf, 1);
+}
+
+void main()
+{
+    if (gl_GlobalInvocationID.x % 2 == 1)
+    {
+        return;
+    }
+
+    uint n = gl_GlobalInvocationID.y * 80 + gl_GlobalInvocationID.x / 2;
+
+    if (n > 80 * 102)
+    {
+        return;
+    }
+
+    uint8_t p = screenBuffer.mPixels[n];
+
+    uint8_t left = p >> 4;
+    uint8_t right = p & uint8_t(0x0F);
+
+    imageStore(resultImage, rotate(gl_GlobalInvocationID.xy, screenBuffer.mRotation), getColor(left));
+    imageStore(resultImage, rotate(vec2(gl_GlobalInvocationID.x + 1, gl_GlobalInvocationID.y), screenBuffer.mRotation), getColor(right));
+}

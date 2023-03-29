@@ -1,0 +1,416 @@
+#include "config.h"
+#include "cfgpath.h"
+#include "log.h"
+#include "app.h"
+#include "imgui.h"
+#include "bootstrap-icons_lib.hpp"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
+#include "session_gui.h"
+#include "memory_editor.h"
+#include "imgui_memory_editor.h"
+#include "disasm_editor.h"
+#include "breakpoints_editor.h"
+#include "watch_editor.h"
+
+void Config::load(App *app)
+{
+    std::string filename = config_file().generic_string();
+    try
+    {
+        std::ifstream is(filename);
+        cereal::JSONInputArchive archive(is);
+
+        archive(CEREAL_NVP(_store));
+    }
+    catch (std::exception &e)
+    {
+        LOG(LOG_ERROR) << "Config - Couldn't load config file " << filename;
+    }
+
+    initialize();
+    load_recents(app);
+
+    app->gui()->_comlynx_visible = _store.comlynx_visisble;
+}
+
+void Config::save_recents(App *app)
+{
+    _store.recent_sessions.clear();
+
+    for (auto recent : app->recent_sessions())
+    {
+        _store.recent_sessions.push_back(recent);
+    }
+}
+
+void Config::load_recents(App *app)
+{
+    app->recent_sessions().clear();
+
+    for (auto recent : _store.recent_sessions)
+    {
+        app->recent_sessions().push_back(recent);
+    }
+}
+
+void Config::initialize()
+{
+    apply_theme();
+    // apply_font(); // https://github.com/ocornut/imgui/pull/3761
+}
+
+void Config::save(App *app)
+{
+    save_recents(app);
+    _store.comlynx_visisble = app->gui()->_comlynx_visible;
+
+    std::string filename = config_file().generic_string();
+
+    try
+    {
+        std::ofstream os(filename);
+        cereal::JSONOutputArchive archive(os);
+
+        archive(CEREAL_NVP(_store));
+    }
+    catch (std::exception &e)
+    {
+        LOG(LOG_ERROR) << "Config - Couldn't save config file " << filename;
+    }
+}
+
+void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
+{
+    for (auto &session : sessions)
+    {
+        std::vector<BreakpointConfigStore> breakpoints{};
+        std::vector<WatchConfigStore> watches{};
+        std::unordered_map<int, int> buttons_mapping{};
+
+        for (auto &bp : session->_session->breakpoints())
+        {
+            breakpoints.push_back({bp.enabled, bp.address});
+        }
+
+        for (auto &w : session->_watch_editor.watches())
+        {
+            watches.push_back({w.id, w.label, w.type, w.address});
+        }
+
+        for (auto btnmap : session->_session->buttons_mapping())
+        {
+            buttons_mapping[btnmap.first] = btnmap.second;
+        }
+
+        auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [session](SessionConfigStore &s) { return s.id == session->id(); });
+
+        if (found == _store.sessions.end())
+        {
+            SessionConfigStore store{};
+
+            store.id = session->_session->identifier();
+            store.cpu_visible = session->_cpu_open;
+            store.watch_visible = session->_watch_open;
+            store.palette_vsible = session->_palette_open;
+            store.cart_info_visible = session->_cart_info_open;
+            store.symbols_visible = session->_symbols_open;
+            store.breakpoints_visible = session->_breakpoints_open;
+            store.states_manager_visible = session->_states_manager_open;
+            store.controls_visible = session->_controls_open;
+            store.breakpoints = breakpoints;
+            store.watches = watches;
+            store.buttons_mapping = buttons_mapping;
+
+            _store.sessions.push_back(store);
+        }
+        else
+        {
+            found->cpu_visible = session->_cpu_open;
+            found->watch_visible = session->_watch_open;
+            found->palette_vsible = session->_palette_open;
+            found->cart_info_visible = session->_cart_info_open;
+            found->symbols_visible = session->_symbols_open;
+            found->breakpoints_visible = session->_breakpoints_open;
+            found->states_manager_visible = session->_states_manager_open;
+            found->controls_visible = session->_controls_open;
+            found->breakpoints = breakpoints;
+            found->watches = watches;
+            found->buttons_mapping = buttons_mapping;
+        }
+
+        for (auto memedit : session->_mem_editors)
+        {
+            save_memory_editor(session->_session->identifier(), memedit.get());
+        }
+
+        for (auto disasmedit : session->_disasm_editors)
+        {
+            save_disasm_editor(session->_session->identifier(), disasmedit.get());
+        }
+    }
+}
+
+void Config::load_session(std::shared_ptr<SessionGUI> session)
+{
+    if (!session)
+    {
+        return;
+    }
+
+    auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [session](SessionConfigStore &s) { return s.id == session->id(); });
+
+    if (found == _store.sessions.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find session '" << session->id() << "'";
+        return;
+    }
+
+    session->_cart_info_open = found->cart_info_visible;
+    session->_cpu_open = found->cpu_visible;
+    session->_palette_open = found->palette_vsible;
+    session->_watch_open = found->watch_visible;
+    session->_symbols_open = found->symbols_visible;
+    session->_breakpoints_open = found->breakpoints_visible;
+    session->_states_manager_open = found->states_manager_visible;
+    session->_controls_open = found->controls_visible;
+
+    for (auto &mem_edit : found->mem_editors)
+    {
+        session->add_memory_editor(mem_edit.id);
+    }
+
+    for (auto &disasm_edit : found->disasm_editors)
+    {
+        session->add_disasm_editor(disasm_edit.id);
+    }
+
+    session->_session->breakpoints().clear();
+
+    for (auto &bp : found->breakpoints)
+    {
+        session->_session->breakpoints().push_back({bp.enabled, bp.address});
+    }
+
+    session->_watch_editor.watches().clear();
+
+    for (auto &w : found->watches)
+    {
+        session->_watch_editor.watches().push_back({w.id, w.label, w.type, w.address});
+    }
+
+    session->_session->buttons_mapping().clear();
+
+    for (auto &m : found->buttons_mapping)
+    {
+        session->_session->buttons_mapping()[m.first] = (LynxButtons)m.second;
+    }
+}
+
+void Config::save_memory_editor(std::string sessionid, MemEditor *editor)
+{
+    auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [sessionid](SessionConfigStore &s) { return s.id == sessionid; });
+
+    if (found == _store.sessions.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        return;
+    }
+
+    int editorid = editor->id();
+
+    auto memconfig = std::find_if(found->mem_editors.begin(), found->mem_editors.end(), [editorid](SessionMemEditorConfigStore &s) { return s.id == editorid; });
+
+    if (memconfig != found->mem_editors.end())
+    {
+        memconfig->optAddrDigitsCount = editor->_memoryEditor.OptAddrDigitsCount;
+        memconfig->optFooterExtraHeight = editor->_memoryEditor.OptFooterExtraHeight;
+        memconfig->optGreyOutZeroes = editor->_memoryEditor.OptGreyOutZeroes;
+        memconfig->optMidColsCount = editor->_memoryEditor.OptMidColsCount;
+        memconfig->optShowAscii = editor->_memoryEditor.OptShowAscii;
+        memconfig->optShowDataPreview = editor->_memoryEditor.OptShowDataPreview;
+        memconfig->optShowHexII = editor->_memoryEditor.OptShowHexII;
+        memconfig->optShowOptions = editor->_memoryEditor.OptShowOptions;
+        memconfig->optUpperCaseHex = editor->_memoryEditor.OptUpperCaseHex;
+        memconfig->selected_bank = editor->_memBank;
+    }
+    else
+    {
+        SessionMemEditorConfigStore store{};
+        store.id = editor->id();
+        store.optAddrDigitsCount = editor->_memoryEditor.OptAddrDigitsCount;
+        store.optFooterExtraHeight = editor->_memoryEditor.OptFooterExtraHeight;
+        store.optGreyOutZeroes = editor->_memoryEditor.OptGreyOutZeroes;
+        store.optMidColsCount = editor->_memoryEditor.OptMidColsCount;
+        store.optShowAscii = editor->_memoryEditor.OptShowAscii;
+        store.optShowDataPreview = editor->_memoryEditor.OptShowDataPreview;
+        store.optShowHexII = editor->_memoryEditor.OptShowHexII;
+        store.optShowOptions = editor->_memoryEditor.OptShowOptions;
+        store.optUpperCaseHex = editor->_memoryEditor.OptUpperCaseHex;
+        store.selected_bank = editor->_memBank;
+        found->mem_editors.push_back(store);
+    }
+}
+
+void Config::delete_memory_editor(std::string sessionid, MemEditor *editor)
+{
+    auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [sessionid](SessionConfigStore &s) { return s.id == sessionid; });
+
+    if (found == _store.sessions.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        return;
+    }
+
+    int editorid = editor->id();
+
+    std::erase_if(found->mem_editors, [editorid](SessionMemEditorConfigStore &s) { return s.id == editorid; });
+}
+
+void Config::load_memory_editor(std::string sessionid, MemEditor *editor)
+{
+    auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [sessionid](SessionConfigStore &s) { return s.id == sessionid; });
+
+    if (found == _store.sessions.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        return;
+    }
+
+    int editorid = editor->id();
+
+    auto memconfig = std::find_if(found->mem_editors.begin(), found->mem_editors.end(), [editorid](SessionMemEditorConfigStore &s) { return s.id == editorid; });
+
+    if (memconfig == found->mem_editors.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find mem editor '" << editorid << "'";
+        return;
+    }
+
+    editor->_memoryEditor.OptAddrDigitsCount = memconfig->optAddrDigitsCount;
+    editor->_memoryEditor.OptFooterExtraHeight = memconfig->optFooterExtraHeight;
+    editor->_memoryEditor.OptGreyOutZeroes = memconfig->optGreyOutZeroes;
+    editor->_memoryEditor.OptMidColsCount = memconfig->optMidColsCount;
+    editor->_memoryEditor.OptShowAscii = memconfig->optShowAscii;
+    editor->_memoryEditor.OptShowDataPreview = memconfig->optShowDataPreview;
+    editor->_memoryEditor.OptShowHexII = memconfig->optShowHexII;
+    editor->_memoryEditor.OptShowOptions = memconfig->optShowOptions;
+    editor->_memoryEditor.OptUpperCaseHex = memconfig->optUpperCaseHex;
+    editor->_memBank = (MemEditorBank)memconfig->selected_bank;
+}
+
+void Config::save_disasm_editor(std::string sessionid, DisasmEditor *editor)
+{
+    auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [sessionid](SessionConfigStore &s) { return s.id == sessionid; });
+
+    if (found == _store.sessions.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        return;
+    }
+
+    int editorid = editor->id();
+
+    auto disasmconfig = std::find_if(found->disasm_editors.begin(), found->disasm_editors.end(), [editorid](SessionDisasmEditorConfigStore &s) { return s.id == editorid; });
+
+    if (disasmconfig != found->disasm_editors.end())
+    {
+        disasmconfig->follow_pc = editor->_follow_pc;
+        disasmconfig->show_labels = editor->_show_labels;
+        disasmconfig->local_pc = editor->_local_pc;
+    }
+    else
+    {
+        SessionDisasmEditorConfigStore store{};
+        store.id = editor->id();
+        store.follow_pc = editor->_follow_pc;
+        store.show_labels = editor->_show_labels;
+        store.local_pc = editor->_local_pc;
+        found->disasm_editors.push_back(store);
+    }
+}
+
+void Config::delete_disasm_editor(std::string sessionid, DisasmEditor *editor)
+{
+    auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [sessionid](SessionConfigStore &s) { return s.id == sessionid; });
+
+    if (found == _store.sessions.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        return;
+    }
+
+    int editorid = editor->id();
+
+    std::erase_if(found->disasm_editors, [editorid](SessionDisasmEditorConfigStore &s) { return s.id == editorid; });
+}
+
+void Config::load_disasm_editor(std::string sessionid, DisasmEditor *editor)
+{
+    auto found = std::find_if(_store.sessions.begin(), _store.sessions.end(), [sessionid](SessionConfigStore &s) { return s.id == sessionid; });
+
+    if (found == _store.sessions.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        return;
+    }
+
+    int editorid = editor->id();
+
+    auto disasmconfig = std::find_if(found->disasm_editors.begin(), found->disasm_editors.end(), [editorid](SessionDisasmEditorConfigStore &s) { return s.id == editorid; });
+
+    if (disasmconfig == found->disasm_editors.end())
+    {
+        LOG(LOG_INFO) << "Config - Couldn't find disasm editor '" << editorid << "'";
+        return;
+    }
+
+    editor->_follow_pc = disasmconfig->follow_pc;
+    editor->_show_labels = disasmconfig->show_labels;
+    editor->_local_pc = disasmconfig->local_pc;
+}
+
+ConfigStore &Config::store()
+{
+    return _store;
+}
+
+std::filesystem::path Config::config_file()
+{
+    char cfgdir[512];
+    get_user_config_folder(cfgdir, sizeof(cfgdir), APP_NAME);
+    if (cfgdir[0] == 0)
+    {
+        LOG(LOG_ERROR) << "Config - Unable to find home directory.";
+        return std::filesystem::path{};
+    }
+    return std::filesystem::path(cfgdir) / "config";
+}
+
+void Config::apply_theme()
+{
+    if (_store.theme == "dark")
+    {
+        ImGui::StyleColorsDark();
+    }
+    else
+    {
+        ImGui::StyleColorsLight();
+    }
+}
+
+void Config::apply_font()
+{
+    ImGuiIO &io = ImGui::GetIO();
+
+    io.Fonts->Clear();
+
+    ImFontConfig cfg;
+    cfg.MergeMode = true;
+    cfg.GlyphOffset = {0.f, -4.f};
+    cfg.GlyphMinAdvanceX = 16.0f;
+
+    io.Fonts->AddFontFromFileTTF(_store.font.c_str(), 16.0f);
+    ImFont *font = BootstrapIcons::Font::Load(io, 16.f, &cfg);
+    io.Fonts->Build();
+}
