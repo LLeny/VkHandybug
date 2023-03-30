@@ -293,8 +293,8 @@ void CMikie::Reset(void)
 
     for (int loop = 0; loop < 16; loop++)
     {
-        mPalette[loop].br = loop;
-        mPalette[loop].g = loop;
+        mPalette[loop].br = 0xff;
+        mPalette[loop].g = 0xf;
     }
 
     // Initialise IODAT register
