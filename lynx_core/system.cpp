@@ -929,7 +929,7 @@ void CSystem::DebugTrace(int address)
     char message[1024 + 1];
     int count = 0;
 
-    sprintf(message, "%08x - DebugTrace(): ", gSystemCycleCount);
+    snprintf(message,1024, "%08x - DebugTrace(): ", gSystemCycleCount);
     count = strlen(message);
 
     if (address)
@@ -940,7 +940,7 @@ void CSystem::DebugTrace(int address)
             char linetext[1024];
             // Register dump
             GetRegs(regs);
-            sprintf(linetext, "PC=$%04x SP=$%02x PS=0x%02x A=0x%02x X=0x%02x Y=0x%02x", regs.PC, regs.SP, regs.PS,
+            snprintf(linetext, 1024, "PC=$%04x SP=$%02x PS=0x%02x A=0x%02x X=0x%02x Y=0x%02x", regs.PC, regs.SP, regs.PS,
                     regs.A, regs.X, regs.Y);
             strcat(message, linetext);
             count = strlen(message);

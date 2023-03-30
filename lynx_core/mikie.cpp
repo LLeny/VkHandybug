@@ -74,7 +74,7 @@ void CMikie::BlowOut(void)
     char addr[100];
     C6502_REGS regs;
     mSystem.GetRegs(regs);
-    sprintf(addr, "Runtime Error - System Halted\nCMikie::Poke() - Read/Write to counter clocks at PC=$%04x.", regs.PC);
+    snprintf(addr,100, "Runtime Error - System Halted\nCMikie::Poke() - Read/Write to counter clocks at PC=$%04x.", regs.PC);
     LOG(LOG_WARN) << std::string(addr);
     mSystem.mSystemHalt = TRUE;
 }
@@ -1906,7 +1906,7 @@ void CMikie::Poke(ULONG addr, UBYTE data)
             char addr[256];
             C6502_REGS regs;
             mSystem.GetRegs(regs);
-            sprintf(addr, "Runtime Alert - System Halted\nCMikie::Poke(SYSCTL1) - Lynx power down occured at PC=$%04x.\nResetting system.", regs.PC);
+            snprintf(addr, 256, "Runtime Alert - System Halted\nCMikie::Poke(SYSCTL1) - Lynx power down occured at PC=$%04x.\nResetting system.", regs.PC);
             mSystem.mError->Warning(addr);
             mSystem.Reset();
             mSystem.mSystemHalt = TRUE;
