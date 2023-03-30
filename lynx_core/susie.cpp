@@ -1153,7 +1153,7 @@ ULONG CSusie::PaintSprites(void)
             if (mSystem.mSingleStepModeSprites)
             {
                 char message[256];
-                sprintf(message, "CSusie:PaintSprites() - Rendered Sprite %03d", sprcount);
+                snprintf(message,256, "CSusie:PaintSprites() - Rendered Sprite %03d", sprcount);
                 if (!mSystem.mError->Warning(message))
                     mSystem.mSingleStepModeSprites = 0;
             }

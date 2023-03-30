@@ -250,6 +250,34 @@
         SET_NZ(mA);     \
     }
 
+#define xBBR(_bn) \
+  {                                                  \
+    int value = CPU_PEEK(mOperand);                  \
+    if ( (value & (1<<_bn)) == 0 ){               \
+      int offset = (signed char)CPU_PEEK(mPC);       \
+      mPC++;                                         \
+      mPC += offset;                                 \
+      mPC &= 0xffff;                                 \
+    } else {                                         \
+      mPC++;                                         \
+      mPC &= 0xffff;                                 \
+    }                                                \
+  }
+
+#define xBBS(_bn) \
+  {                                             \
+    int value = CPU_PEEK(mOperand);                  \
+    if ( (value & (1<<_bn)) != 0 ){               \
+      int offset = (signed char)CPU_PEEK(mPC);       \
+      mPC++;                                         \
+      mPC += offset;                                 \
+      mPC &= 0xffff;                                 \
+    } else {                                         \
+      mPC++;                                         \
+      mPC &= 0xffff;                                 \
+    }                                                \
+  }
+
 #define xBCC()                                       \
     {                                                \
         if (!mC)                                     \

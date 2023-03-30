@@ -47,7 +47,7 @@
 #define S_AND "AND"
 #define S_ASL "ASL"
 #define S_BBR0 "BBR0"
-#define S_BBR1 "BBR2"
+#define S_BBR1 "BBR1"
 #define S_BBR2 "BBR2"
 #define S_BBR3 "BBR3"
 #define S_BBR4 "BBR4"
@@ -392,7 +392,7 @@ static DISASS6502 mLookupTable[256] = {
     // 0xE0
     {S_CPX, imm},
     {S_SBC, indx},
-    {S_ILLEGAL, 0},
+    {S_NOP, 0},
     {S_ILLEGAL, 0},
     {S_CPX, zp},
     {S_SBC, zp},
@@ -419,7 +419,7 @@ static DISASS6502 mLookupTable[256] = {
     {S_SBC, absy},
     {S_PLX, impl},
     {S_ILLEGAL, 0},
-    {S_ILLEGAL, 0},
+    {S_NOP, 0},
     {S_SBC, absx},
     {S_INC, absx},
     {S_BBS7, zrel},
