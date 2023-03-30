@@ -387,10 +387,10 @@ void DisasmEditor::scroll_up()
 {
     uint8_t data;
     int operand, size;
-    int16_t address = _local_pc;
+    uint16_t address = _local_pc;
 
-    if (address > 0xffff)
-        address = 0xffff;
+    if (address > 0xffffU)
+        address = 0xffffU;
     if (address < 4)
     {
         _local_pc = address;
@@ -399,7 +399,6 @@ void DisasmEditor::scroll_up()
 
     for (int loop = 1; loop < 4; loop++)
     {
-
         data = _session->system()->Peek_RAM(address - loop);
         operand = mLookupTable[data].mode;
         size = mOperandSizes[operand];
