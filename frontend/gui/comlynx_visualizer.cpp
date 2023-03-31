@@ -29,27 +29,31 @@ bool ComLynxVisualizer::render()
 
         std::chrono::time_point<std::chrono::system_clock> prev_timestamp{};
 
-        for (unsigned i = _frames.size(); i-- > 0;)
         {
-            auto frame = _frames[i];
+            std::scoped_lock<std::mutex> lock(_frame_lock);
 
-            ImGui::TableNextColumn();
-            if (prev_timestamp == frame.timestamp)
+            for (unsigned i = _frames.size(); i-- > 0;)
             {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImVec4(255, 0, 0, 255)));
-            }
-            ImGui::Text("%s", fmt::format("{:%T}", frame.timestamp).c_str());
+                auto frame = _frames[i];
 
-            for (auto &session : _known_sessions)
-            {
                 ImGui::TableNextColumn();
-                if (session.first == frame.source_identifier)
+                if (prev_timestamp == frame.timestamp)
                 {
-                    ImGui::Text("%s", fmt::format("{:2X}", frame.data).c_str());
+                    ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImGui::GetColorU32(ImVec4(255, 0, 0, 255)));
                 }
-            }
+                ImGui::Text("%s", fmt::format("{:%T}", frame.timestamp).c_str());
 
-            prev_timestamp = frame.timestamp;
+                for (auto &session : _known_sessions)
+                {
+                    ImGui::TableNextColumn();
+                    if (session.first == frame.source_identifier)
+                    {
+                        ImGui::Text("%s", fmt::format("{:2X}", frame.data).c_str());
+                    }
+                }
+
+                prev_timestamp = frame.timestamp;
+            }
         }
 
         ImGui::EndTable();
@@ -62,9 +66,12 @@ bool ComLynxVisualizer::render()
 
 void ComLynxVisualizer::add_frame(std::string source_identifier, std::chrono::system_clock::time_point timestamp, uint8_t data)
 {
-    while (_frames.size() > MAX_FRAMES)
     {
-        _frames.erase(_frames.begin());
+        std::scoped_lock<std::mutex> lock(_frame_lock);
+        while (_frames.size() > MAX_FRAMES)
+        {
+            _frames.erase(_frames.begin());
+        }
     }
 
     if (!_known_sessions.contains(source_identifier))

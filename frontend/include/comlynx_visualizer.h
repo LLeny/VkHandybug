@@ -24,4 +24,5 @@ class ComLynxVisualizer
   private:
     std::vector<ComLynxFrame> _frames{};
     std::unordered_map<std::string, bool> _known_sessions{};
+    std::mutex _frame_lock{};
 };
