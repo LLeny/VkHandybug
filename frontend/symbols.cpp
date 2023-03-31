@@ -8,11 +8,11 @@ Symbols::Symbols()
 
     for (int i = 0; i < 0x100; ++i)
     {
-        _symbols[i] = {false, fmt::format("${:02X}", i)};
+        _symbols[i] = {false, (uint16_t)i, fmt::format("${:02X}", i)};
     }
     for (int i = 0x100; i <= 0xffff; ++i)
     {
-        _symbols[i] = {false, fmt::format("${:04X}", i)};
+        _symbols[i] = {false, (uint16_t)i, fmt::format("${:04X}", i)};
     }
 }
 
@@ -36,6 +36,8 @@ bool Symbols::load_symbols(std::filesystem::path symbol_file)
     {
         parse_line(line);
     }
+
+    std::sort(_override_symbols.begin(), _override_symbols.end());
 
     return true;
 }
@@ -61,10 +63,28 @@ void Symbols::parse_line(std::string line)
         return;
     }
 
-    _symbols[addr] = {true, label_match};
+    _symbols[addr] = {true, (uint16_t)addr, label_match};
+    _override_symbols.push_back(label_match);
 }
 
 Symbol &Symbols::get_symbol(uint16_t addr)
 {
     return _symbols[addr];
+}
+
+std::vector<std::string> &Symbols::overrides()
+{
+    return _override_symbols;
+}
+
+int Symbols::get_addr(std::string symbol)
+{
+    auto found = std::find_if(_symbols.begin(), _symbols.end(), [symbol](const Symbol &s) { return symbol == s.symbol; });
+
+    if (found == _symbols.end())
+    {
+        return -1;
+    }
+
+    return found->address;
 }

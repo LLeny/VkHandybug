@@ -25,24 +25,28 @@ void BreakpointsEditor::render()
 
 void BreakpointsEditor::render_header()
 {
-    char buf[10];
-
     ImGui::Text("Add breakpoint, address");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(50);
+    ImGui::SetNextItemWidth(120);
 
-    if (ImGui::InputText("##bpaddr", buf, 6, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_EnterReturnsTrue))
+    if (imgui_autocomplete_input("##bpaddr", _address_buf, sizeof(_address_buf), _session->symbols().overrides(), ImGuiInputTextFlags_None) && _address_buf[0])
     {
-        if (strlen(buf) <= 0 || is_read_only())
+        if (strlen(_address_buf) <= 0 || is_read_only())
         {
             return;
         }
 
-        int addr;
-        std::from_chars(buf, buf + 5, addr, 16);
+        int addr = _session->symbols().get_addr(std::string(_address_buf));
 
-        _session->add_breakpoint(addr);
+        if (addr < 0)
+        {
+            std::from_chars(_address_buf, _address_buf + sizeof(_address_buf) - 1, addr, 16);
+        }
+
+        _session->add_breakpoint((uint16_t)addr);
+
+        memset(_address_buf, 0, sizeof(_address_buf));
     }
 }
 

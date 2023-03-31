@@ -252,9 +252,17 @@ void WatchEditor::delete_watch(const WatchItem *item)
 
 void WatchEditor::add_watch(const char *label, ImGuiDataType type, const char *addr)
 {
-    int a;
-    sscanf(addr, "%04X", &a);
-    add_watch(label, type, a);
+    int a = _session->symbols().get_addr(std::string(label));
+
+    if (a < 0 && strlen(addr) <= 4)
+    {
+        sscanf(addr, "%04X", &a);
+    }
+
+    if (a > 0)
+    {
+        add_watch(label, type, a);
+    }
 }
 
 void WatchEditor::add_watch(const char *label, ImGuiDataType type, uint16_t addr)
@@ -278,6 +286,9 @@ void WatchEditor::add_watch(const char *label, ImGuiDataType type, uint16_t addr
     item.type = type;
     item.label = label;
     item.address = addr;
+
+    memset(_newItemAddrBuf, 0, sizeof(_newItemAddrBuf));
+    memset(_newItemLabelBuf, 0, sizeof(_newItemLabelBuf));
 
     _items.push_back(item);
 }
@@ -312,15 +323,17 @@ void WatchEditor::render()
 
     ImGui::SameLine();
     ImGui::SetNextItemWidth(120);
-    ImGui::InputText("##watchlabel", _newItemLabelBuf, 16);
+    ImGui::InputText("##watchlabel", _newItemLabelBuf, 49);
 
     ImGui::SameLine();
     ImGui::Text("Address");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(35);
-    auto addrflag = ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase;
-    ImGui::InputText("##watchaddr", _newItemAddrBuf, 5, addrflag);
+    ImGui::SetNextItemWidth(120);
+    if (imgui_autocomplete_input("##watchaddr", _newItemAddrBuf, sizeof(_newItemAddrBuf), _session->symbols().overrides(), ImGuiInputTextFlags_None) && !_newItemLabelBuf[0])
+    {
+        strncpy(_newItemLabelBuf, _newItemAddrBuf, sizeof(_newItemAddrBuf));
+    }
 
     ImGui::SameLine();
     ImGui::Text("Type");

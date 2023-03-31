@@ -2,6 +2,7 @@
 #pragma once
 
 #include "global.h"
+#include "editor.h"
 
 class Session;
 class Config;
@@ -40,6 +41,7 @@ class DisasmEditor
     uint16_t _local_pc{};
     bool _follow_pc{};
     bool _show_labels{};
+    char _address_buf[50]{};
 
     bool is_read_only();
     void draw_disasm_table();

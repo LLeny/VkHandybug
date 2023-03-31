@@ -44,8 +44,8 @@ class WatchEditor : public IEditor
   private:
     std::vector<WatchItem> _items;
 
-    char _newItemLabelBuf[17]{};
-    char _newItemAddrBuf[6]{};
+    char _newItemLabelBuf[50]{};
+    char _newItemAddrBuf[50]{};
     ImGuiDataType _newItemDataType{ImGuiDataType_U8};
 
     void delete_watch(const WatchItem *item);

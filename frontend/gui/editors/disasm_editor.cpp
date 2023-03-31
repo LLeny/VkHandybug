@@ -65,8 +65,6 @@ void DisasmEditor::draw_contents()
 
 void DisasmEditor::draw_options()
 {
-    std::array<char, 5> addrbuf{};
-
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() - (int)ImGuiStyleVar_CellPadding - 10);
     ImGui::Separator();
     if (ImGui::Button("Options"))
@@ -83,11 +81,26 @@ void DisasmEditor::draw_options()
     ImGui::Text("Jump to");
     ImGui::SameLine();
     ImGui::BeginDisabled(_follow_pc);
-    ImGui::SetNextItemWidth(40);
-    if (ImGui::InputText("##disasmtableaddr", addrbuf.data(), addrbuf.size(), ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_EnterReturnsTrue))
+    ImGui::SetNextItemWidth(120);
+    if (imgui_autocomplete_input("##disasmtableaddr", _address_buf, sizeof(_address_buf), _session->symbols().overrides(), ImGuiInputTextFlags_None) && _address_buf[0])
     {
-        std::from_chars(addrbuf.data(), addrbuf.data() + addrbuf.size(), _local_pc, 16);
+        if (strlen(_address_buf) <= 0 || is_read_only())
+        {
+            return;
+        }
+
+        int addr = _session->symbols().get_addr(std::string(_address_buf));
+
+        if (addr < 0)
+        {
+            std::from_chars(_address_buf, _address_buf + sizeof(_address_buf) - 1, addr, 16);
+        }
+
+        _local_pc = (uint16_t)addr;
+
+        memset(_address_buf, 0, sizeof(_address_buf));
     }
+
     ImGui::EndDisabled();
 }
 

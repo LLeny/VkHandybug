@@ -22,4 +22,6 @@ class BreakpointsEditor : public IEditor
     void render_header();
     void render_table();
     void render_entry(Breakpoint &bp);
+
+    char _address_buf[50]{};
 };

@@ -30,3 +30,5 @@ class IEditor
   protected:
     std::shared_ptr<Session> _session;
 };
+
+bool imgui_autocomplete_input(std::string label, char *buffer, size_t buffer_size, std::vector<std::string> &dictionary, ImGuiInputTextFlags flags);
