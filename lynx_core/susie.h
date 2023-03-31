@@ -75,16 +75,6 @@ class CSystem;
 // Define button values
 //
 
-#define BUTTON_A 0x0001
-#define BUTTON_B 0x0002
-#define BUTTON_OPT2 0x0004
-#define BUTTON_OPT1 0x0008
-#define BUTTON_LEFT 0x0010
-#define BUTTON_RIGHT 0x0020
-#define BUTTON_UP 0x0040
-#define BUTTON_DOWN 0x0080
-#define BUTTON_PAUSE 0x0100
-
 enum
 {
     line_error = 0,
@@ -169,8 +159,8 @@ typedef struct
 #ifdef MSB_FIRST
             UBYTE Up : 1;
             UBYTE Down : 1;
-            UBYTE Right : 1;
             UBYTE Left : 1;
+            UBYTE Right : 1;
             UBYTE Option1 : 1;
             UBYTE Option2 : 1;
             UBYTE Inside : 1;
@@ -180,8 +170,8 @@ typedef struct
             UBYTE Inside : 1;
             UBYTE Option2 : 1;
             UBYTE Option1 : 1;
-            UBYTE Left : 1;
             UBYTE Right : 1;
+            UBYTE Left : 1;
             UBYTE Down : 1;
             UBYTE Up : 1;
 #endif

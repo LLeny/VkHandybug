@@ -2439,7 +2439,7 @@ UBYTE CSusie::Peek(ULONG addr)
         return retval;
 
     case (JOYSTICK & 0xff):
-        if (mSPRSYS_LeftHand)
+        if (!mSPRSYS_LeftHand)
         {
             retval = mJOYSTICK.Byte;
         }
