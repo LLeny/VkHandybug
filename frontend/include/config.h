@@ -100,6 +100,7 @@ struct SessionConfigStore
     bool breakpoints_visible;
     bool states_manager_visible;
     bool controls_visible;
+    bool mikie_visible;
 
     std::vector<SessionMemEditorConfigStore> mem_editors{};
     std::vector<SessionDisasmEditorConfigStore> disasm_editors{};
@@ -119,6 +120,7 @@ struct SessionConfigStore
         archive(CEREAL_NVP(breakpoints_visible));
         archive(CEREAL_NVP(states_manager_visible));
         archive(CEREAL_NVP(controls_visible));
+        archive(CEREAL_NVP(mikie_visible));
         archive(CEREAL_NVP(mem_editors));
         archive(CEREAL_NVP(disasm_editors));
         archive(CEREAL_NVP(breakpoints));

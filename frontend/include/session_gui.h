@@ -13,6 +13,7 @@
 #include "states_editor.h"
 #include "controls_editor.h"
 #include "session_control_editor.h"
+#include "mikey_editor.h"
 
 class Config;
 class Menu;
@@ -55,6 +56,7 @@ class SessionGUI
     StatesEditor _states_editor{};
     ControlsEditor _controls_editor{};
     SessionControlEditor _session_control_editor{};
+    MikeyEditor _mikie_editor{};
     std::vector<std::shared_ptr<MemEditor>> _mem_editors{};
     std::vector<std::shared_ptr<DisasmEditor>> _disasm_editors{};
 
@@ -66,6 +68,7 @@ class SessionGUI
     bool _breakpoints_open = false;
     bool _states_manager_open = false;
     bool _controls_open = false;
+    bool _mikie_open = false;
 
     void render_single_editors();
     void render_screen();

@@ -237,6 +237,7 @@ void Menu::update_items()
         add_bool_callback_item(sessionid, subs, &guisession->_cart_info_open, "cart information", "Ctrl+I", ImGuiMod_Ctrl | ImGuiKey_I);
         add_bool_callback_item(sessionid, subs, &guisession->_controls_open, "controls", "Ctrl+O", ImGuiMod_Ctrl | ImGuiKey_O);
         add_bool_callback_item(sessionid, subs, &guisession->_cpu_open, "CPU", "Ctrl+C", ImGuiMod_Ctrl | ImGuiKey_C);
+        add_bool_callback_item(sessionid, subs, &guisession->_mikie_open, "mikey", "Ctrl+K", ImGuiMod_Ctrl | ImGuiKey_K);
         add_bool_callback_item(sessionid, subs, &guisession->_palette_open, "palette", "Ctrl+P", ImGuiMod_Ctrl | ImGuiKey_P);
         add_bool_callback_item(sessionid, subs, &guisession->_states_manager_open, "states", "Ctrl+T", ImGuiMod_Ctrl | ImGuiKey_T);
         add_bool_callback_item(sessionid, subs, &guisession->_symbols_open, "symbols", "Ctrl+S", ImGuiMod_Ctrl | ImGuiKey_S);

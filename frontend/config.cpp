@@ -118,6 +118,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             store.breakpoints_visible = session->_breakpoints_open;
             store.states_manager_visible = session->_states_manager_open;
             store.controls_visible = session->_controls_open;
+            store.mikie_visible = session->_mikie_open;
             store.breakpoints = breakpoints;
             store.watches = watches;
             store.buttons_mapping = buttons_mapping;
@@ -134,6 +135,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             found->breakpoints_visible = session->_breakpoints_open;
             found->states_manager_visible = session->_states_manager_open;
             found->controls_visible = session->_controls_open;
+            found->mikie_visible = session->_mikie_open;
             found->breakpoints = breakpoints;
             found->watches = watches;
             found->buttons_mapping = buttons_mapping;
@@ -174,6 +176,7 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
     session->_breakpoints_open = found->breakpoints_visible;
     session->_states_manager_open = found->states_manager_visible;
     session->_controls_open = found->controls_visible;
+    session->_mikie_open = found->mikie_visible;
 
     for (auto &mem_edit : found->mem_editors)
     {
