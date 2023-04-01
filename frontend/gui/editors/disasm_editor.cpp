@@ -221,8 +221,8 @@ DisasmEntry DisasmEditor::disassemble(uint16_t addr)
     DisasmEntry ret{};
 
     auto system = _session->system();
-    int opcode, operand;
-    int count = next_address(addr) - addr;
+    uint16_t opcode, operand;
+    uint16_t count = next_address(addr) - addr;
 
     ret.data_length = count;
 
