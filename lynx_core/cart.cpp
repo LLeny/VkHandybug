@@ -54,10 +54,23 @@
 #include "cart.h"
 #include "zlib.h"
 
-CCart::CCart(CSystemBase &parent, UBYTE *gamedata, ULONG gamesize)
+CCart::CCart(CSystemBase &parent)
     : mSystem{parent}
 {
-    int headersize = 0 TRACE_CART1("CCart() called with %s", gamefile);
+}
+
+CCart::~CCart()
+{
+    TRACE_CART0("~CCart()");
+    delete[] mCartBank0;
+    delete[] mCartBank1;
+    delete[] mCartBank0A;
+    delete[] mCartBank1A;
+}
+
+void CCart::InitializeGameData(UBYTE *gamedata, ULONG gamesize)
+{
+    int headersize = 0 TRACE_CART1("CCart::CopyGameData() called with %s", gamefile);
     LYNX_HEADER header;
 
     mWriteEnableBank0 = FALSE;
@@ -311,15 +324,6 @@ CCart::CCart(CSystemBase &parent, UBYTE *gamedata, ULONG gamesize)
         mWriteEnableBank1 = TRUE;
         mCartRAM = TRUE;
     }
-}
-
-CCart::~CCart()
-{
-    TRACE_CART0("~CCart()");
-    delete[] mCartBank0;
-    delete[] mCartBank1;
-    delete[] mCartBank0A;
-    delete[] mCartBank1A;
 }
 
 void CCart::Reset(void)

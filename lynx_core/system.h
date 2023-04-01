@@ -60,6 +60,7 @@
 #endif
 
 #include "machine.h"
+#include "global.h"
 
 #define HANDY_SYSTEM_FREQ 16000000
 #define HANDY_TIMER_FREQ 20
@@ -143,6 +144,8 @@ class CSystem : public CSystemBase
     bool ContextSave(const char *context);
     bool ContextLoad(const char *context);
     bool IsZip(char *filename);
+    bool ReloadCart();
+    bool ReadCart();
 
     ULONG Update(void)
     {
@@ -376,16 +379,17 @@ class CSystem : public CSystemBase
 #endif
 
   public:
+    std::filesystem::path mGamefile;
     ULONG mCycleCountBreakpoint;
     CLynxBase *mMemoryHandlers[SYSTEM_SIZE];
-    CCart *mCart;
-    CRom *mRom;
-    CMemMap *mMemMap;
-    CRam *mRam;
-    C65C02 *mCpu;
-    CMikie *mMikie;
-    CSusie *mSusie;
-    CEEPROM *mEEPROM;
+    CCart *mCart{};
+    CRom *mRom{};
+    CMemMap *mMemMap{};
+    CRam *mRam{};
+    C65C02 *mCpu{};
+    CMikie *mMikie{};
+    CSusie *mSusie{};
+    CEEPROM *mEEPROM{};
 
     ULONG mFileType;
 };

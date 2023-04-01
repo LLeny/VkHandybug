@@ -53,11 +53,14 @@
 #include "system.h"
 #include "ram.h"
 
-CRam::CRam(CSystemBase &parent, UBYTE *filememory, ULONG filesize)
+CRam::CRam(CSystemBase &parent)
     : mSystem{parent}
 {
-    HOME_HEADER header;
+}
 
+void CRam::Initialize(UBYTE *filememory, ULONG filesize)
+{
+    HOME_HEADER header;
     // Take a copy into the backup buffer for restore on reset
     mFileSize = filesize;
 
@@ -83,9 +86,6 @@ CRam::CRam(CSystemBase &parent, UBYTE *filememory, ULONG filesize)
     {
         filememory = NULL;
     }
-    // Reset will cause the loadup
-
-    Reset();
 }
 
 CRam::~CRam()

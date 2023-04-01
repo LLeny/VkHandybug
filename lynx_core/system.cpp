@@ -56,6 +56,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "global.h"
 #include "system.h"
 #include "error.h"
 
@@ -91,7 +92,7 @@ int lss_read(void *dest, int varsize, int varcount, LSS_FILE *fp)
 }
 
 CSystem::CSystem(const char *gamefile, const char *romfile, bool useEmu)
-    : mCart(NULL), mRom(NULL), mMemMap(NULL), mRam(NULL), mCpu(NULL), mMikie(NULL), mSusie(NULL), mEEPROM()
+    : mCart(NULL), mRom(NULL), mMemMap(NULL), mRam(NULL), mCpu(NULL), mMikie(NULL), mSusie(NULL), mEEPROM(), mGamefile{gamefile}
 {
 
 #ifdef _LYNXDBG
@@ -99,6 +100,94 @@ CSystem::CSystem(const char *gamefile, const char *romfile, bool useEmu)
     mDebugCallbackObject = 0;
 #endif
 
+    mCycleCountBreakpoint = 0xffffffff;
+
+    // Attempt to load the cartridge errors caught above here...
+
+    mRom = new CRom(*this, romfile, useEmu);
+
+    // An exception from this will be caught by the level above
+    mEEPROM = new CEEPROM();
+
+    ReadCart();
+    // These can generate exceptions
+
+    mMikie = new CMikie(*this);
+    mSusie = new CSusie(*this);
+
+    // Instantiate the memory map handler
+
+    mMemMap = new CMemMap(*this);
+
+    // Now the handlers are set we can instantiate the CPU as is will use handlers on reset
+
+    mCpu = new C65C02(*this);
+
+    // Now init is complete do a reset, this will cause many things to be reset twice
+    // but what the hell, who cares, I don't.....
+
+    Reset();
+
+    // If this is a snapshot type then restore the context
+
+    if (mFileType == HANDY_FILETYPE_SNAPSHOT)
+    {
+        if (!ContextLoad(gamefile))
+        {
+            Reset();
+            CLynxException lynxerr;
+            lynxerr.Message() << "Handy Error: Snapshot load error";
+            lynxerr.Description() << "The snapshot you selected could not be loaded." << std::endl
+                                  << "(The file format was not recognised by Handy)." << std::endl;
+            throw(lynxerr);
+        }
+    }
+
+    mEEPROM->SetEEPROMType(mCart->mEEPROMType);
+
+    {
+        char eepromfile[1024];
+        strncpy(eepromfile, gamefile, 1024 - 10);
+        strcat(eepromfile, ".eeprom");
+        mEEPROM->SetFilename(eepromfile);
+        printf("filename %d %s %s\n", mCart->mEEPROMType, gamefile, eepromfile);
+        mEEPROM->Load();
+    }
+}
+
+void CSystem::SaveEEPROM(void)
+{
+    if (mEEPROM != NULL)
+        mEEPROM->Save();
+}
+
+CSystem::~CSystem()
+{
+    // Cleanup all our objects
+
+    if (mEEPROM != NULL)
+    {
+        SaveEEPROM();
+        delete mEEPROM;
+    }
+    if (mCart != NULL)
+        delete mCart;
+    if (mRom != NULL)
+        delete mRom;
+    if (mRam != NULL)
+        delete mRam;
+    if (mCpu != NULL)
+        delete mCpu;
+    if (mMikie != NULL)
+        delete mMikie;
+    if (mSusie != NULL)
+        delete mSusie;
+    if (mMemMap != NULL)
+        delete mMemMap;
+}
+
+bool CSystem::ReadCart()
+{
     // Select the default filetype
     UBYTE *filememory = NULL;
     UBYTE *howardmemory = NULL;
@@ -106,7 +195,7 @@ CSystem::CSystem(const char *gamefile, const char *romfile, bool useEmu)
     ULONG howardsize = 0;
 
     mFileType = HANDY_FILETYPE_ILLEGAL;
-    if (strcmp(gamefile, "") == 0)
+    if (mGamefile.empty())
     {
         // No file
         filesize = 0;
@@ -221,13 +310,13 @@ CSystem::CSystem(const char *gamefile, const char *romfile, bool useEmu)
         FILE *fp;
 
         // Open the cartridge file for reading
-        if ((fp = fopen(gamefile, "rb")) == NULL)
+        if ((fp = fopen(mGamefile.generic_string().c_str(), "rb")) == NULL)
         {
             CLynxException lynxerr;
 
             lynxerr.Message() << "Handy Error: File Open Error";
             lynxerr.Description() << "The lynx emulator will not run without a cartridge image." << std::endl
-                                  << "\"" << gamefile << "\" was not found in the place you " << std::endl
+                                  << "\"" << mGamefile << "\" was not found in the place you " << std::endl
                                   << "specified. (see the Handy User Guide for more information).";
             throw(lynxerr);
         }
@@ -285,161 +374,109 @@ CSystem::CSystem(const char *gamefile, const char *romfile, bool useEmu)
         }
     }
 
-    mCycleCountBreakpoint = 0xffffffff;
-
-    // Create the system objects that we'll use
-
-    // Attempt to load the cartridge errors caught above here...
-
-    mRom = new CRom(*this, romfile, useEmu);
-
-    // An exception from this will be caught by the level above
-    mEEPROM = new CEEPROM();
-
     switch (mFileType)
     {
     case HANDY_FILETYPE_RAW:
     case HANDY_FILETYPE_LNX:
-        mCart = new CCart(*this, filememory, filesize);
-        // TODO
-        //   if (mCart->CartHeaderLess())
-        //   {
-        //       // veryvery strange Howard Check CANNOT work, as there are two different loader-less card types...
-        //       // unclear HOW this should do anything useful...
-        //       FILE *fp;
-        //       char drive[3], dir[256], cartgo[256];
-        //       mFileType = HANDY_FILETYPE_HOMEBREW;
-        //       _splitpath(romfile, drive, dir, NULL, NULL);
-        //       strcpy(cartgo, drive);
-        //       strcat(cartgo, dir);
-        //       strcat(cartgo, "howard.o");
-
-        //       // Open the howard file for reading
-        //       if ((fp = fopen(cartgo, "rb")) == NULL)
-        //       {
-        //           CLynxException lynxerr;
-        //           delete filememory;
-        //           lynxerr.Message() << "Handy Error: Howard.o File Open Error";
-        //           lynxerr.Description() << "Headerless cartridges need howard.o bootfile to ." << std::endl
-        //                                 << "be able to run correctly, could not open file. " << std::endl;
-        //           throw(lynxerr);
-        //       }
-
-        //       // How big is the file ??
-        //       fseek(fp, 0, SEEK_END);
-        //       howardsize = ftell(fp);
-        //       fseek(fp, 0, SEEK_SET);
-        //       howardmemory = (UBYTE *)new UBYTE[filesize];
-
-        //       if (fread(howardmemory, sizeof(char), howardsize, fp) != howardsize)
-        //       {
-        //           CLynxException lynxerr;
-        //           delete filememory;
-        //           delete howardmemory;
-        //           lynxerr.Message() << "Handy Error: Howard.o load error (Header)";
-        //           lynxerr.Description() << "Howard.o could not be read????." << std::endl;
-        //           throw(lynxerr);
-        //       }
-
-        //       fclose(fp);
-
-        //       // Pass it to RAM to load
-        //       mRam = new CRam(howardmemory, howardsize);
-        //   }
-        //   else
+        if (!mCart)
         {
-            mRam = new CRam(*this, 0, 0);
+            mCart = new CCart(*this);
+        }
+        mCart->InitializeGameData(filememory, filesize);
+
+        if (mCart->CartHeaderLess())
+        {
+            // veryvery strange Howard Check CANNOT work, as there are two different loader-less card types...
+            // unclear HOW this should do anything useful...
+            FILE *fp;
+            mFileType = HANDY_FILETYPE_HOMEBREW;
+
+            std::filesystem::path cartgo = ".";
+            cartgo = cartgo / "howard.o";
+
+            // Open the howard file for reading
+            if ((fp = fopen(cartgo.generic_string().c_str(), "rb")) == NULL)
+            {
+                CLynxException lynxerr;
+                delete filememory;
+                lynxerr.Message() << "Handy Error: Howard.o File Open Error";
+                lynxerr.Description() << "Headerless cartridges need howard.o bootfile to ." << std::endl
+                                      << "be able to run correctly, could not open file. " << std::endl;
+                throw(lynxerr);
+            }
+
+            // How big is the file ??
+            fseek(fp, 0, SEEK_END);
+            howardsize = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+            howardmemory = (UBYTE *)new UBYTE[filesize];
+
+            if (fread(howardmemory, sizeof(char), howardsize, fp) != howardsize)
+            {
+                CLynxException lynxerr;
+                delete filememory;
+                delete howardmemory;
+                lynxerr.Message() << "Handy Error: Howard.o load error (Header)";
+                lynxerr.Description() << "Howard.o could not be read????." << std::endl;
+                throw(lynxerr);
+            }
+
+            fclose(fp);
+
+            // Pass it to RAM to load
+            if (!mRam)
+            {
+                mRam = new CRam(*this);
+            }
+            mRam->Initialize(howardmemory, howardsize);
+        }
+        else
+        {
+            if (!mRam)
+            {
+                mRam = new CRam(*this);
+            }
+            mRam->Initialize(0, 0);
         }
         break;
     case HANDY_FILETYPE_HOMEBREW:
-        mCart = new CCart(*this, 0, 0);
-        mRam = new CRam(*this, filememory, filesize);
+        if (!mCart)
+        {
+            mCart = new CCart(*this);
+        }
+        if (!mRam)
+        {
+            mRam = new CRam(*this);
+        }
+        mCart->InitializeGameData(0, 0);
+        mRam->Initialize(filememory, filesize);
         break;
     case HANDY_FILETYPE_SNAPSHOT:
     case HANDY_FILETYPE_ILLEGAL:
     default:
-        mCart = new CCart(*this, 0, 0);
-        mRam = new CRam(*this, 0, 0);
+        if (!mCart)
+        {
+            mCart = new CCart(*this);
+        }
+        if (!mRam)
+        {
+            mRam = new CRam(*this);
+        }
+        mCart->InitializeGameData(0, 0);
+        mRam->Initialize(0, 0);
         break;
     }
 
-    // These can generate exceptions
-
-    mMikie = new CMikie(*this);
-    mSusie = new CSusie(*this);
-
-    // Instantiate the memory map handler
-
-    mMemMap = new CMemMap(*this);
-
-    // Now the handlers are set we can instantiate the CPU as is will use handlers on reset
-
-    mCpu = new C65C02(*this);
-
-    // Now init is complete do a reset, this will cause many things to be reset twice
-    // but what the hell, who cares, I don't.....
-
-    Reset();
-
-    // If this is a snapshot type then restore the context
-
-    if (mFileType == HANDY_FILETYPE_SNAPSHOT)
-    {
-        if (!ContextLoad(gamefile))
-        {
-            Reset();
-            CLynxException lynxerr;
-            lynxerr.Message() << "Handy Error: Snapshot load error";
-            lynxerr.Description() << "The snapshot you selected could not be loaded." << std::endl
-                                  << "(The file format was not recognised by Handy)." << std::endl;
-            throw(lynxerr);
-        }
-    }
     if (filesize)
         delete filememory;
     if (howardsize)
         delete howardmemory;
-    mEEPROM->SetEEPROMType(mCart->mEEPROMType);
-
-    {
-        char eepromfile[1024];
-        strncpy(eepromfile, gamefile, 1024 - 10);
-        strcat(eepromfile, ".eeprom");
-        mEEPROM->SetFilename(eepromfile);
-        printf("filename %d %s %s\n", mCart->mEEPROMType, gamefile, eepromfile);
-        mEEPROM->Load();
-    }
 }
 
-void CSystem::SaveEEPROM(void)
+bool CSystem::ReloadCart()
 {
-    if (mEEPROM != NULL)
-        mEEPROM->Save();
-}
-
-CSystem::~CSystem()
-{
-    // Cleanup all our objects
-
-    if (mEEPROM != NULL)
-    {
-        SaveEEPROM();
-        delete mEEPROM;
-    }
-    if (mCart != NULL)
-        delete mCart;
-    if (mRom != NULL)
-        delete mRom;
-    if (mRam != NULL)
-        delete mRam;
-    if (mCpu != NULL)
-        delete mCpu;
-    if (mMikie != NULL)
-        delete mMikie;
-    if (mSusie != NULL)
-        delete mSusie;
-    if (mMemMap != NULL)
-        delete mMemMap;
+    ReadCart();
+    Reset();
 }
 
 bool CSystem::IsZip(char *filename)
@@ -929,7 +966,7 @@ void CSystem::DebugTrace(int address)
     char message[1024 + 1];
     int count = 0;
 
-    snprintf(message,1024, "%08x - DebugTrace(): ", gSystemCycleCount);
+    snprintf(message, 1024, "%08x - DebugTrace(): ", gSystemCycleCount);
     count = strlen(message);
 
     if (address)
@@ -941,7 +978,7 @@ void CSystem::DebugTrace(int address)
             // Register dump
             GetRegs(regs);
             snprintf(linetext, 1024, "PC=$%04x SP=$%02x PS=0x%02x A=0x%02x X=0x%02x Y=0x%02x", regs.PC, regs.SP, regs.PS,
-                    regs.A, regs.X, regs.Y);
+                     regs.A, regs.X, regs.Y);
             strcat(message, linetext);
             count = strlen(message);
         }

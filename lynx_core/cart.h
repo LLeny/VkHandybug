@@ -101,12 +101,13 @@ class CCart : public CLynxBase, public IMemoryAccess
 {
     // Function members
   public:
-    CCart(CSystemBase &parent, UBYTE *gamedata, ULONG gamesize);
+    CCart(CSystemBase &parent);
     ~CCart();
 
   public:
     // Access for sensible members of the clan
 
+    void InitializeGameData(UBYTE *gamedata, ULONG gamesize);
     void Reset(void);
     bool ContextSave(FILE *fp);
     bool ContextLoad(LSS_FILE *fp);

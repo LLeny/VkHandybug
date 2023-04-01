@@ -65,10 +65,11 @@ class CRam : public CLynxBase, public IMemoryAccess
     // Function members
 
   public:
-    CRam(CSystemBase &parent, UBYTE *filememory, ULONG filesize);
+    CRam(CSystemBase &parent);
     ~CRam();
 
   public:
+    void Initialize(UBYTE *filememory, ULONG filesize);
     void Reset(void);
     void Clear(void);
     bool ContextSave(FILE *fp);
