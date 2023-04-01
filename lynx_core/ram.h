@@ -45,6 +45,8 @@
 #ifndef RAM_H
 #define RAM_H
 
+#include "memoryaccess.h"
+
 #define RAM_SIZE 65536
 #define RAM_ADDR_MASK 0xffff
 #define DEFAULT_RAM_CONTENTS 0xff
@@ -57,7 +59,7 @@ typedef struct
     UBYTE magic[4];
 } HOME_HEADER;
 
-class CRam : public CLynxBase
+class CRam : public CLynxBase, public IMemoryAccess
 {
 
     // Function members

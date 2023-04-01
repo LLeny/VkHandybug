@@ -45,6 +45,8 @@
 #ifndef CART_H
 #define CART_H
 
+#include "memoryaccess.h"
+
 #define EPYX_HEADER_OLD 512
 #define EPYX_HEADER_NEW 410
 
@@ -95,7 +97,7 @@ typedef struct
     UBYTE spare[3];
 } LYNX_HEADER;
 
-class CCart : public CLynxBase
+class CCart : public CLynxBase, public IMemoryAccess
 {
     // Function members
   public:

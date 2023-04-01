@@ -83,6 +83,14 @@ void SessionControlEditor::render()
             }
         }
 
+        ImGui::TableNextColumn();
+        ImGui::TableNextColumn();
+        if (create_button("Rld", {buttonWidth, buttonHeight}, "Reload cart from disk"))
+        {
+            _session->set_status(SessionStatus_Break);
+            _session->system()->ReloadCart();
+        }
+
         ImGui::EndTable();
     }
 

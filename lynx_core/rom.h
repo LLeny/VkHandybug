@@ -45,6 +45,8 @@
 #ifndef ROM_H
 #define ROM_H
 
+#include "memoryaccess.h"
+
 #define ROM_SIZE 0x200
 #define ROM_ADDR_MASK 0x01ff
 #define DEFAULT_ROM_CONTENTS 0x88
@@ -56,7 +58,7 @@
 
 #include "sysbase.h"
 
-class CRom : public CLynxBase
+class CRom : public CLynxBase, public IMemoryAccess
 {
 
     // Function members

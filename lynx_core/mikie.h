@@ -49,6 +49,8 @@
 #ifndef MIKIE_H
 #define MIKIE_H
 
+#include "memoryaccess.h"
+
 // #include <crtdbg.h>
 // #define	TRACE_MIKIE
 
@@ -155,7 +157,7 @@ enum
     MIKIE_ROTATE_R
 };
 
-class CMikie : public CLynxBase
+class CMikie : public CLynxBase, public IMemoryAccess
 {
   public:
     CMikie(CSystem &parent);

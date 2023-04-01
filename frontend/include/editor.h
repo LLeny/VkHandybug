@@ -2,6 +2,7 @@
 
 #include "global.h"
 #include "session.h"
+#include "memoryaccess.h"
 
 class IEditor
 {
@@ -32,3 +33,5 @@ class IEditor
 };
 
 bool imgui_autocomplete_input(std::string label, char *buffer, size_t buffer_size, std::vector<std::string> &dictionary, ImGuiInputTextFlags flags);
+bool imgui_char_hex(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled);
+bool imgui_char_bin(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled);

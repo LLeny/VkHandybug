@@ -3,6 +3,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <cstring>
 
+#include "memoryaccess.h"
+
 #ifndef EEPROM_H
 #define EEPROM_H
 
@@ -23,7 +25,7 @@ enum
     EE_WAIT
 };
 
-class CEEPROM : public CLynxBase
+class CEEPROM : public CLynxBase, public IMemoryAccess
 {
 
     // Function members

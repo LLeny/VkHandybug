@@ -2,6 +2,7 @@
 #include "editor.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "fmt/core.h"
 
 bool imgui_autocomplete_input(std::string label, char *buffer, size_t buffer_size, std::vector<std::string> &dictionary, ImGuiInputTextFlags flags)
 {
@@ -48,4 +49,55 @@ bool imgui_autocomplete_input(std::string label, char *buffer, size_t buffer_siz
     }
 
     return is_input_text_enter_pressed;
+}
+
+bool imgui_char_hex(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled)
+{
+    auto buf = fmt::format("{:02X}", mem.Peek(address));
+
+    if (!label.starts_with("##"))
+    {
+        ImGui::Text("%s", label.c_str());
+        ImGui::SameLine();
+    }
+
+    if (!ImGui::InputText(("##charhex" + std::to_string(address)).c_str(), buf.data(), buf.length() + 1, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase))
+    {
+        return false;
+    }
+
+    uint8_t v;
+    std::from_chars(buf.data(), buf.data() + buf.length(), v, 16);
+    mem.Poke(address, v);
+    return true;
+}
+
+int imgui_char_bin_edit_callback(ImGuiInputTextCallbackData *data)
+{
+    if (data->EventChar == '0' || data->EventChar == '1')
+    {
+        return 0;
+    }
+    return 1;
+}
+
+bool imgui_char_bin(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled)
+{
+    auto buf = fmt::format("{:08B}", mem.Peek(address));
+
+    if (!label.starts_with("##"))
+    {
+        ImGui::Text("%s", label.c_str());
+        ImGui::SameLine();
+    }
+
+    if (!ImGui::InputText(("##charbin" + std::to_string(address)).c_str(), buf.data(), buf.length() + 1, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CallbackCharFilter, imgui_char_bin_edit_callback))
+    {
+        return false;
+    }
+
+    uint8_t v;
+    std::from_chars(buf.data(), buf.data() + buf.length(), v, 2);
+    mem.Poke(address, v);
+    return true;
 }

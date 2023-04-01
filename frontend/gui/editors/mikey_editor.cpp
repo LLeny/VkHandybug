@@ -48,14 +48,14 @@ void MikeyEditor::render_timer(uint8_t timerid)
     ImGui::Text("%d", timerid);
 
     ImGui::TableNextColumn();
-    ImGui::Text("%02X", mikie->Peek(timerid * 4 + 00));
+    imgui_char_hex("##TIMBKP", *mikie, timerid * 4 + 00, [&]() { return enabled(); });
 
     ImGui::TableNextColumn();
-    ImGui::Text("%s", fmt::format("{:08B}", mikie->Peek(timerid * 4 + 01)).c_str());
+    imgui_char_bin("##TIMCTLA", *mikie, timerid * 4 + 01, [&]() { return enabled(); });
 
     ImGui::TableNextColumn();
-    ImGui::Text("%02X", mikie->Peek(timerid * 4 + 02));
+    imgui_char_hex("##TIMCRT", *mikie, timerid * 4 + 02, [&]() { return enabled(); });
 
     ImGui::TableNextColumn();
-    ImGui::Text("%s", fmt::format("{:08B}", mikie->Peek(timerid * 4 + 03)).c_str());
+    imgui_char_bin("##TIMCTLB", *mikie, timerid * 4 + 03, [&]() { return enabled(); });
 }

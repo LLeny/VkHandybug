@@ -45,6 +45,8 @@
 #ifndef SUSIE_H
 #define SUSIE_H
 
+#include "memoryaccess.h"
+
 #ifdef TRACE_SUSIE
 
 #define TRACE_SUSIE0(msg) _RPT1(_CRT_WARN, "CSusie::" msg " (Time=%012d)\n", gSystemCycleCount)
@@ -342,7 +344,7 @@ typedef struct
     };
 } TMATHNP;
 
-class CSusie : public CLynxBase
+class CSusie : public CLynxBase, public IMemoryAccess
 {
   public:
     CSusie(CSystem &parent);
