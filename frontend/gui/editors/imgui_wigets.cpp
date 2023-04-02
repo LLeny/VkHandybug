@@ -61,6 +61,7 @@ bool imgui_char_hex(std::string label, IMemoryAccess &mem, uint16_t address, std
         ImGui::SameLine();
     }
 
+    ImGui::SetNextItemWidth(25);
     if (!ImGui::InputText(("##charhex" + std::to_string(address)).c_str(), buf.data(), buf.length() + 1, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase))
     {
         return false;
@@ -91,6 +92,7 @@ bool imgui_char_bin(std::string label, IMemoryAccess &mem, uint16_t address, std
         ImGui::SameLine();
     }
 
+    ImGui::SetNextItemWidth(80);
     if (!ImGui::InputText(("##charbin" + std::to_string(address)).c_str(), buf.data(), buf.length() + 1, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CallbackCharFilter, imgui_char_bin_edit_callback))
     {
         return false;
