@@ -52,11 +52,12 @@ void BreakpointsEditor::render_header()
 
 void BreakpointsEditor::render_table()
 {
-    if (ImGui::BeginTable("##bpitems", 3, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##bpitems", 4, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
     {
         ImGui::TableSetupColumn("Del");
         ImGui::TableSetupColumn("E/D");
         ImGui::TableSetupColumn("Address");
+        ImGui::TableSetupColumn("Symbol");
         ImGui::TableSetupScrollFreeze(0, 1);
         ImGui::TableHeadersRow();
 
@@ -95,4 +96,11 @@ void BreakpointsEditor::render_entry(Breakpoint &bp)
 
     std::string laddr = fmt::format("${:04X}", bp.address);
     ImGui::Text("%s", laddr.c_str());
+
+    ImGui::TableNextColumn();
+    auto sym = _session->symbols().get_symbol(bp.address);
+    if (sym.override)
+    {
+        ImGui::Text("%s", sym.symbol.c_str());
+    }
 }

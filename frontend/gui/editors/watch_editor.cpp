@@ -362,11 +362,12 @@ void WatchEditor::render()
 
     ImGui::Separator();
 
-    if (ImGui::BeginTable("##watchitems", 6, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##watchitems", 7, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
     {
         ImGui::TableSetupColumn("Del");
         ImGui::TableSetupColumn("Label");
         ImGui::TableSetupColumn("Address");
+        ImGui::TableSetupColumn("Symbol");
         ImGui::TableSetupColumn("Hex");
         ImGui::TableSetupColumn("Dec");
         ImGui::TableSetupColumn("Bin");
@@ -396,6 +397,13 @@ void WatchEditor::render()
 
             ImGui::TableNextColumn();
             ImGui::Text("%s", fmt::format("${:04X}", item.address).c_str());
+
+            ImGui::TableNextColumn();
+            auto sym = _session->symbols().get_symbol(item.address);
+            if (sym.override)
+            {
+                ImGui::Text("%s", sym.symbol.c_str());
+            }
 
             ImGui::TableNextColumn();
             draw_preview_data(dataBuf, sizeof(dataBuf), item.type, Watch_DataFormat_Hex, dataOutputBuf, sizeof(dataOutputBuf));
