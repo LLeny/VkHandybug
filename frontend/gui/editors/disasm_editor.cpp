@@ -270,10 +270,7 @@ DisasmEntry DisasmEditor::disassemble(uint16_t addr)
         ret.operands = "A";
         break;
     case imm:
-        if (_show_labels)
-            ret.operands = fmt::format("#{}", _session->symbols().get_symbol(operand).symbol);
-        else
-            ret.operands = fmt::format("#${:02X}", operand);
+        ret.operands = fmt::format("#${:02X}", operand);
         break;
     case absl:
         if (_show_labels)
