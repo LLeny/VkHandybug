@@ -24,7 +24,7 @@ void CPUEditor::draw_register(const char *label, uint8_t reg)
     ImGui::SetNextItemWidth(ITEM_WIDTH);
 
     ImGui::BeginDisabled(is_read_only());
-    if (ImGui::InputText(labelbuf.data(), regBuf.data(), regBuf.size(), ImGuiInputTextFlags_CharsHexadecimal, 0, (void *)label))
+    if (ImGui::InputText(labelbuf.data(), regBuf.data(), regBuf.size() + 1, ImGuiInputTextFlags_CharsHexadecimal, 0, (void *)label))
     {
         int r;
         std::from_chars(regBuf.data(), regBuf.data() + regBuf.size(), r, 16);
@@ -72,7 +72,7 @@ void CPUEditor::draw_PS(const char *label, uint16_t ps)
     ImGui::SetNextItemWidth(ITEM_WIDTH);
 
     ImGui::BeginDisabled(is_read_only());
-    if (ImGui::InputText(labelbuf.data(), regBuf.data(), regBuf.size(), ImGuiInputTextFlags_CharsHexadecimal))
+    if (ImGui::InputText(labelbuf.data(), regBuf.data(), regBuf.size() + 1, ImGuiInputTextFlags_CharsHexadecimal))
     {
         int v;
         std::from_chars(regBuf.data(), regBuf.data() + regBuf.size(), v, 16);
