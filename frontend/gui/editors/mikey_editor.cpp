@@ -11,6 +11,7 @@ MikeyEditor::~MikeyEditor()
 
 void MikeyEditor::render()
 {
+    ImGui::AlignTextToFramePadding();
     render_timers();
     render_audio();
     render_misc();

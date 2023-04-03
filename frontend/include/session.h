@@ -58,6 +58,7 @@ class Session : public std::enable_shared_from_this<Session>
     std::vector<Breakpoint> &breakpoints();
     void add_breakpoint(uint16_t addr);
     void delete_breakpoint(uint16_t addr);
+    void toggle_breakpoint(uint16_t addr);
 
     StatesManager &states_manager();
 

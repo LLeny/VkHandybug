@@ -201,8 +201,15 @@ int DisasmEditor::draw_disasm_entry(DisasmEntry &entry)
         ++itemcount;
     }
 
+    bool selected = false;
     ImGui::TableNextColumn();
-    ImGui::Text("%s", fmt::format("{}{}{:04X}:", entry.has_breakpoint ? "*" : " ", entry.is_pc ? ">" : " ", entry.base_address).c_str());
+    if (ImGui::Selectable(fmt::format("{}{}{:04X}:", entry.has_breakpoint ? "*" : " ", entry.is_pc ? ">" : " ", entry.base_address).c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowDoubleClick))
+    {
+        if (ImGui::IsMouseDoubleClicked(0))
+        {
+            _session->toggle_breakpoint(entry.base_address);
+        }
+    }
 
     ImGui::TableNextColumn();
     ImGui::Text("%s", entry.data.c_str());

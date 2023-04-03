@@ -188,6 +188,18 @@ std::vector<Breakpoint> &Session::breakpoints()
     return _breakpoints;
 }
 
+void Session::toggle_breakpoint(uint16_t addr)
+{
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr](const Breakpoint &b) { return b.address == addr; }))
+    {
+        delete_breakpoint(addr);
+    }
+    else
+    {
+        add_breakpoint(addr);
+    }
+}
+
 void Session::add_breakpoint(uint16_t addr)
 {
     if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr](const Breakpoint &b) { return b.address == addr; }))
