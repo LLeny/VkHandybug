@@ -471,12 +471,15 @@ bool CSystem::ReadCart()
         delete filememory;
     if (howardsize)
         delete howardmemory;
+
+    return true;
 }
 
 bool CSystem::ReloadCart()
 {
     ReadCart();
     Reset();
+    return true;
 }
 
 bool CSystem::IsZip(char *filename)
