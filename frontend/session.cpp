@@ -135,20 +135,61 @@ void Session::set_button_status(int glfw_key, int mods, bool status)
     }
 
     auto buttons = _lynx->GetButtonData();
+    auto rotation = _lynx->CartGetRotate();
 
     switch (_buttons_mapping[glfw_key])
     {
     case LynxButtons_Up:
-        buttons.sys.joystick.Bits.Up = status;
+        switch (rotation)
+        {
+        case CART_ROTATE_LEFT:
+            buttons.sys.joystick.Bits.Left = status;
+            break;
+        case CART_ROTATE_RIGHT:
+            buttons.sys.joystick.Bits.Right = status;
+            break;
+        default:
+            buttons.sys.joystick.Bits.Up = status;
+        }
         break;
     case LynxButtons_Down:
-        buttons.sys.joystick.Bits.Down = status;
+        switch (rotation)
+        {
+        case CART_ROTATE_LEFT:
+            buttons.sys.joystick.Bits.Right = status;
+            break;
+        case CART_ROTATE_RIGHT:
+            buttons.sys.joystick.Bits.Left = status;
+            break;
+        default:
+            buttons.sys.joystick.Bits.Down = status;
+        }
         break;
     case LynxButtons_Left:
-        buttons.sys.joystick.Bits.Left = status;
+        switch (rotation)
+        {
+        case CART_ROTATE_LEFT:
+            buttons.sys.joystick.Bits.Down = status;
+            break;
+        case CART_ROTATE_RIGHT:
+            buttons.sys.joystick.Bits.Up = status;
+            break;
+        default:
+            buttons.sys.joystick.Bits.Left = status;
+        }
         break;
     case LynxButtons_Right:
-        buttons.sys.joystick.Bits.Right = status;
+        switch (rotation)
+        {
+        case CART_ROTATE_LEFT:
+            buttons.sys.joystick.Bits.Up = status;
+            break;
+        case CART_ROTATE_RIGHT:
+            buttons.sys.joystick.Bits.Down = status;
+            break;
+        default:
+            buttons.sys.joystick.Bits.Right = status;
+        }
         break;
     case LynxButtons_Outside:
         buttons.sys.joystick.Bits.Outside = status;
