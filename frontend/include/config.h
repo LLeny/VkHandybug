@@ -16,6 +16,7 @@ struct WatchConfigStore
     uint32_t id = 0;
     std::string label;
     ImGuiDataType type = ImGuiDataType_U8;
+    LynxMemBank bank = LynxMemBank_RAM;
     uint16_t address = 0;
 
     template <class Archive>
@@ -24,6 +25,7 @@ struct WatchConfigStore
         archive(CEREAL_NVP(id));
         archive(CEREAL_NVP(label));
         archive(CEREAL_NVP(type));
+        archive(CEREAL_NVP(bank));
         archive(CEREAL_NVP(address));
     }
 };

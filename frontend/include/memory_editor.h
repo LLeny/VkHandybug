@@ -8,17 +8,6 @@
 class Session;
 class Config;
 
-enum MemEditorBank
-{
-    MemEditorBank_MIN = 0,
-    MemEditorBank_RAM = MemEditorBank_MIN,
-    MemEditorBank_ROM = 1,
-    MemEditorBank_Suzy = 2,
-    MemEditorBank_Mikey = 3,
-    MemEditorBank_CPU = 4,
-    MemEditorBank_MAX = 5
-};
-
 class MemEditor
 {
     friend Config;
@@ -37,9 +26,9 @@ class MemEditor
     void write_changes(uint16_t offset, ImU8 data);
     ImU8 read_mem(uint16_t offset);
 
-    void draw_bank_button(MemEditorBank access);
-    const char *bank_label(MemEditorBank access);
-    uint16_t bank_upper_bound(MemEditorBank access);
+    void draw_bank_button(LynxMemBank access);
+    const char *bank_label(LynxMemBank access);
+    uint16_t bank_upper_bound(LynxMemBank access);
 
   private:
     std::string _identifier;
@@ -47,7 +36,7 @@ class MemEditor
     std::shared_ptr<Session> _session;
     MemoryEditor _memoryEditor;
     uint32_t _bankUppberBound = 0xFFFF + 1;
-    MemEditorBank _memBank = MemEditorBank_RAM;
+    LynxMemBank _memBank = LynxMemBank_RAM;
 
     bool is_read_only();
 };

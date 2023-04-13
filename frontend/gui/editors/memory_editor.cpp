@@ -56,21 +56,21 @@ bool MemEditor::is_read_only()
     return _session->status() != SessionStatus_Break;
 }
 
-uint16_t MemEditor::bank_upper_bound(MemEditorBank access)
+uint16_t MemEditor::bank_upper_bound(LynxMemBank access)
 {
     uint16_t bounds[] = {0xFFFF, 0x1FF, 0xFF, 0xFF, 0xFFFF};
-    IM_ASSERT(access >= MemEditorBank_MIN && access < MemEditorBank_MAX);
+    IM_ASSERT(access >= LynxMemBank_MIN && access < LynxMemBank_MAX);
     return bounds[access];
 }
 
-const char *MemEditor::bank_label(MemEditorBank access)
+const char *MemEditor::bank_label(LynxMemBank access)
 {
     const char *descs[] = {"RAM", "ROM", "Suzy", "Mikey", "CPU"};
-    IM_ASSERT(access >= MemEditorBank_MIN && access < MemEditorBank_MAX);
+    IM_ASSERT(access >= LynxMemBank_MIN && access < LynxMemBank_MAX);
     return descs[access];
 }
 
-void MemEditor::draw_bank_button(MemEditorBank bank)
+void MemEditor::draw_bank_button(LynxMemBank bank)
 {
     bool pushed = false;
 
@@ -99,10 +99,10 @@ void MemEditor::draw_contents()
         return;
     }
 
-    for (int a = MemEditorBank_MIN; a < MemEditorBank_MAX; ++a)
+    for (int a = LynxMemBank_MIN; a < LynxMemBank_MAX; ++a)
     {
-        draw_bank_button((MemEditorBank)a);
-        if (a < MemEditorBank_MAX - 1)
+        draw_bank_button((LynxMemBank)a);
+        if (a < LynxMemBank_MAX - 1)
         {
             ImGui::SameLine();
         }
@@ -116,19 +116,19 @@ void MemEditor::write_changes(uint16_t offset, ImU8 data)
 {
     switch (_memBank)
     {
-    case MemEditorBank_RAM:
+    case LynxMemBank_RAM:
         _session->system()->Poke_RAM(offset, data);
         break;
-    case MemEditorBank_ROM:
+    case LynxMemBank_ROM:
         _session->system()->mRom->Poke(offset, data);
         break;
-    case MemEditorBank_Mikey:
+    case LynxMemBank_Mikey:
         _session->system()->mMikie->Poke(offset, data);
         break;
-    case MemEditorBank_Suzy:
+    case LynxMemBank_Suzy:
         _session->system()->mSusie->Poke(offset, data);
         break;
-    case MemEditorBank_CPU:
+    case LynxMemBank_CPU:
         _session->system()->Poke_CPU(offset, data);
         break;
     default:
@@ -141,15 +141,15 @@ ImU8 MemEditor::read_mem(uint16_t offset)
 {
     switch (_memBank)
     {
-    case MemEditorBank_RAM:
+    case LynxMemBank_RAM:
         return _session->system()->Peek_RAM(offset);
-    case MemEditorBank_ROM:
+    case LynxMemBank_ROM:
         return _session->system()->mRom->Peek(offset);
-    case MemEditorBank_Mikey:
+    case LynxMemBank_Mikey:
         return _session->system()->mMikie->Peek(offset);
-    case MemEditorBank_Suzy:
+    case LynxMemBank_Suzy:
         return _session->system()->mSusie->Peek(offset);
-    case MemEditorBank_CPU:
+    case LynxMemBank_CPU:
         return _session->system()->Peek_CPU(offset);
     default:
         return 0;

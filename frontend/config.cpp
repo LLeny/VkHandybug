@@ -95,7 +95,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
 
         for (auto &w : session->_watch_editor.watches())
         {
-            watches.push_back({w.id, w.label, w.type, w.address});
+            watches.push_back({w.id, w.label, w.type, w.bank, w.address});
         }
 
         for (auto btnmap : session->_session->buttons_mapping())
@@ -199,7 +199,7 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
 
     for (auto &w : found->watches)
     {
-        session->_watch_editor.watches().push_back({w.id, w.label, w.type, w.address});
+        session->_watch_editor.watches().push_back({w.id, w.label, w.type, w.bank, w.address});
     }
 
     session->_session->buttons_mapping().clear();
@@ -299,7 +299,7 @@ void Config::load_memory_editor(std::string sessionid, MemEditor *editor)
     editor->_memoryEditor.OptShowHexII = memconfig->optShowHexII;
     editor->_memoryEditor.OptShowOptions = memconfig->optShowOptions;
     editor->_memoryEditor.OptUpperCaseHex = memconfig->optUpperCaseHex;
-    editor->_memBank = (MemEditorBank)memconfig->selected_bank;
+    editor->_memBank = (LynxMemBank)memconfig->selected_bank;
 }
 
 void Config::save_disasm_editor(std::string sessionid, DisasmEditor *editor)

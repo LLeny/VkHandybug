@@ -34,3 +34,14 @@ enum LynxButtons
     LynxButtons_Pause,
     LynxButtons_Max
 };
+
+enum LynxMemBank
+{
+    LynxMemBank_MIN = 0,
+    LynxMemBank_RAM = LynxMemBank_MIN,
+    LynxMemBank_ROM = 1,
+    LynxMemBank_Suzy = 2,
+    LynxMemBank_Mikey = 3,
+    LynxMemBank_CPU = 4,
+    LynxMemBank_MAX = 5
+};

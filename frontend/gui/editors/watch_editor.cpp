@@ -36,6 +36,31 @@ ImGuiDataType WatchEditor::dataType_get_type(const char *data_type)
     return -1;
 }
 
+LynxMemBank WatchEditor::mem_bank_get_type(const char *data_type)
+{
+    for (int i = 0; i < LynxMemBank_MAX; ++i)
+    {
+        auto t = mem_bank_get_desc((LynxMemBank)i);
+
+        while (*data_type or *t)
+        {
+            char c = std::toupper(*data_type++);
+            char d = std::toupper(*t++);
+            if (c != d)
+                continue;
+        }
+        return (LynxMemBank)i;
+    }
+    return LynxMemBank_MIN;
+}
+
+const char *WatchEditor::mem_bank_get_desc(LynxMemBank data_type) const
+{
+    const char *descs[] = {"RAM", "ROM", "Suzy", "Mikey", "CPU"};
+    IM_ASSERT(data_type >= 0 && data_type < LynxMemBank_MAX);
+    return descs[data_type];
+}
+
 size_t WatchEditor::dataType_get_size(ImGuiDataType data_type) const
 {
     const size_t sizes[] = {1, 1, 2, 2, 4, 4, 8, 8, sizeof(float), sizeof(double)};
@@ -250,7 +275,7 @@ void WatchEditor::delete_watch(const WatchItem *item)
     _items.erase(std::remove(_items.begin(), _items.end(), *item), _items.end());
 }
 
-void WatchEditor::add_watch(const char *label, ImGuiDataType type, const char *addr)
+void WatchEditor::add_watch(const char *label, ImGuiDataType type, LynxMemBank bank, const char *addr)
 {
     int a = _session->symbols().get_addr(std::string(label));
 
@@ -261,18 +286,18 @@ void WatchEditor::add_watch(const char *label, ImGuiDataType type, const char *a
 
     if (a > 0)
     {
-        add_watch(label, type, a);
+        add_watch(label, type, bank, a);
     }
 }
 
-void WatchEditor::add_watch(const char *label, ImGuiDataType type, uint16_t addr)
+void WatchEditor::add_watch(const char *label, ImGuiDataType type, LynxMemBank bank, uint16_t addr)
 {
     if (strlen(label) <= 0 || addr > 0xffff)
     {
         return;
     }
 
-    if (std::any_of(_items.begin(), _items.end(), [type, addr](const WatchItem i) { return i.address == addr && i.type == type; }))
+    if (std::any_of(_items.begin(), _items.end(), [type, addr, bank](const WatchItem i) { return i.address == addr && i.type == type && i.bank == bank; }))
     {
         return;
     }
@@ -286,6 +311,7 @@ void WatchEditor::add_watch(const char *label, ImGuiDataType type, uint16_t addr
     item.type = type;
     item.label = label;
     item.address = addr;
+    item.bank = bank;
 
     memset(_newItemAddrBuf, 0, sizeof(_newItemAddrBuf));
     memset(_newItemLabelBuf, 0, sizeof(_newItemLabelBuf));
@@ -293,7 +319,7 @@ void WatchEditor::add_watch(const char *label, ImGuiDataType type, uint16_t addr
     _items.push_back(item);
 }
 
-void WatchEditor::add_watch(const char *label, const char *type, uint16_t addr)
+void WatchEditor::add_watch(const char *label, const char *type, LynxMemBank bank, uint16_t addr)
 {
     ImGuiDataType t = dataType_get_type(type);
 
@@ -302,7 +328,7 @@ void WatchEditor::add_watch(const char *label, const char *type, uint16_t addr)
         return;
     }
 
-    add_watch(label, t, addr);
+    add_watch(label, t, bank, addr);
 }
 
 std::vector<WatchItem> &WatchEditor::watches()
@@ -336,6 +362,19 @@ void WatchEditor::render()
     }
 
     ImGui::SameLine();
+    ImGui::Text("Bank");
+
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(70);
+    if (ImGui::BeginCombo("##watchbank", mem_bank_get_desc(_new_item_meme_bank), ImGuiComboFlags_HeightLargest))
+    {
+        for (int n = 0; n < LynxMemBank_MAX; n++)
+            if (ImGui::Selectable(mem_bank_get_desc((LynxMemBank)n), _new_item_meme_bank == n))
+                _new_item_meme_bank = (LynxMemBank)n;
+        ImGui::EndCombo();
+    }
+
+    ImGui::SameLine();
     ImGui::Text("Type");
 
     ImGui::SameLine();
@@ -357,15 +396,16 @@ void WatchEditor::render()
             return;
         }
 
-        add_watch(_newItemLabelBuf, _newItemDataType, _newItemAddrBuf);
+        add_watch(_newItemLabelBuf, _newItemDataType, _new_item_meme_bank, _newItemAddrBuf);
     }
 
     ImGui::Separator();
 
-    if (ImGui::BeginTable("##watchitems", 7, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##watchitems", 8, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
     {
         ImGui::TableSetupColumn("Del");
         ImGui::TableSetupColumn("Label");
+        ImGui::TableSetupColumn("Bank");
         ImGui::TableSetupColumn("Address");
         ImGui::TableSetupColumn("Symbol");
         ImGui::TableSetupColumn("Hex");
@@ -381,7 +421,24 @@ void WatchEditor::render()
             do
             {
                 --size;
-                dataBuf[size] = _session->system()->Peek_RAM(item.address + (uint16_t)size);
+                switch (item.bank)
+                {
+                case LynxMemBank_CPU:
+                    dataBuf[size] = _session->system()->Peek_CPU(item.address + (uint16_t)size);
+                    break;
+                case LynxMemBank_Mikey:
+                    dataBuf[size] = _session->system()->mMikie->Peek(item.address + (uint16_t)size);
+                    break;
+                case LynxMemBank_RAM:
+                    dataBuf[size] = _session->system()->Peek_RAM(item.address + (uint16_t)size);
+                    break;
+                case LynxMemBank_ROM:
+                    dataBuf[size] = _session->system()->mRom->Peek(item.address + (uint16_t)size);
+                    break;
+                case LynxMemBank_Suzy:
+                    dataBuf[size] = _session->system()->mSusie->Peek(item.address + (uint16_t)size);
+                    break;
+                }
             } while (size > 0);
 
             ImGui::TableNextColumn();
@@ -394,6 +451,9 @@ void WatchEditor::render()
 
             ImGui::TableNextColumn();
             ImGui::Text("%s", item.label.c_str());
+
+            ImGui::TableNextColumn();
+            ImGui::Text("%s", mem_bank_get_desc(item.bank));
 
             ImGui::TableNextColumn();
             ImGui::Text("%s", fmt::format("${:04X}", item.address).c_str());

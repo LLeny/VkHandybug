@@ -7,11 +7,20 @@
 #include <cstring>
 #include "editor.h"
 
+enum DataFormat
+{
+    Watch_DataFormat_Bin = 0,
+    Watch_DataFormat_Dec = 1,
+    Watch_DataFormat_Hex = 2,
+    Watch_DataFormat_COUNT
+};
+
 typedef struct WatchItem
 {
     uint32_t id = 0;
     std::string label;
     ImGuiDataType type = ImGuiDataType_U8;
+    LynxMemBank bank = LynxMemBank_RAM;
     uint16_t address = 0;
 
     bool operator==(const WatchItem &b)
@@ -20,14 +29,6 @@ typedef struct WatchItem
     }
 
 } WatchItem;
-
-enum DataFormat
-{
-    Watch_DataFormat_Bin = 0,
-    Watch_DataFormat_Dec = 1,
-    Watch_DataFormat_Hex = 2,
-    Watch_DataFormat_COUNT
-};
 
 class WatchEditor : public IEditor
 {
@@ -38,7 +39,7 @@ class WatchEditor : public IEditor
     void render() override;
 
     void delete_watch(const char *label);
-    void add_watch(const char *label, const char *type, uint16_t addr);
+    void add_watch(const char *label, const char *type, LynxMemBank bank, uint16_t addr);
     std::vector<WatchItem> &watches();
 
   private:
@@ -47,13 +48,17 @@ class WatchEditor : public IEditor
     char _newItemLabelBuf[50]{};
     char _newItemAddrBuf[50]{};
     ImGuiDataType _newItemDataType{ImGuiDataType_U8};
+    LynxMemBank _new_item_meme_bank{LynxMemBank_RAM};
 
     void delete_watch(const WatchItem *item);
     void delete_watch(uint16_t id);
-    void add_watch(const char *label, ImGuiDataType type, const char *addr);
-    void add_watch(const char *label, ImGuiDataType type, uint16_t addr);
+    void add_watch(const char *label, ImGuiDataType type, LynxMemBank bank, const char *addr);
+    void add_watch(const char *label, ImGuiDataType type, LynxMemBank bank, uint16_t addr);
     ImGuiDataType dataType_get_type(const char *data_type);
     const char *dataType_get_desc(ImGuiDataType data_type) const;
+    LynxMemBank mem_bank_get_type(const char *data_type);
+    const char *mem_bank_get_desc(LynxMemBank data_type) const;
+
     size_t dataType_get_size(ImGuiDataType data_type) const;
     void draw_preview_data(const ImU8 *mem_data, size_t mem_size, ImGuiDataType data_type, DataFormat data_format, char *out_buf, size_t out_buf_size) const;
     const char *format_binary(const uint8_t *buf, int width) const;
