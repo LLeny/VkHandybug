@@ -30,6 +30,11 @@ class App : public std::enable_shared_from_this<App>
     void set_active_session(std::string session_identifier);
     bool is_active_session(std::string session_identifier);
 
+    ImVec2 get_dimensions();
+    ImVec2 get_position();
+    void set_dimensions(ImVec2 dim);
+    void set_position(ImVec2 pos);
+
   private:
     bool volatile _closing = false;
 

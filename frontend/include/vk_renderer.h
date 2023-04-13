@@ -19,15 +19,15 @@
 #include "gui.h"
 #include <vulkan/vulkan.h>
 
-#define VK_CHECK(x)                                         \
-    do                                                      \
-    {                                                       \
-        VkResult err = x;                                   \
-        if (err)                                            \
-        {                                                   \
+#define VK_CHECK(x)                                                  \
+    do                                                               \
+    {                                                                \
+        VkResult err = x;                                            \
+        if (err)                                                     \
+        {                                                            \
             LOG(LOG_ERROR) << "Detected Vulkan error: " << (int)err; \
-            abort();                                        \
-        }                                                   \
+            abort();                                                 \
+        }                                                            \
     } while (0)
 
 typedef struct LynxScreenBuffer
@@ -64,6 +64,10 @@ class VulkanRenderer
     int64_t render(std::shared_ptr<GUI> gui);
     bool should_close();
     void setTitle(std::string title);
+    ImVec2 get_dimensions();
+    ImVec2 get_position();
+    void set_dimensions(ImVec2 dim);
+    void set_position(ImVec2 pos);
 
     void register_file_open_callback(std::function<void(std::string)> callback);
     void register_key_event_callback(std::function<void(int, int, bool)> callback);
@@ -148,7 +152,6 @@ class VulkanRenderer
     void frame_render(ImGui_ImplVulkanH_Window *wd, ImDrawData *draw_data);
     void frame_present(ImGui_ImplVulkanH_Window *wd);
     void render_ImGui(std::shared_ptr<GUI> gui);
-    ImVec2 get_dimensions();
 
     void prepare_view_texture(VkTextureView &view, VkFormat format);
 };

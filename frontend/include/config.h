@@ -137,6 +137,8 @@ struct ConfigStore
     std::string theme = "dark";
     std::string last_rom_folder = ".";
     std::string lynx_rom_file = "./lynxboot.img";
+    int main_window_x_pos = 10, main_window_y_pos = 10;
+    int main_window_width = 800, main_window_height = 600;
     bool comlynx_visisble = false;
     std::vector<std::string> recent_sessions{};
 
@@ -149,6 +151,10 @@ struct ConfigStore
         archive(CEREAL_NVP(theme));
         archive(CEREAL_NVP(last_rom_folder));
         archive(CEREAL_NVP(lynx_rom_file));
+        archive(CEREAL_NVP(main_window_x_pos));
+        archive(CEREAL_NVP(main_window_y_pos));
+        archive(CEREAL_NVP(main_window_width));
+        archive(CEREAL_NVP(main_window_height));
         archive(CEREAL_NVP(comlynx_visisble));
         archive(CEREAL_NVP(recent_sessions));
         archive(CEREAL_NVP(sessions));

@@ -270,3 +270,23 @@ ComLynxHub &App::comlynx_hub()
 {
     return _comlynx_hub;
 }
+
+ImVec2 App::get_dimensions()
+{
+    return _renderer->get_dimensions();
+}
+
+ImVec2 App::get_position()
+{
+    return _renderer->get_position();
+}
+
+void App::set_dimensions(ImVec2 dim)
+{
+    _renderer->set_dimensions(dim);
+}
+
+void App::set_position(ImVec2 pos)
+{
+    _renderer->set_position(pos);
+}

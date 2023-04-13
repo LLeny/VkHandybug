@@ -280,6 +280,23 @@ ImVec2 VulkanRenderer::get_dimensions()
     return _dimensions;
 }
 
+ImVec2 VulkanRenderer::get_position()
+{
+    int xpos, ypos;
+    glfwGetWindowPos(_mainWindow, &xpos, &ypos);
+    return {(float)xpos, (float)ypos};
+}
+
+void VulkanRenderer::set_dimensions(ImVec2 dim)
+{
+    glfwSetWindowSize(_mainWindow, dim.x, dim.y);
+}
+
+void VulkanRenderer::set_position(ImVec2 pos)
+{
+    glfwSetWindowPos(_mainWindow, pos.x, pos.y);
+}
+
 void VulkanRenderer::initialize()
 {
     glfwSetErrorCallback([](int error, const char *description) { LOG(LOG_ERROR) << "GLFW Error " << error << ": " << description; });

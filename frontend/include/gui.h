@@ -4,6 +4,7 @@
 #include "session.h"
 #include "session_gui.h"
 #include "comlynx_visualizer.h"
+#include "imgui.h"
 
 class Config;
 

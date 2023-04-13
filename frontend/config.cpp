@@ -31,6 +31,9 @@ void Config::load(App *app)
     initialize();
     load_recents(app);
 
+    app->set_dimensions({(float)_store.main_window_width, (float)_store.main_window_height});
+    app->set_position({(float)_store.main_window_x_pos, (float)_store.main_window_y_pos});
+
     app->gui()->_comlynx_visible = _store.comlynx_visisble;
 }
 
@@ -63,6 +66,15 @@ void Config::initialize()
 void Config::save(App *app)
 {
     save_recents(app);
+
+    auto dim = app->get_dimensions();
+    auto pos = app->get_position();
+
+    _store.main_window_x_pos = pos.x;
+    _store.main_window_y_pos = pos.y;
+    _store.main_window_width = dim.x;
+    _store.main_window_height = dim.y;
+
     _store.comlynx_visisble = app->gui()->_comlynx_visible;
 
     std::string filename = config_file().generic_string();
