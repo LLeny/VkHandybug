@@ -103,6 +103,8 @@ struct SessionConfigStore
     bool states_manager_visible;
     bool controls_visible;
     bool mikie_visible;
+    bool muted;
+    bool comlynx_connected;
 
     std::vector<SessionMemEditorConfigStore> mem_editors{};
     std::vector<SessionDisasmEditorConfigStore> disasm_editors{};
@@ -128,6 +130,8 @@ struct SessionConfigStore
         archive(CEREAL_NVP(breakpoints));
         archive(CEREAL_NVP(watches));
         archive(CEREAL_NVP(buttons_mapping));
+        archive(CEREAL_NVP(muted));
+        archive(CEREAL_NVP(comlynx_connected));
     }
 };
 

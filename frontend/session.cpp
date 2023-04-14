@@ -276,7 +276,26 @@ void Session::disable_comlynx()
     return _app->comlynx_hub().unregister_session(shared_from_this());
 }
 
+bool Session::is_comlynx_enabled()
+{
+    return _lynx->mMikie->ComLynxCable();
+}
+
 std::shared_ptr<VulkanRenderer> &Session::renderer()
 {
     return _renderer;
+}
+
+void Session::set_audio(bool enabled)
+{
+    _lynx->mAudioEnabled = enabled;
+    if (enabled)
+    {
+        sound_set_session(shared_from_this());
+    }
+}
+
+bool Session::is_audio_enabled()
+{
+    return _lynx->mAudioEnabled;
 }

@@ -256,8 +256,6 @@ void App::new_session(std::filesystem::path file)
 
     Config::getInstance().load_session(sessiongui);
 
-    sound_set_session(session);
-
     _sessions.push_back(std::move(session));
 }
 

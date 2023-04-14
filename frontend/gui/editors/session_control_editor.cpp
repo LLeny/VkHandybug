@@ -52,23 +52,23 @@ void SessionControlEditor::render()
         }
 
         ImGui::TableNextColumn();
-        if (_session->system()->mAudioEnabled)
+        if (_session->is_audio_enabled())
         {
             if (create_button(BootstrapIcons_volume_up, {buttonWidth, buttonHeight}, "Mute"))
             {
-                _session->system()->mAudioEnabled = false;
+                _session->set_audio(false);
             }
         }
         else
         {
             if (create_button(BootstrapIcons_volume_mute, {buttonWidth, buttonHeight}, "Unmute"))
             {
-                _session->system()->mAudioEnabled = true;
+                _session->set_audio(true);
             }
         }
 
         ImGui::TableNextColumn();
-        if (_session->system()->mMikie->ComLynxCable())
+        if (_session->is_comlynx_enabled())
         {
             if (create_button(BootstrapIcons_wifi, {buttonWidth, buttonHeight}, "Disconnect ComLynx"))
             {

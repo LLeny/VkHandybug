@@ -131,6 +131,8 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             store.states_manager_visible = session->_states_manager_open;
             store.controls_visible = session->_controls_open;
             store.mikie_visible = session->_mikie_open;
+            store.comlynx_connected = session->_session->is_comlynx_enabled();
+            store.muted = !session->_session->is_audio_enabled();
             store.breakpoints = breakpoints;
             store.watches = watches;
             store.buttons_mapping = buttons_mapping;
@@ -148,6 +150,8 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             found->states_manager_visible = session->_states_manager_open;
             found->controls_visible = session->_controls_open;
             found->mikie_visible = session->_mikie_open;
+            found->comlynx_connected = session->_session->is_comlynx_enabled();
+            found->muted = !session->_session->is_audio_enabled();
             found->breakpoints = breakpoints;
             found->watches = watches;
             found->buttons_mapping = buttons_mapping;
@@ -189,6 +193,11 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
     session->_states_manager_open = found->states_manager_visible;
     session->_controls_open = found->controls_visible;
     session->_mikie_open = found->mikie_visible;
+    if (found->comlynx_connected)
+    {
+        session->_session->enable_comlynx();
+    }
+    session->_session->set_audio(!found->muted);
 
     for (auto &mem_edit : found->mem_editors)
     {

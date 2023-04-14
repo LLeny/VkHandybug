@@ -73,6 +73,10 @@ class Session : public std::enable_shared_from_this<Session>
     void register_app(std::shared_ptr<App> app);
     void enable_comlynx();
     void disable_comlynx();
+    bool is_comlynx_enabled();
+
+    void set_audio(bool enabled);
+    bool is_audio_enabled();
 
     void set_active();
     bool is_active();
