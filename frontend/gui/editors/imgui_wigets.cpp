@@ -51,14 +51,14 @@ bool imgui_autocomplete_input(std::string label, char *buffer, size_t buffer_siz
     return is_input_text_enter_pressed;
 }
 
-bool imgui_char_hex(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled)
+bool imgui_char_hex(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled, float label_width)
 {
     auto buf = fmt::format("{:02X}", mem.Peek(address));
 
     if (!label.starts_with("##"))
     {
         ImGui::Text("%s", label.c_str());
-        ImGui::SameLine();
+        ImGui::SameLine(label_width);
     }
 
     ImGui::SetNextItemWidth(25);
@@ -82,14 +82,14 @@ int imgui_char_bin_edit_callback(ImGuiInputTextCallbackData *data)
     return 1;
 }
 
-bool imgui_char_bin(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled)
+bool imgui_char_bin(std::string label, IMemoryAccess &mem, uint16_t address, std::function<bool()> enabled, float label_width)
 {
     auto buf = fmt::format("{:08B}", mem.Peek(address));
 
     if (!label.starts_with("##"))
     {
         ImGui::Text("%s", label.c_str());
-        ImGui::SameLine();
+        ImGui::SameLine(label_width);
     }
 
     ImGui::SetNextItemWidth(80);

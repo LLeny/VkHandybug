@@ -240,6 +240,7 @@ void Menu::update_items()
         add_bool_callback_item(sessionid, subs, &guisession->_mikie_open, "mikey", "Ctrl+K", ImGuiMod_Ctrl | ImGuiKey_K);
         add_bool_callback_item(sessionid, subs, &guisession->_palette_open, "palette", "Ctrl+P", ImGuiMod_Ctrl | ImGuiKey_P);
         add_bool_callback_item(sessionid, subs, &guisession->_states_manager_open, "states", "Ctrl+T", ImGuiMod_Ctrl | ImGuiKey_T);
+        add_bool_callback_item(sessionid, subs, &guisession->_suzy_open, "suzy", "Ctrl+U", ImGuiMod_Ctrl | ImGuiKey_U);
         add_bool_callback_item(sessionid, subs, &guisession->_symbols_open, "symbols", "Ctrl+S", ImGuiMod_Ctrl | ImGuiKey_S);
         add_bool_callback_item(sessionid, subs, &guisession->_watch_open, "watch", "Ctrl+W", ImGuiMod_Ctrl | ImGuiKey_W);
 

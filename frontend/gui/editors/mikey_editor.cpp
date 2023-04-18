@@ -12,17 +12,24 @@ MikeyEditor::~MikeyEditor()
 void MikeyEditor::render()
 {
     ImGui::AlignTextToFramePadding();
-    render_timers();
-    render_audio();
-    render_misc();
+    if (ImGui::CollapsingHeader("Timers"))
+    {
+        render_timers();
+    }
+    if (ImGui::CollapsingHeader("Audio"))
+    {
+        render_audio();
+    }
+    if (ImGui::CollapsingHeader("Misc"))
+    {
+        render_misc();
+    }
 }
 
 void MikeyEditor::render_timers()
 {
-    ImGui::Text("Timers");
     if (ImGui::BeginTable("##mikeytimertable", 5, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit))
     {
-
         ImGui::TableSetupColumn("Timer");
         ImGui::TableSetupColumn("Backup");
         ImGui::TableSetupColumn("Static control");
@@ -40,10 +47,8 @@ void MikeyEditor::render_timers()
 }
 void MikeyEditor::render_audio()
 {
-    ImGui::Text("Audio");
     if (ImGui::BeginTable("##mikeyaudiotable", 9, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit))
     {
-
         ImGui::TableSetupColumn("Audio");
         ImGui::TableSetupColumn("Volume");
         ImGui::TableSetupColumn("Feedback");
@@ -68,7 +73,6 @@ void MikeyEditor::render_misc()
 {
     auto mikie = _session->system()->mMikie;
 
-    ImGui::Text("Misc");
     imgui_char_bin("INTRST", *mikie, 0x80, [&]() { return is_read_only(); });
     ImGui::SameLine();
     imgui_char_bin("INTSET", *mikie, 0x81, [&]() { return is_read_only(); });

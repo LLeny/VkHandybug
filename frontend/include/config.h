@@ -103,6 +103,7 @@ struct SessionConfigStore
     bool states_manager_visible;
     bool controls_visible;
     bool mikie_visible;
+    bool suzy_visible;
     bool muted;
     bool comlynx_connected;
 
@@ -125,6 +126,7 @@ struct SessionConfigStore
         archive(CEREAL_NVP(states_manager_visible));
         archive(CEREAL_NVP(controls_visible));
         archive(CEREAL_NVP(mikie_visible));
+        archive(CEREAL_NVP(suzy_visible));
         archive(CEREAL_NVP(mem_editors));
         archive(CEREAL_NVP(disasm_editors));
         archive(CEREAL_NVP(breakpoints));

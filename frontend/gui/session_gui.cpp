@@ -25,6 +25,7 @@ void SessionGUI::initialize(std::shared_ptr<Session> session)
     _controls_editor.set_session(session);
     _session_control_editor.set_session(session);
     _mikie_editor.set_session(session);
+    _suzy_editor.set_session(session);
 
     bool always_open = true;
 
@@ -38,6 +39,7 @@ void SessionGUI::initialize(std::shared_ptr<Session> session)
     _single_editors.push_back({std::string(BootstrapIcons_controller), id(), &_controls_editor, &_controls_open});
     _single_editors.push_back({std::string(BootstrapIcons_play), id(), &_session_control_editor, &always_open, true});
     _single_editors.push_back({std::string(BootstrapIcons_cpu) + "Mikey", id(), &_mikie_editor, &_mikie_open});
+    _single_editors.push_back({std::string(BootstrapIcons_cpu) + "Suzy", id(), &_suzy_editor, &_suzy_open});
 }
 
 std::string SessionGUI::id()
