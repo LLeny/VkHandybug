@@ -24,7 +24,6 @@ include("tools/cmake.dependencies")
 FetchContent_MakeAvailable(glfw)
 FetchContent_MakeAvailable(vkmemalloc)
 FetchContent_MakeAvailable(vkbootstrap)
-FetchContent_MakeAvailable(zlib)
 FetchContent_MakeAvailable(fmt)
 FetchContent_Populate(miniaudio)
 FetchContent_Populate(cereal)
@@ -48,6 +47,12 @@ file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     ${imgui_filedialog_SOURCE_DIR}/ImGuiFileDialog.cpp  
     ${hashlib_SOURCE_DIR}/md5.cpp  
 )
+
+FetchContent_GetProperties(zlib)
+if(NOT zlib_POPULATED)
+  FetchContent_Populate(zlib)
+  add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
 
 add_executable(${PROJECT_NAME} ${vkhandybug_SOURCES})
 
@@ -88,7 +93,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     vk-bootstrap::vk-bootstrap
     VulkanMemoryAllocator
     glfw
-    zlib
+    zlibstatic
     fmt
     )
 
