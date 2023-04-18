@@ -21,7 +21,6 @@ find_package(Threads REQUIRED)
 
 include("tools/cmake.dependencies")
 
-FetchContent_MakeAvailable(glfw)
 FetchContent_MakeAvailable(vkmemalloc)
 FetchContent_MakeAvailable(vkbootstrap)
 FetchContent_MakeAvailable(fmt)
@@ -52,6 +51,12 @@ FetchContent_GetProperties(zlib)
 if(NOT zlib_POPULATED)
   FetchContent_Populate(zlib)
   add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+FetchContent_GetProperties(glfw)
+if(NOT glfw_POPULATED)
+  FetchContent_Populate(glfw)
+  add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
 add_executable(${PROJECT_NAME} ${vkhandybug_SOURCES})

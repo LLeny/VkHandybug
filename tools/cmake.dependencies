@@ -1,62 +1,83 @@
+Set(FETCHCONTENT_QUIET FALSE)
 
 FetchContent_Declare(
   miniaudio
   GIT_REPOSITORY       https://github.com/mackron/miniaudio.git
   GIT_TAG              9a7663496fc06f7a9439c752fd7666ca93328c20
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   imgui
   GIT_REPOSITORY       https://github.com/ocornut/imgui.git
   GIT_TAG              1ebb91382757777382b3629ced2a573996e46453
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   glfw
   GIT_REPOSITORY       https://github.com/glfw/glfw.git
-  GIT_TAG              9a87635686c7fcb63ca63149c5b179b85a53a725
+  GIT_TAG              3.3.8
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   vkmemalloc
   GIT_REPOSITORY       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-  GIT_TAG              66afe099f1cf1f79c270471e9c0f02139072057d
+  GIT_TAG              v3.0.1
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   vkbootstrap
   GIT_REPOSITORY       https://github.com/charles-lunarg/vk-bootstrap
   GIT_TAG              61f77612c70dd49a59157fe139a7d248a90e206a
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   zlib
   GIT_REPOSITORY       https://github.com/madler/zlib.git
   GIT_TAG              04f42ceca40f73e2978b50e93806c2a18c1281fc
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   imgui_filedialog
   GIT_REPOSITORY       https://github.com/aiekick/ImGuiFileDialog.git
   GIT_TAG              2917cd9ec120bce7b4297e7f3afb660071707e05
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   cereal
   GIT_REPOSITORY       https://github.com/USCiLab/cereal.git
   GIT_TAG              ddd467244713ea4fe63733628992efcdd6a9187d
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   fmt
   GIT_REPOSITORY       https://github.com/fmtlib/fmt.git
-  GIT_TAG              f6276a2c2b76c54c3a659d5fee5557c7bec95a0c
+  GIT_TAG              9.1.0
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 FetchContent_Declare(
   hashlib
   GIT_REPOSITORY       https://github.com/stbrumme/hash-library.git
   GIT_TAG              d389d18112bcf7e4786ec5e8723f3658a7f433d7
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
 )
 
 file(READ "${FETCHCONTENT_BASE_DIR}/vkmemalloc-src/src/CMakeLists.txt" FILE_CONTENTS)
