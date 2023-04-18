@@ -198,27 +198,7 @@ void App::execute()
                 continue;
             }
 
-            if (session->_status == SessionStatus_Running || session->_status == SessionStatus_Step)
-            {
-                cycles = std::max(cycles, session->_lynx->Update());
-
-                if (session->_status == SessionStatus_Step)
-                {
-                    session->set_status(SessionStatus_Break);
-                }
-                else
-                {
-                    auto &bps = session->breakpoints();
-                    C6502_REGS regs;
-                    session->_lynx->GetRegs(regs);
-
-                    if (std::any_of(bps.begin(), bps.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.address == regs.PC; }))
-                    {
-                        session->set_status(SessionStatus_Break);
-                        continue;
-                    }
-                }
-            }
+            cycles = std::max(cycles, session->execute());
         }
 
         if (!cycles)

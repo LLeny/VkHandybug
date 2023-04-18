@@ -44,8 +44,8 @@ void ControlsEditor::render_button_mapping(LynxButtons btn)
     ImGui::Text("%s", get_description(btn).c_str());
 
     ImGui::TableNextColumn();
-    std::string label = fmt::format("{}##btn{}", get_description(glfw_key).c_str(), btn);
-    std::string labelpop = fmt::format("##pop{}", btn);
+    std::string label = fmt::format("{}##btn{}", get_description(glfw_key).c_str(), (int)btn);
+    std::string labelpop = fmt::format("##pop{}", (int)btn);
     if (ImGui::Button(label.c_str(), {70, 0}))
     {
         _selected_key = glfw_key;

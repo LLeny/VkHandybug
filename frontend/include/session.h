@@ -8,6 +8,8 @@
 #include <GLFW/glfw3.h>
 
 #define CYCLE_TIME_NS (250)
+#define RTS 0x60
+#define JSR 0x20
 
 class VulkanRenderer;
 class App;
@@ -20,11 +22,20 @@ struct Breakpoint
     uint16_t address = 0;
 };
 
+struct CallStackItem
+{
+    int src_address;
+    int dst_address;
+    bool is_breakpoint;
+};
+
 enum SessionStatus
 {
     SessionStatus_None = 0,
     SessionStatus_Break,
     SessionStatus_Step,
+    SessionStatus_Step_Out,
+    SessionStatus_Step_Over,
     SessionStatus_Running,
     SessionStatus_Quit,
 };
@@ -62,7 +73,7 @@ class Session : public std::enable_shared_from_this<Session>
 
     StatesManager &states_manager();
 
-    void execute();
+    ULONG execute();
     void destroy();
 
     std::filesystem::path cartridge_file();
@@ -81,6 +92,8 @@ class Session : public std::enable_shared_from_this<Session>
     void set_active();
     bool is_active();
 
+    std::vector<CallStackItem> &callstack();
+
   private:
     static int idinc;
     int _id;
@@ -95,7 +108,8 @@ class Session : public std::enable_shared_from_this<Session>
     std::shared_ptr<App> _app;
     std::shared_ptr<CSystem> _lynx = nullptr;
     std::shared_ptr<VulkanRenderer> _renderer;
-    std::vector<Breakpoint> _breakpoints{};
+    std::vector<Breakpoint> _breakpoints{50};
+    std::vector<CallStackItem> _callstack{50};
     std::unordered_map<int, LynxButtons> _buttons_mapping = {{265, LynxButtons_Up},
                                                              {264, LynxButtons_Down},
                                                              {263, LynxButtons_Left},
@@ -105,4 +119,6 @@ class Session : public std::enable_shared_from_this<Session>
                                                              {49, LynxButtons_Option1},
                                                              {50, LynxButtons_Option2},
                                                              {80, LynxButtons_Pause}};
+
+    bool check_for_breakpoints();
 };

@@ -234,6 +234,7 @@ void Menu::update_items()
         auto guisession = _app->gui()->get_session(sessionid);
 
         add_bool_callback_item(sessionid, subs, &guisession->_breakpoints_open, "breakpoints", "Ctrl+B", ImGuiMod_Ctrl | ImGuiKey_B);
+        add_bool_callback_item(sessionid, subs, &guisession->_callstack_open, "callstack", "Ctrl+A", ImGuiMod_Ctrl | ImGuiKey_A);
         add_bool_callback_item(sessionid, subs, &guisession->_cart_info_open, "cart information", "Ctrl+I", ImGuiMod_Ctrl | ImGuiKey_I);
         add_bool_callback_item(sessionid, subs, &guisession->_controls_open, "controls", "Ctrl+O", ImGuiMod_Ctrl | ImGuiKey_O);
         add_bool_callback_item(sessionid, subs, &guisession->_cpu_open, "CPU", "Ctrl+C", ImGuiMod_Ctrl | ImGuiKey_C);

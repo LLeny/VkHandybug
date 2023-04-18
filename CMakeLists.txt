@@ -72,9 +72,10 @@ if (HAVE_RETURN_TYPE)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-return-type)
 endif (HAVE_RETURN_TYPE)
 
-target_glsl_shaders( ${PROJECT_NAME} PRIVATE 
+target_glsl_shaders(${PROJECT_NAME} PRIVATE 
         "${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/shaders/lynx_render.comp"
 )
+
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${Vulkan_INCLUDE_DIRS}
     ${vkbootstrap_SOURCE_DIR}/src

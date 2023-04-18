@@ -22,7 +22,7 @@ void SessionControlEditor::render()
 
     ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
 
-    if (ImGui::BeginTable("#controltable", 3, ImGuiTableFlags_NoBordersInBody))
+    if (ImGui::BeginTable("#controltable", 5, ImGuiTableFlags_NoBordersInBody))
     {
         ImGui::TableNextColumn();
         if (_session->status() == SessionStatus_Running)
@@ -40,17 +40,30 @@ void SessionControlEditor::render()
             }
         }
         ImGui::TableNextColumn();
-        if (create_button(BootstrapIcons_reply, {buttonWidth, buttonHeight}, "Step - F10") || (ImGui::IsKeyPressed(ImGuiKey_F10) && _session->is_active()))
+        if (create_button(BootstrapIcons_skip_end, {buttonWidth, buttonHeight}, "Step - F10") || (ImGui::IsKeyPressed(ImGuiKey_F10) && _session->is_active()))
         {
             _session->set_status(SessionStatus_Step);
         }
 
         ImGui::TableNextColumn();
-        if (create_button(BootstrapIcons_arrow_repeat, {buttonWidth, buttonHeight}, "Reset - F12") || (ImGui::IsKeyPressed(ImGuiKey_F12) && _session->is_active()))
+        if (create_button(BootstrapIcons_reply, {buttonWidth, buttonHeight}, "Step Over - F11") || (ImGui::IsKeyPressed(ImGuiKey_F11) && _session->is_active()))
+        {
+            _session->set_status(SessionStatus_Step_Over);
+        }
+
+        ImGui::TableNextColumn();
+        if (create_button(BootstrapIcons_arrow_right, {buttonWidth, buttonHeight}, "Step Out - F12") || (ImGui::IsKeyPressed(ImGuiKey_F12) && _session->is_active()))
+        {
+            _session->set_status(SessionStatus_Step_Out);
+        }
+
+        ImGui::TableNextColumn();
+        if (create_button(BootstrapIcons_arrow_repeat, {buttonWidth, buttonHeight}, "Reset - F8") || (ImGui::IsKeyPressed(ImGuiKey_F8) && _session->is_active()))
         {
             _session->system()->Reset();
         }
 
+        ImGui::TableNextRow();
         ImGui::TableNextColumn();
         if (_session->is_audio_enabled())
         {
@@ -83,7 +96,7 @@ void SessionControlEditor::render()
             }
         }
 
-        ImGui::TableNextColumn();
+        ImGui::TableNextRow();
         ImGui::TableNextColumn();
         if (create_button("Rld", {buttonWidth, buttonHeight}, "Reload cart from disk"))
         {

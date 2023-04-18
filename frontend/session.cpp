@@ -216,12 +216,86 @@ SessionStatus Session::status()
     return _status;
 }
 
+std::vector<CallStackItem> &Session::callstack()
+{
+    return _callstack;
+}
+
 void Session::destroy()
 {
     _status = SessionStatus_Quit;
     unregister_main_screen();
     disable_comlynx();
     _lynx = nullptr;
+}
+
+bool Session::check_for_breakpoints()
+{
+    C6502_REGS regs;
+    _lynx->GetRegs(regs);
+
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.address == regs.PC; }))
+    {
+        set_status(SessionStatus_Break);
+        return true;
+    }
+    return false;
+}
+
+ULONG Session::execute()
+{
+    ULONG cycles = 0;
+    C6502_REGS regs;
+    UBYTE opcode = 0;
+
+    switch (_status)
+    {
+    case SessionStatus_Running:
+    case SessionStatus_Step:
+    case SessionStatus_Step_Out:
+    case SessionStatus_Step_Over: {
+        _lynx->GetRegs(regs);
+        opcode = system()->Peek_CPU(regs.PC);
+    }
+    break;
+    default:
+        return cycles;
+    }
+
+    switch (opcode)
+    {
+    case JSR: {
+        bool isbp = _status == SessionStatus_Step_Over && std::none_of(_callstack.begin(), _callstack.end(), [](const CallStackItem &i) { return i.is_breakpoint; });
+        _callstack.push_back({regs.PC,
+                              _lynx->PeekW_CPU(regs.PC + 1),
+                              isbp});
+    }
+    break;
+    case RTS: {
+        if (_callstack.back().is_breakpoint || _status == SessionStatus_Step_Out)
+        {
+            set_status(SessionStatus_Break);
+        }
+        _callstack.pop_back();
+    }
+    break;
+    default:
+        break;
+    }
+
+    cycles = _lynx->Update();
+    check_for_breakpoints();
+
+    switch (_status)
+    {
+    case SessionStatus_Step:
+        set_status(SessionStatus_Break);
+        break;
+    default:
+        break;
+    }
+
+    return cycles;
 }
 
 std::vector<Breakpoint> &Session::breakpoints()

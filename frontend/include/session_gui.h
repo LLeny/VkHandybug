@@ -15,6 +15,7 @@
 #include "session_control_editor.h"
 #include "mikey_editor.h"
 #include "suzy_editor.h"
+#include "callstack_editor.h"
 
 class Config;
 class Menu;
@@ -59,6 +60,7 @@ class SessionGUI
     SessionControlEditor _session_control_editor{};
     MikeyEditor _mikie_editor{};
     SuzyEditor _suzy_editor{};
+    CallstackEditor _callstack_editor{};
     std::vector<std::shared_ptr<MemEditor>> _mem_editors{};
     std::vector<std::shared_ptr<DisasmEditor>> _disasm_editors{};
 
@@ -72,6 +74,7 @@ class SessionGUI
     bool _controls_open = false;
     bool _mikie_open = false;
     bool _suzy_open = false;
+    bool _callstack_open = false;
 
     void render_single_editors();
     void render_screen();

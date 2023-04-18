@@ -132,6 +132,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             store.controls_visible = session->_controls_open;
             store.mikie_visible = session->_mikie_open;
             store.suzy_visible = session->_suzy_open;
+            store.callstack_visible = session->_callstack_open;
             store.comlynx_connected = session->_session->is_comlynx_enabled();
             store.muted = !session->_session->is_audio_enabled();
             store.breakpoints = breakpoints;
@@ -152,6 +153,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             found->controls_visible = session->_controls_open;
             found->mikie_visible = session->_mikie_open;
             found->suzy_visible = session->_suzy_open;
+            found->callstack_visible = session->_callstack_open;
             found->comlynx_connected = session->_session->is_comlynx_enabled();
             found->muted = !session->_session->is_audio_enabled();
             found->breakpoints = breakpoints;
@@ -196,6 +198,7 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
     session->_controls_open = found->controls_visible;
     session->_mikie_open = found->mikie_visible;
     session->_suzy_open = found->suzy_visible;
+    session->_callstack_open = found->callstack_visible;
     if (found->comlynx_connected)
     {
         session->_session->enable_comlynx();
