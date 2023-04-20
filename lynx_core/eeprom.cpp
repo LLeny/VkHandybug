@@ -11,6 +11,7 @@
 
 CEEPROM::CEEPROM()
 {
+    SetBankType(LynxMemBank_EEPROM);
     type = 0;
     *filename = 0;
     Reset();

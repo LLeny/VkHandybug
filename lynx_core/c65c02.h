@@ -83,13 +83,13 @@
 // ACCESS MACROS
 //
 
-// #define CPU_PEEK(m)				(mSystem.Peek_CPU(m))
-// #define CPU_PEEKW(m)			(mSystem.PeekW_CPU(m))
-// #define CPU_POKE(m1,m2)			(mSystem.Poke_CPU(m1,m2))
+#define CPU_PEEK(m) (mSystem.Peek_CPU(m))
+#define CPU_PEEKW(m) (mSystem.PeekW_CPU(m))
+#define CPU_POKE(m1, m2) (mSystem.Poke_CPU(m1, m2))
 
-#define CPU_PEEK(m) (((m < 0xfc00) ? mRamPointer[m] : mSystem.Peek_CPU(m)))
-#define CPU_PEEKW(m) (((m < 0xfc00) ? (mRamPointer[m] + (mRamPointer[m + 1] << 8)) : mSystem.PeekW_CPU(m)))
-#define CPU_POKE(m1, m2)              \
+// #define CPU_PEEK(m) (((m < 0xfc00) ? mRamPointer[m] : mSystem.Peek_CPU(m)))
+// #define CPU_PEEKW(m) (((m < 0xfc00) ? (mRamPointer[m] + (mRamPointer[m + 1] << 8)) : mSystem.PeekW_CPU(m)))
+// #define CPU_POKE(m1, m2)              \
     {                                 \
         if (m1 < 0xfc00)              \
             mRamPointer[m1] = m2;     \
@@ -777,8 +777,7 @@ class C65C02
             break;
         case 0x54:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
-            xNOP()
-            break;
+            xNOP() break;
         case 0x55:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
             xZEROPAGE_X();
@@ -1778,7 +1777,7 @@ class C65C02
     inline void xILLEGAL(void)
     {
         char addr[1024];
-        snprintf(addr,1024, "C65C02::Update() - Illegal opcode (%02x) at PC=$%04x.", mOpcode, mPC);
+        snprintf(addr, 1024, "C65C02::Update() - Illegal opcode (%02x) at PC=$%04x.", mOpcode, mPC);
         LOG(LOG_ERROR) << std::string(addr);
     }
 

@@ -36,31 +36,6 @@ ImGuiDataType WatchEditor::dataType_get_type(const char *data_type)
     return -1;
 }
 
-LynxMemBank WatchEditor::mem_bank_get_type(const char *data_type)
-{
-    for (int i = 0; i < LynxMemBank_MAX; ++i)
-    {
-        auto t = mem_bank_get_desc((LynxMemBank)i);
-
-        while (*data_type or *t)
-        {
-            char c = std::toupper(*data_type++);
-            char d = std::toupper(*t++);
-            if (c != d)
-                continue;
-        }
-        return (LynxMemBank)i;
-    }
-    return LynxMemBank_MIN;
-}
-
-const char *WatchEditor::mem_bank_get_desc(LynxMemBank data_type) const
-{
-    const char *descs[] = {"RAM", "ROM", "Suzy", "Mikey", "CPU"};
-    IM_ASSERT(data_type >= 0 && data_type < LynxMemBank_MAX);
-    return descs[data_type];
-}
-
 size_t WatchEditor::dataType_get_size(ImGuiDataType data_type) const
 {
     const size_t sizes[] = {1, 1, 2, 2, 4, 4, 8, 8, sizeof(float), sizeof(double)};
@@ -437,6 +412,12 @@ void WatchEditor::render()
                     break;
                 case LynxMemBank_Suzy:
                     dataBuf[size] = _session->system()->mSusie->Peek(item.address + (uint16_t)size);
+                    break;
+                case LynxMemBank_CART:
+                    dataBuf[size] = _session->system()->mCart->Peek(item.address + (uint16_t)size);
+                    break;
+                case LynxMemBank_EEPROM:
+                    dataBuf[size] = _session->system()->mEEPROM->Peek(item.address + (uint16_t)size);
                     break;
                 }
             } while (size > 0);

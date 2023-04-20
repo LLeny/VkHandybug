@@ -57,6 +57,7 @@
 CCart::CCart(CSystemBase &parent)
     : mSystem{parent}
 {
+    SetBankType(LynxMemBank_CART);
 }
 
 CCart::~CCart()

@@ -207,7 +207,7 @@ int DisasmEditor::draw_disasm_entry(DisasmEntry &entry)
     {
         if (ImGui::IsMouseDoubleClicked(0))
         {
-            _session->toggle_breakpoint(entry.base_address);
+            _session->toggle_breakpoint(entry.base_address, LynxMemBank_RAM, BreakPointType_EXEC);
         }
     }
 
@@ -247,10 +247,10 @@ DisasmEntry DisasmEditor::disassemble(uint16_t addr)
 
     for (int loop = 0; loop < count; loop++)
     {
-        ret.data += fmt::format("{:02X} ", system->Peek_RAM(addr + loop));
+        ret.data += fmt::format("{:02X} ", system->mRam->Peek(addr + loop));
     }
 
-    opcode = system->Peek_RAM(addr);
+    opcode = system->mRam->Peek(addr);
 
     ret.opcode = mLookupTable[opcode].opcode;
 
@@ -258,12 +258,12 @@ DisasmEntry DisasmEditor::disassemble(uint16_t addr)
     {
     case 3:
         addr++;
-        operand = system->Peek_RAM(addr++);
-        operand += (system->Peek_RAM(addr++)) << 8;
+        operand = system->mRam->Peek(addr++);
+        operand += (system->mRam->Peek(addr++)) << 8;
         break;
     case 2:
         addr++;
-        operand = system->Peek_RAM(addr++);
+        operand = system->mRam->Peek(addr++);
         break;
     case 1:
     default:
@@ -381,7 +381,7 @@ int16_t DisasmEditor::next_address(int addr)
         addr = 0xffff;
     }
 
-    UBYTE data = _session->system()->Peek_RAM(addr);
+    UBYTE data = _session->system()->mRam->Peek(addr);
 
     int operand = mLookupTable[data].mode;
 
@@ -416,7 +416,7 @@ void DisasmEditor::scroll_up()
 
     for (int loop = 1; loop < 4; loop++)
     {
-        data = _session->system()->Peek_RAM(address - loop);
+        data = _session->system()->mRam->Peek(address - loop);
         operand = mLookupTable[data].mode;
         size = mOperandSizes[operand];
 

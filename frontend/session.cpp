@@ -53,7 +53,19 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
 
     _states_manager.initialize(shared_from_this());
 
+    _lynx->RegisterMemoryAccessCallback([&](LynxMemBank bank, uint16_t addr, bool write) { memory_access_callback(bank, addr, write); });
+
     return true;
+}
+
+void Session::memory_access_callback(LynxMemBank bank, uint16_t addr, bool write)
+{
+    BreakPointType type = write ? BreakPointType_WRITE : BreakPointType_READ;
+
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [bank, addr, type](const Breakpoint &bp) { return bp.enabled && bp.address == addr && bp.bank == bank && bp.type == type; }))
+    {
+        set_status(SessionStatus_Break);
+    }
 }
 
 void Session::register_app(std::shared_ptr<App> app)
@@ -234,7 +246,7 @@ bool Session::check_for_breakpoints()
     C6502_REGS regs;
     _lynx->GetRegs(regs);
 
-    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.address == regs.PC; }))
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.type == BreakPointType_EXEC && bp.address == regs.PC; }))
     {
         set_status(SessionStatus_Break);
         return true;
@@ -303,31 +315,31 @@ std::vector<Breakpoint> &Session::breakpoints()
     return _breakpoints;
 }
 
-void Session::toggle_breakpoint(uint16_t addr)
+void Session::toggle_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type)
 {
-    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr](const Breakpoint &b) { return b.address == addr; }))
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr, bank, type](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type; }))
     {
-        delete_breakpoint(addr);
+        delete_breakpoint(addr, bank, type);
     }
     else
     {
-        add_breakpoint(addr);
+        add_breakpoint(addr, bank, type);
     }
 }
 
-void Session::add_breakpoint(uint16_t addr)
+void Session::add_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type)
 {
-    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr](const Breakpoint &b) { return b.address == addr; }))
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr, bank, type](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type; }))
     {
         return;
     }
 
-    _breakpoints.push_back({true, addr});
+    _breakpoints.push_back({true, addr, bank, type});
 }
 
-void Session::delete_breakpoint(uint16_t addr)
+void Session::delete_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type)
 {
-    std::erase_if(_breakpoints, [addr](const Breakpoint &b) { return b.address == addr; });
+    std::erase_if(_breakpoints, [addr, bank, type](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type; });
 }
 
 std::filesystem::path Session::cartridge_file()

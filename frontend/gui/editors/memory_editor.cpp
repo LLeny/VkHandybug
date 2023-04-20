@@ -65,7 +65,7 @@ uint16_t MemEditor::bank_upper_bound(LynxMemBank access)
 
 const char *MemEditor::bank_label(LynxMemBank access)
 {
-    const char *descs[] = {"RAM", "ROM", "Suzy", "Mikey", "CPU"};
+    const char *descs[] = {"RAM", "ROM", "Suzy", "Mikey", "CPU", "CART", "EEPROM"};
     IM_ASSERT(access >= LynxMemBank_MIN && access < LynxMemBank_MAX);
     return descs[access];
 }
@@ -131,6 +131,12 @@ void MemEditor::write_changes(uint16_t offset, ImU8 data)
     case LynxMemBank_CPU:
         _session->system()->Poke_CPU(offset, data);
         break;
+    case LynxMemBank_CART:
+        _session->system()->Poke_CART(offset, data);
+        break;
+    case LynxMemBank_EEPROM:
+        _session->system()->mEEPROM->Poke(offset, data);
+        break;
     default:
         LOG(LOG_ERROR) << "MemEditor: Can't write to bank: " << (int)_memBank;
         break;
@@ -151,6 +157,10 @@ ImU8 MemEditor::read_mem(uint16_t offset)
         return _session->system()->mSusie->Peek(offset);
     case LynxMemBank_CPU:
         return _session->system()->Peek_CPU(offset);
+    case LynxMemBank_CART:
+        return _session->system()->Peek_CART(offset);
+    case LynxMemBank_EEPROM:
+        return _session->system()->mEEPROM->Peek(offset);
     default:
         return 0;
     }

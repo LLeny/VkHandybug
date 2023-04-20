@@ -56,8 +56,6 @@ class WatchEditor : public IEditor
     void add_watch(const char *label, ImGuiDataType type, LynxMemBank bank, uint16_t addr);
     ImGuiDataType dataType_get_type(const char *data_type);
     const char *dataType_get_desc(ImGuiDataType data_type) const;
-    LynxMemBank mem_bank_get_type(const char *data_type);
-    const char *mem_bank_get_desc(LynxMemBank data_type) const;
 
     size_t dataType_get_size(ImGuiDataType data_type) const;
     void draw_preview_data(const ImU8 *mem_data, size_t mem_size, ImGuiDataType data_type, DataFormat data_format, char *out_buf, size_t out_buf_size) const;

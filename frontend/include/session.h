@@ -16,10 +16,20 @@ class App;
 class Config;
 class ControlsEditor;
 
+enum BreakPointType
+{
+    BreakPointType_EXEC,
+    BreakPointType_READ,
+    BreakPointType_WRITE,
+    BreakPointType_MAX,
+};
+
 struct Breakpoint
 {
     bool enabled = false;
     uint16_t address = 0;
+    LynxMemBank bank = LynxMemBank_RAM;
+    BreakPointType type = BreakPointType_EXEC;
 };
 
 struct CallStackItem
@@ -67,9 +77,9 @@ class Session : public std::enable_shared_from_this<Session>
     Symbols &symbols();
 
     std::vector<Breakpoint> &breakpoints();
-    void add_breakpoint(uint16_t addr);
-    void delete_breakpoint(uint16_t addr);
-    void toggle_breakpoint(uint16_t addr);
+    void add_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type);
+    void delete_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type);
+    void toggle_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type);
 
     StatesManager &states_manager();
 
@@ -121,4 +131,5 @@ class Session : public std::enable_shared_from_this<Session>
                                                              {80, LynxButtons_Pause}};
 
     bool check_for_breakpoints();
+    void memory_access_callback(LynxMemBank bank, uint16_t addr, bool write);
 };

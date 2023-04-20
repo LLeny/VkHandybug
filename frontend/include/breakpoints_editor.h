@@ -23,5 +23,10 @@ class BreakpointsEditor : public IEditor
     void render_table();
     void render_entry(Breakpoint &bp);
 
+    BreakPointType type_get_type(const char *type);
+    const char *type_get_desc(BreakPointType type) const;
+
     char _address_buf[50]{};
+    LynxMemBank _mem_bank = LynxMemBank_RAM;
+    BreakPointType _type = BreakPointType_EXEC;
 };

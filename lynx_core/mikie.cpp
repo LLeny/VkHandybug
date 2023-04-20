@@ -74,7 +74,7 @@ void CMikie::BlowOut(void)
     char addr[100];
     C6502_REGS regs;
     mSystem.GetRegs(regs);
-    snprintf(addr,100, "Runtime Error - System Halted\nCMikie::Poke() - Read/Write to counter clocks at PC=$%04x.", regs.PC);
+    snprintf(addr, 100, "Runtime Error - System Halted\nCMikie::Poke() - Read/Write to counter clocks at PC=$%04x.", regs.PC);
     LOG(LOG_WARN) << std::string(addr);
     mSystem.mSystemHalt = TRUE;
 }
@@ -83,6 +83,8 @@ CMikie::CMikie(CSystem &parent)
     : mSystem(parent)
 {
     TRACE_MIKIE0("CMikie()");
+
+    SetBankType(LynxMemBank_Mikey);
 
     mpRamPointer = NULL;
 

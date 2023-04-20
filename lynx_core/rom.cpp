@@ -60,6 +60,7 @@ CRom::CRom(CSystemBase &parent, const char *romfile, bool useEmu)
 {
     mWriteEnable = FALSE;
     mValid = TRUE;
+    SetBankType(LynxMemBank_ROM);
     strncpy(mFileName, romfile, 1024);
     Reset();
 

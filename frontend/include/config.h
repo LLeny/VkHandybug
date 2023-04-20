@@ -5,6 +5,7 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/types/unordered_map.hpp>
 #include "imgui.h"
+#include "breakpoints_editor.h"
 
 class SessionGUI;
 class MemEditor;
@@ -34,12 +35,16 @@ struct BreakpointConfigStore
 {
     bool enabled;
     uint16_t address;
+    LynxMemBank bank;
+    BreakPointType type;
 
     template <class Archive>
     void serialize(Archive &archive)
     {
         archive(CEREAL_NVP(enabled));
         archive(CEREAL_NVP(address));
+        archive(CEREAL_NVP(bank));
+        archive(CEREAL_NVP(type));
     }
 };
 

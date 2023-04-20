@@ -44,5 +44,7 @@ enum LynxMemBank
     LynxMemBank_Suzy = 2,
     LynxMemBank_Mikey = 3,
     LynxMemBank_CPU = 4,
-    LynxMemBank_MAX = 5
+    LynxMemBank_CART = 5,
+    LynxMemBank_EEPROM = 6,
+    LynxMemBank_MAX = 7
 };

@@ -27,6 +27,8 @@
 #ifndef LYNXBASE_H
 #define LYNXBASE_H
 
+#include "global.h"
+
 //
 // bank0	- Cartridge bank 0
 // bank1	- Cartridge bank 1
@@ -49,6 +51,18 @@ class CLynxBase
     virtual ~CLynxBase(){};
 
   public:
+    LynxMemBank mBankType;
+
+    LynxMemBank GetBankType()
+    {
+        return mBankType;
+    }
+
+    void SetBankType(LynxMemBank type)
+    {
+        mBankType = type;
+    }
+
     virtual void Reset(void){};
     virtual bool ContextLoad(FILE *fp)
     {

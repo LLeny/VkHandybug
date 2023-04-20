@@ -103,3 +103,28 @@ bool imgui_char_bin(std::string label, IMemoryAccess &mem, uint16_t address, std
     mem.Poke(address, v);
     return true;
 }
+
+LynxMemBank mem_bank_get_type(const char *data_type)
+{
+    for (int i = 0; i < LynxMemBank_MAX; ++i)
+    {
+        auto t = mem_bank_get_desc((LynxMemBank)i);
+
+        while (*data_type or *t)
+        {
+            char c = std::toupper(*data_type++);
+            char d = std::toupper(*t++);
+            if (c != d)
+                continue;
+        }
+        return (LynxMemBank)i;
+    }
+    return LynxMemBank_MIN;
+}
+
+const char *mem_bank_get_desc(LynxMemBank data_type)
+{
+    const char *descs[] = {"RAM", "ROM", "Suzy", "Mikey", "CPU", "CART", "EEPROM"};
+    IM_ASSERT(data_type >= 0 && data_type < LynxMemBank_MAX);
+    return descs[data_type];
+}

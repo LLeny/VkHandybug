@@ -56,6 +56,7 @@
 CRam::CRam(CSystemBase &parent)
     : mSystem{parent}
 {
+    SetBankType(LynxMemBank_RAM);
 }
 
 void CRam::Initialize(UBYTE *filememory, ULONG filesize)

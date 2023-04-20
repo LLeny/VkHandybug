@@ -147,6 +147,11 @@ class CSystem : public CSystemBase
     bool ReloadCart();
     bool ReadCart();
 
+    void RegisterMemoryAccessCallback(std::function<void(LynxMemBank, uint16_t, bool)> callback)
+    {
+        mMemoryAccessCallback = callback;
+    }
+
     ULONG Update(void)
     {
         ULONG cycles = mSystemCycleCount;
@@ -200,20 +205,41 @@ class CSystem : public CSystemBase
     //
     inline void Poke_CPU(ULONG addr, UBYTE data)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(mMemoryHandlers[addr]->GetBankType(), addr, true);
+        }
         mMemoryHandlers[addr]->Poke(addr, data);
     };
     inline UBYTE Peek_CPU(ULONG addr)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(mMemoryHandlers[addr]->GetBankType(), addr, false);
+        }
         return mMemoryHandlers[addr]->Peek(addr);
     };
     inline void PokeW_CPU(ULONG addr, UWORD data)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(mMemoryHandlers[addr]->GetBankType(), addr, true);
+        }
         mMemoryHandlers[addr]->Poke(addr, data & 0xff);
         addr++;
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(mMemoryHandlers[addr]->GetBankType(), addr, true);
+        }
         mMemoryHandlers[addr]->Poke(addr, data >> 8);
     };
     inline UWORD PeekW_CPU(ULONG addr)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(mMemoryHandlers[addr]->GetBankType(), addr, false);
+            mMemoryAccessCallback(mMemoryHandlers[addr]->GetBankType(), addr + 1, false);
+        }
         return ((mMemoryHandlers[addr]->Peek(addr)) + (mMemoryHandlers[addr]->Peek(addr + 1) << 8));
     };
 
@@ -222,20 +248,41 @@ class CSystem : public CSystemBase
     //
     inline void Poke_RAM(ULONG addr, UBYTE data)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(LynxMemBank_RAM, addr, true);
+        }
         mRam->Poke(addr, data);
     };
     inline UBYTE Peek_RAM(ULONG addr)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(LynxMemBank_RAM, addr, false);
+        }
         return mRam->Peek(addr);
     };
     inline void PokeW_RAM(ULONG addr, UWORD data)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(LynxMemBank_RAM, addr, true);
+        }
         mRam->Poke(addr, data & 0xff);
         addr++;
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(LynxMemBank_RAM, addr, true);
+        }
         mRam->Poke(addr, data >> 8);
     };
     inline UWORD PeekW_RAM(ULONG addr)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(LynxMemBank_RAM, addr, false);
+            mMemoryAccessCallback(LynxMemBank_RAM, addr + 1, false);
+        }
         return ((mRam->Peek(addr)) + (mRam->Peek(addr + 1) << 8));
     };
 
@@ -243,10 +290,18 @@ class CSystem : public CSystemBase
 
     inline void Poke_CART(ULONG addr, UBYTE data)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(LynxMemBank_CART, addr, true);
+        }
         mCart->Poke(addr, data);
     };
     inline UBYTE Peek_CART(ULONG addr)
     {
+        if (mMemoryAccessCallback)
+        {
+            mMemoryAccessCallback(LynxMemBank_CART, addr, false);
+        }
         return mCart->Peek(addr);
     };
     inline void CartBank(EMMODE bank)
@@ -382,6 +437,7 @@ class CSystem : public CSystemBase
     std::filesystem::path mGamefile;
     ULONG mCycleCountBreakpoint;
     CLynxBase *mMemoryHandlers[SYSTEM_SIZE];
+    std::function<void(LynxMemBank, uint16_t, bool)> mMemoryAccessCallback{};
     CCart *mCart{};
     CRom *mRom{};
     CMemMap *mMemMap{};
