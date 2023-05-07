@@ -3,7 +3,7 @@ Set(FETCHCONTENT_QUIET FALSE)
 FetchContent_Declare(
   miniaudio
   GIT_REPOSITORY       https://github.com/mackron/miniaudio.git
-  GIT_TAG              9a7663496fc06f7a9439c752fd7666ca93328c20
+  GIT_TAG              0.11.15
   GIT_SHALLOW          TRUE
   GIT_PROGRESS         TRUE
 )
@@ -60,7 +60,7 @@ FetchContent_Declare(
   cereal
   GIT_REPOSITORY       https://github.com/USCiLab/cereal.git
   GIT_TAG              ddd467244713ea4fe63733628992efcdd6a9187d
-  GIT_SHALLOW          TRUE
+  GIT_SHALLOW          FALSE
   GIT_PROGRESS         TRUE
 )
 
@@ -76,7 +76,7 @@ FetchContent_Declare(
   hashlib
   GIT_REPOSITORY       https://github.com/stbrumme/hash-library.git
   GIT_TAG              d389d18112bcf7e4786ec5e8723f3658a7f433d7
-  GIT_SHALLOW          TRUE
+  GIT_SHALLOW          FALSE
   GIT_PROGRESS         TRUE
 )
 
