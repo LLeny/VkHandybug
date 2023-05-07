@@ -124,54 +124,56 @@ void DisasmEditor::draw_disasm_table()
 
     int working_pc = _local_pc;
 
-    ImGui::BeginTable("##DisasmTable", 4, ImGuiTableFlags_ScrollY | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_SizingStretchProp, tableSize);
-
-    ImGui::TableSetupColumn("##disasmtableaddr", ImGuiTableColumnFlags_NoHeaderLabel, 0.20F);
-    ImGui::TableSetupColumn("##disasmtablehex", ImGuiTableColumnFlags_NoHeaderLabel, 0.25F);
-    ImGui::TableSetupColumn("##disasmtableopc", ImGuiTableColumnFlags_NoHeaderLabel, 0.15F);
-    ImGui::TableSetupColumn("##disasmtableope", ImGuiTableColumnFlags_NoHeaderLabel, 0.40F);
-
-    if (working_pc)
+    if (ImGui::BeginTable("##DisasmTable", 4, ImGuiTableFlags_ScrollY | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_SizingStretchProp, tableSize))
     {
-        ImGui::TableNextRow();
-        ImGui::TableNextColumn();
-        ImGui::Text(" ");
-        if (ImGui::IsItemVisible())
+
+        ImGui::TableSetupColumn("##disasmtableaddr", ImGuiTableColumnFlags_NoHeaderLabel, 0.20F);
+        ImGui::TableSetupColumn("##disasmtablehex", ImGuiTableColumnFlags_NoHeaderLabel, 0.25F);
+        ImGui::TableSetupColumn("##disasmtableopc", ImGuiTableColumnFlags_NoHeaderLabel, 0.15F);
+        ImGui::TableSetupColumn("##disasmtableope", ImGuiTableColumnFlags_NoHeaderLabel, 0.40F);
+
+        if (working_pc)
         {
-            scroll_up();
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text(" ");
+            if (ImGui::IsItemVisible())
+            {
+                scroll_up();
+            }
+            ImGui::TableNextRow();
         }
-        ImGui::TableNextRow();
+
+        int rows = 0;
+
+        auto &bps = _session->breakpoints();
+
+        do
+        {
+            ImGui::TableNextRow();
+
+            auto entry = disassemble(working_pc);
+
+            entry.is_pc = entry.base_address == regs.PC;
+            entry.has_breakpoint = std::any_of(bps.begin(), bps.end(), [entry](const Breakpoint &bp) { return bp.enabled && bp.address == entry.base_address; });
+
+            rows = draw_disasm_entry(entry);
+
+            working_pc += entry.data_length;
+
+            if (working_pc < 0xffff && !itemCount && ImGui::IsItemVisible())
+            {
+                scroll_down();
+            }
+
+            itemCount -= rows;
+
+        } while (itemCount >= 0);
+
+        ImGui::SetScrollY(rowHeight);
+
+        ImGui::EndTable();
     }
-
-    int rows = 0;
-
-    auto &bps = _session->breakpoints();
-
-    do
-    {
-        ImGui::TableNextRow();
-
-        auto entry = disassemble(working_pc);
-
-        entry.is_pc = entry.base_address == regs.PC;
-        entry.has_breakpoint = std::any_of(bps.begin(), bps.end(), [entry](const Breakpoint &bp) { return bp.enabled && bp.address == entry.base_address; });
-
-        rows = draw_disasm_entry(entry);
-
-        working_pc += entry.data_length;
-
-        if (working_pc < 0xffff && !itemCount && ImGui::IsItemVisible())
-        {
-            scroll_down();
-        }
-
-        itemCount -= rows;
-
-    } while (itemCount >= 0);
-
-    ImGui::SetScrollY(rowHeight);
-
-    ImGui::EndTable();
 }
 
 int DisasmEditor::draw_disasm_entry(DisasmEntry &entry)

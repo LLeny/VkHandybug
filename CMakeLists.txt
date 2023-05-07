@@ -12,7 +12,7 @@ set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-project(vkhandybug VERSION "0.1.2")
+project(vkhandybug VERSION "0.2.0")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/configure.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/frontend/configure.h")
 
@@ -30,21 +30,21 @@ FetchContent_Populate(imgui)
 FetchContent_Populate(imgui_filedialog)
 FetchContent_Populate(hashlib)
 
-file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS 
-    "frontend/*.c" 
-    "frontend/*.cpp" 
-    "frontend/renderer/*.cpp" 
-    "frontend/renderer/*.c" 
-    "frontend/resources/shaders/*.spv" 
-    "lynx_core/*.cpp"    
+file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
+    "frontend/*.c"
+    "frontend/*.cpp"
+    "frontend/renderer/*.cpp"
+    "frontend/renderer/*.c"
+    "frontend/resources/shaders/*.spv"
+    "lynx_core/*.cpp"
     ${imgui_SOURCE_DIR}/imgui.cpp
     ${imgui_SOURCE_DIR}/imgui_tables.cpp
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
     ${imgui_SOURCE_DIR}/imgui_draw.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-    ${imgui_filedialog_SOURCE_DIR}/ImGuiFileDialog.cpp  
-    ${hashlib_SOURCE_DIR}/md5.cpp  
+    ${imgui_filedialog_SOURCE_DIR}/ImGuiFileDialog.cpp
+    ${hashlib_SOURCE_DIR}/md5.cpp
 )
 
 FetchContent_GetProperties(zlib)
@@ -72,11 +72,11 @@ if (HAVE_RETURN_TYPE)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-return-type)
 endif (HAVE_RETURN_TYPE)
 
-target_glsl_shaders(${PROJECT_NAME} PRIVATE 
+target_glsl_shaders(${PROJECT_NAME} PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/shaders/lynx_render.comp"
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE 
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${Vulkan_INCLUDE_DIRS}
     ${vkbootstrap_SOURCE_DIR}/src
     ${imgui_SOURCE_DIR}

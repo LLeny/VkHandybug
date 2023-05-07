@@ -1,7 +1,7 @@
 #include "session_gui.h"
+#include "imgui_internal.h"
 #include "imgui.h"
 #include "log.h"
-#include "bootstrap-icons.h"
 #include <fmt/core.h>
 
 SessionGUI::SessionGUI()
@@ -15,6 +15,24 @@ SessionGUI::~SessionGUI()
 void SessionGUI::initialize(std::shared_ptr<Session> session)
 {
     _session = session;
+
+    auto sid = id();
+    _display_window_id = fmt::format("{}##{}{}", "Display", "Display", sid);
+    _cpu_window_id = fmt::format("{}##{}{}", "CPU", "CPU", sid);
+    _watch_window_id = fmt::format("{}##{}{}", "Watches", "Watches", sid);
+    _palette_window_id = fmt::format("{}##{}{}", "Palette", "Palette", sid);
+    _symbols_window_id = fmt::format("{}##{}{}", "Symbols", "Symbols", sid);
+    _cart_info_window_id = fmt::format("{}##{}{}", "Cart info", "Cart info", sid);
+    _breakpoints_window_id = fmt::format("{}##{}{}", "Breakpoints", "Breakpoints", sid);
+    _states_window_id = fmt::format("{}##{}{}", "States", "States", sid);
+    _controls_window_id = fmt::format("{}##{}{}", "Joystick", "Joystick", sid);
+    _session_control_window_id = fmt::format("{}##{}{}", "Control", "Control", sid);
+    _mikey_window_id = fmt::format("{}##{}{}", "Mikey", "Mikey", sid);
+    _suzy_window_id = fmt::format("{}##{}{}", "Suzy", "Suzy", sid);
+    _callstack_window_id = fmt::format("{}##{}{}", "Callstack", "Callstack", sid);
+    _memory_window_id = fmt::format("{}##{}{}", "Memory", "Memory", sid);
+    _disasm_window_id = fmt::format("{}##{}{}", "Disassembly", "Disassembly", sid);
+
     _cpu_editor.set_session(session);
     _palette_editor.set_session(session);
     _watch_editor.set_session(session);
@@ -28,25 +46,79 @@ void SessionGUI::initialize(std::shared_ptr<Session> session)
     _suzy_editor.set_session(session);
     _callstack_editor.set_session(session);
 
-    bool always_open = true;
-
-    _single_editors.push_back({std::string(BootstrapIcons_cpu), id(), &_cpu_editor, &_cpu_open});
-    _single_editors.push_back({std::string(BootstrapIcons_binoculars), id(), &_watch_editor, &_watch_open});
-    _single_editors.push_back({std::string(BootstrapIcons_droplet), id(), &_palette_editor, &_palette_open});
-    _single_editors.push_back({std::string(BootstrapIcons_globe), id(), &_symbols_editor, &_symbols_open});
-    _single_editors.push_back({std::string(BootstrapIcons_info_circle), id(), &_cart_info_editor, &_cart_info_open});
-    _single_editors.push_back({std::string(BootstrapIcons_bookmarks), id(), &_breakpoints_editor, &_breakpoints_open});
-    _single_editors.push_back({std::string(BootstrapIcons_folder2_open), id(), &_states_editor, &_states_manager_open});
-    _single_editors.push_back({std::string(BootstrapIcons_controller), id(), &_controls_editor, &_controls_open});
-    _single_editors.push_back({std::string(BootstrapIcons_play), id(), &_session_control_editor, &always_open, true});
-    _single_editors.push_back({std::string(BootstrapIcons_cpu) + "Mikey", id(), &_mikie_editor, &_mikie_open});
-    _single_editors.push_back({std::string(BootstrapIcons_cpu) + "Suzy", id(), &_suzy_editor, &_suzy_open});
-    _single_editors.push_back({std::string(BootstrapIcons_skip_end) + "Callstack", id(), &_callstack_editor, &_callstack_open});
+    _single_editors.push_back({_cpu_window_id, &_cpu_editor, &_cpu_open});
+    _single_editors.push_back({_watch_window_id, &_watch_editor, &_watch_open});
+    _single_editors.push_back({_palette_window_id, &_palette_editor, &_palette_open});
+    _single_editors.push_back({_symbols_window_id, &_symbols_editor, &_symbols_open});
+    _single_editors.push_back({_cart_info_window_id, &_cart_info_editor, &_cart_info_open});
+    _single_editors.push_back({_breakpoints_window_id, &_breakpoints_editor, &_breakpoints_open});
+    _single_editors.push_back({_states_window_id, &_states_editor, &_states_manager_open});
+    _single_editors.push_back({_controls_window_id, &_controls_editor, &_controls_open});
+    _single_editors.push_back({_session_control_window_id, &_session_control_editor, NULL, true});
+    _single_editors.push_back({_mikey_window_id, &_mikie_editor, &_mikie_open});
+    _single_editors.push_back({_suzy_window_id, &_suzy_editor, &_suzy_open});
+    _single_editors.push_back({_callstack_window_id, &_callstack_editor, &_callstack_open});
 }
 
 std::string SessionGUI::id()
 {
     return _session->identifier();
+}
+
+void SessionGUI::init_default_session(ImGuiID dockid)
+{
+    ImGui::DockBuilderRemoveNode(dockid);
+    ImGui::DockBuilderAddNode(dockid);
+
+    ImGuiID A, B, C, D, E, F, G, H, I;
+
+    ImGuiID c2;
+    ImGuiID c1 = ImGui::DockBuilderSplitNode(dockid, ImGuiDir_Left, 0.70f, NULL, &c2);
+    ImGuiID c1r1;
+    ImGuiID c1r2 = ImGui::DockBuilderSplitNode(c1, ImGuiDir_Down, 0.60f, NULL, &c1r1);
+    ImGuiID c1r1c2;
+    ImGuiID c1r1c1 = ImGui::DockBuilderSplitNode(c1r1, ImGuiDir_Left, 0.30f, NULL, &c1r1c2);
+    ImGuiID c1r1c2r1;
+    E = ImGui::DockBuilderSplitNode(c1r1c2, ImGuiDir_Down, 0.50f, NULL, &c1r1c2r1);
+    B = ImGui::DockBuilderSplitNode(c1r1c1, ImGuiDir_Down, 0.30f, NULL, &A);
+    C = ImGui::DockBuilderSplitNode(c1r1c2r1, ImGuiDir_Left, 0.50f, NULL, &D);
+    F = ImGui::DockBuilderSplitNode(c1r2, ImGuiDir_Left, 0.60f, NULL, &G);
+    I = ImGui::DockBuilderSplitNode(c2, ImGuiDir_Down, 0.15f, NULL, &H);
+
+    ImGui::DockBuilderDockWindow(_palette_window_id.c_str(), A);
+    ImGui::DockBuilderDockWindow(_display_window_id.c_str(), A);
+    ImGui::DockBuilderDockWindow(_cart_info_window_id.c_str(), A);
+    ImGui::DockBuilderDockWindow(_controls_window_id.c_str(), B);
+    ImGui::DockBuilderDockWindow(_states_window_id.c_str(), B);
+    ImGui::DockBuilderDockWindow(_session_control_window_id.c_str(), B);
+    ImGui::DockBuilderDockWindow(_cpu_window_id.c_str(), C);
+    ImGui::DockBuilderDockWindow(_callstack_window_id.c_str(), D);
+    ImGui::DockBuilderDockWindow(_watch_window_id.c_str(), E);
+    ImGui::DockBuilderDockWindow(_suzy_window_id.c_str(), F);
+    ImGui::DockBuilderDockWindow(_mikey_window_id.c_str(), F);
+    ImGui::DockBuilderDockWindow(_breakpoints_window_id.c_str(), I);
+    ImGui::DockBuilderDockWindow(_symbols_window_id.c_str(), H);
+    ImGui::DockBuilderDockWindow((_disasm_window_id + "Disassembly 1").c_str(), H);
+    ImGui::DockBuilderDockWindow((_memory_window_id + "Memory 1").c_str(), G);
+
+    ImGui::DockBuilderFinish(dockid);
+
+    ImGui::SetWindowSize(ImVec2(300, 300));
+
+    add_memory_editor(-1);
+    add_disasm_editor(-1);
+}
+
+void SessionGUI::build_dock()
+{
+    auto sessiondockid = ImGui::GetID(id().c_str());
+
+    if (ImGui::DockBuilderGetNode(sessiondockid) == NULL)
+    {
+        init_default_session(sessiondockid);
+    }
+
+    ImGui::DockSpace(sessiondockid);
 }
 
 void SessionGUI::render()
@@ -103,11 +175,8 @@ void SessionGUI::add_disasm_editor(int i)
 
 void SessionGUI::render_screen()
 {
-    std::string i = fmt::format("{} {}", BootstrapIcons_display, id());
-
     ImVec2 contentSize;
     float ratio;
-    bool open = true;
 
     if ((int)_session->system()->CartGetRotate())
     {
@@ -120,13 +189,9 @@ void SessionGUI::render_screen()
         ratio = (float)SCREEN_WIDTH / SCREEN_HEIGHT;
     }
 
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar;
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, {contentSize.x, contentSize.y});
-
-    ImGui::Begin(i.c_str(), &open, flags);
+    ImGui::Begin(_display_window_id.c_str(), NULL, flags);
 
     auto size = ImGui::GetWindowSize();
     float headerHeight = ImGui::GetFrameHeight();
@@ -150,14 +215,12 @@ void SessionGUI::render_screen()
         ImGui::Image(tex, {tgtSize.x, tgtSize.y});
     }
 
-    ImGui::PopStyleVar(3);
+    ImGui::End();
 
     if (ImGui::IsWindowFocused())
     {
         _session->set_active();
     }
-
-    ImGui::End();
 }
 
 void SessionGUI::render_memory()
@@ -168,7 +231,7 @@ void SessionGUI::render_memory()
 
         auto memidentifier = memedit->identifer();
 
-        std::string i = fmt::format("{} {} {}", BootstrapIcons_box_seam, id(), memidentifier);
+        std::string i = fmt::format("{}{}", _memory_window_id, memidentifier);
 
         ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_None);
 
@@ -178,6 +241,7 @@ void SessionGUI::render_memory()
         {
             _session->set_active();
         }
+
         ImGui::End();
 
         if (!open)
@@ -197,7 +261,7 @@ void SessionGUI::render_disassembly()
 
         auto identifier = disasmedit->identifer();
 
-        std::string i = fmt::format("{} {} {}", BootstrapIcons_code, id(), identifier);
+        std::string i = fmt::format("{}{}", _disasm_window_id, identifier);
 
         ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_None);
 
@@ -207,6 +271,7 @@ void SessionGUI::render_disassembly()
         {
             _session->set_active();
         }
+
         ImGui::End();
 
         if (!open)
@@ -227,9 +292,7 @@ void SessionGUI::render_single_editors()
             continue;
         }
 
-        std::string i = fmt::format("{} {}", e.icon, e.label);
-
-        ImGui::Begin(i.c_str(), e.is_open, ImGuiWindowFlags_None);
+        ImGui::Begin(e.label.c_str(), e.is_open, ImGuiWindowFlags_None);
 
         (*e.editor).render();
 
@@ -237,6 +300,7 @@ void SessionGUI::render_single_editors()
         {
             _session->set_active();
         }
+
         ImGui::End();
     }
 }

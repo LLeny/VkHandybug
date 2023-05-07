@@ -14,13 +14,8 @@ SessionControlEditor::~SessionControlEditor()
 
 void SessionControlEditor::render()
 {
-    std::string i = fmt::format("{} {}", BootstrapIcons_play, _session->identifier());
-
-    bool open = true;
     float buttonHeight = 20;
     float buttonWidth = 50;
-
-    ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
 
     if (ImGui::BeginTable("#controltable", 5, ImGuiTableFlags_NoBordersInBody))
     {
@@ -106,8 +101,6 @@ void SessionControlEditor::render()
 
         ImGui::EndTable();
     }
-
-    ImGui::End();
 }
 
 bool SessionControlEditor::create_button(std::string text, ImVec2 size, std::string tooltip)

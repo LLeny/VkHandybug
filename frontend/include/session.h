@@ -118,7 +118,7 @@ class Session : public std::enable_shared_from_this<Session>
     std::shared_ptr<App> _app;
     std::shared_ptr<CSystem> _lynx = nullptr;
     std::shared_ptr<VulkanRenderer> _renderer;
-    std::vector<Breakpoint> _breakpoints{50};
+    std::vector<Breakpoint> _breakpoints{};
     std::vector<CallStackItem> _callstack{50};
     std::unordered_map<int, LynxButtons> _buttons_mapping = {{265, LynxButtons_Up},
                                                              {264, LynxButtons_Down},

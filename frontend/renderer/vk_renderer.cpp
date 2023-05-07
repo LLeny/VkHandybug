@@ -376,6 +376,7 @@ void VulkanRenderer::initialize()
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui_ImplGlfw_InitForVulkan(_mainWindow, true);
     ImGui_ImplVulkan_InitInfo init_info = {};
@@ -732,7 +733,9 @@ void VulkanRenderer::render_ImGui(std::shared_ptr<GUI> ui)
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ui->render();
+    auto id = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
+    ui->render(id);
 
     ImGui::Render();
     ImDrawData *draw_data = ImGui::GetDrawData();

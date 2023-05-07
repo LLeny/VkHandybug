@@ -20,7 +20,7 @@ class GUI
 
     std::shared_ptr<SessionGUI> register_session(std::shared_ptr<Session> session);
     void unregister_session(std::string sessionid);
-    void render();
+    void render(ImGuiID dockspace_id);
     Menu &menu();
     std::vector<std::shared_ptr<SessionGUI>> sessions();
     std::shared_ptr<SessionGUI> get_session(std::string identifier);

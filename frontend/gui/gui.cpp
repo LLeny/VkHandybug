@@ -1,8 +1,8 @@
 #include "global.h"
 #include "gui.h"
+#include "imgui_internal.h"
 #include "imgui.h"
 #include "log.h"
-#include "bootstrap-icons.h"
 
 GUI::GUI()
 {
@@ -27,12 +27,33 @@ std::vector<std::shared_ptr<SessionGUI>> GUI::sessions()
     return _sessions;
 }
 
-void GUI::render()
+void GUI::render(ImGuiID dockspace_id)
 {
     _menu.render();
 
+    if (ImGui::DockBuilderGetNode(dockspace_id) == NULL)
+    {
+        ImGui::DockBuilderRemoveNode(dockspace_id);                            // Clear out existing layout
+        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace); // Add empty node
+    }
+
     for (auto session : _sessions)
     {
+        auto sessionid = session->id();
+
+        if (sessionid.length() <= 0)
+        {
+            continue;
+        }
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin(sessionid.c_str(), NULL);
+        ImGui::PopStyleVar();
+
+        session->build_dock();
+
+        ImGui::End();
+
         session->render();
     }
 
