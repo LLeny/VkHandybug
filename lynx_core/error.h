@@ -52,12 +52,19 @@
 #define MAX_ERROR_MSG 512
 #define MAX_ERROR_DESC 2048
 
+enum LynxErrors_
+{
+  LynxErrors_None = 0,
+  LynxErrors_Illegal_Opcode = 1,
+  LynxErrors_MAX
+};
+
 // class CLynxException : public CException
 class CLynxException
 {
   public:
     // Constructor
-    CLynxException()
+    CLynxException() : mError { LynxErrors_None }
     {
     }
 
@@ -65,6 +72,8 @@ class CLynxException
     CLynxException(CLynxException &err)
     {
         int MsgCount, DescCount;
+
+        mError = err.mError;
 
         MsgCount = (int)err.Message().pcount() + 1;
         DescCount = (int)err.Description().pcount() + 1;
@@ -97,6 +106,11 @@ class CLynxException
     std::ostrstream &Description()
     {
         return mDescStream;
+    }
+
+    LynxErrors_ &Error()
+    {
+        return mError;
     }
 
   public:
@@ -140,11 +154,13 @@ class CLynxException
     // Contains a multiple line description of the error and ways to
     // solve the problem
     std::ostrstream mDescStream;
+    LynxErrors_ mError;
 
   public:
     // CStrings to hold the data after its been thrown
 
     char mMsg[MAX_ERROR_MSG];
     char mDesc[MAX_ERROR_DESC];
+
 };
 #endif

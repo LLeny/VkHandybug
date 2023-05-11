@@ -47,6 +47,13 @@ bool Settings::render()
         {
             ImGuiFileDialog::Instance()->OpenDialog("ChooseROM", "ROM", ".img,.rom,.bin", Config::getInstance().store().lynx_rom_file, 1, nullptr, ImGuiFileDialogFlags_Modal);
         }
+
+        ImGui::TableNextColumn();
+        ImGui::Text("Break on illegal opcode");
+
+        ImGui::TableNextColumn();
+        toggle_button("##breakillegal", &(Config::getInstance().store().break_on_illegal_opcode));
+
         ImGui::EndTable();
     }
 

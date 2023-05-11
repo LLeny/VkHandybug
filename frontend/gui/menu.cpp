@@ -116,7 +116,7 @@ void Menu::render_popups()
     {
         ImGui::OpenPopup(_settings_popup_id);
 
-        ImGui::SetNextWindowSize({400, 120});
+        ImGui::SetNextWindowSize({400, 150});
         if (ImGui::BeginPopupModal(_settings_popup_id))
         {
             if (!_settings.render())

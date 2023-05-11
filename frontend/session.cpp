@@ -295,7 +295,18 @@ ULONG Session::execute()
         break;
     }
 
-    cycles = _lynx->Update();
+    try
+    {
+        cycles = _lynx->Update();
+    }
+    catch(CLynxException &ex)
+    {
+        if(ex.Error() == LynxErrors_Illegal_Opcode && Config::getInstance().store().break_on_illegal_opcode)
+        {
+            set_status(SessionStatus_Break);
+        }
+    }
+
     check_for_breakpoints();
 
     switch (_status)

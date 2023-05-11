@@ -1779,6 +1779,11 @@ class C65C02
         char addr[1024];
         snprintf(addr, 1024, "C65C02::Update() - Illegal opcode (%02x) at PC=$%04x.", mOpcode, mPC);
         LOG(LOG_ERROR) << std::string(addr);
+
+        CLynxException lynxerr;
+        lynxerr.Message() << addr;
+        lynxerr.Error() = LynxErrors_Illegal_Opcode;
+        throw(lynxerr);
     }
 
   private:
