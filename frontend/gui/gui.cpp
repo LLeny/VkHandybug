@@ -3,6 +3,7 @@
 #include "imgui_internal.h"
 #include "imgui.h"
 #include "log.h"
+#include "console.h"
 
 GUI::GUI()
 {
@@ -61,6 +62,11 @@ void GUI::render(ImGuiID dockspace_id)
     {
         _comlynx_visible = _comlynx->render();
     }
+
+    if (_console_visible)
+    {
+        Console::get_instance().render();
+    }
 }
 
 std::shared_ptr<ComLynxVisualizer> GUI::comlynx_visualizer()
@@ -71,6 +77,11 @@ std::shared_ptr<ComLynxVisualizer> GUI::comlynx_visualizer()
 void GUI::switch_comlynx_visualizer()
 {
     _comlynx_visible = !_comlynx_visible;
+}
+
+void GUI::switch_console_visibility()
+{
+    _console_visible = !_console_visible;
 }
 
 std::shared_ptr<SessionGUI> GUI::register_session(std::shared_ptr<Session> session)

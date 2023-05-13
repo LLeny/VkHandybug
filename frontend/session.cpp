@@ -120,7 +120,6 @@ void Session::render_screen(int screen_id, uint8_t *dispram, uint8_t *palette)
 
 void Session::set_status(SessionStatus status)
 {
-    LOG(LOG_DEBUG) << "Session - set_status(" << status << ")";
     _status = status;
 }
 
@@ -248,6 +247,7 @@ bool Session::check_for_breakpoints()
 
     if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.type == BreakPointType_EXEC && bp.address == regs.PC; }))
     {
+        LOG(LOG_INFO) << "Session '" << identifier() << "' breakpoint reached.";
         set_status(SessionStatus_Break);
         return true;
     }
@@ -302,7 +302,8 @@ ULONG Session::execute()
     catch(CLynxException &ex)
     {
         if(ex.Error() == LynxErrors_Illegal_Opcode && Config::getInstance().store().break_on_illegal_opcode)
-        {
+        {       
+            LOG(LOG_INFO) << "Session '" << identifier() << "' illegal opcode break.";
             set_status(SessionStatus_Break);
         }
     }

@@ -7,6 +7,7 @@
 #include "imgui.h"
 
 class Config;
+class Console;
 
 class GUI
 {
@@ -25,10 +26,12 @@ class GUI
     std::vector<std::shared_ptr<SessionGUI>> sessions();
     std::shared_ptr<SessionGUI> get_session(std::string identifier);
     void switch_comlynx_visualizer();
+    void switch_console_visibility();
     std::shared_ptr<ComLynxVisualizer> comlynx_visualizer();
 
   private:
     bool _comlynx_visible;
+    bool _console_visible;
     std::vector<std::shared_ptr<SessionGUI>> _sessions{};
 
     Menu _menu{};

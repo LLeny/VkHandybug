@@ -35,6 +35,7 @@ void Config::load(App *app)
     app->set_position({(float)_store.main_window_x_pos, (float)_store.main_window_y_pos});
 
     app->gui()->_comlynx_visible = _store.comlynx_visisble;
+    app->gui()->_console_visible = _store.console_visible;
 }
 
 void Config::save_recents(App *app)
@@ -76,6 +77,7 @@ void Config::save(App *app)
     _store.main_window_height = dim.y;
 
     _store.comlynx_visisble = app->gui()->_comlynx_visible;
+    _store.console_visible = app->gui()->_console_visible;
 
     std::string filename = config_file().generic_string();
 

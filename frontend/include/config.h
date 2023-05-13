@@ -153,6 +153,7 @@ struct ConfigStore
     int main_window_x_pos = 10, main_window_y_pos = 10;
     int main_window_width = 800, main_window_height = 600;
     bool comlynx_visisble = false;
+    bool console_visible = false;
     std::vector<std::string> recent_sessions{};
 
     std::vector<SessionConfigStore> sessions{};
@@ -170,6 +171,7 @@ struct ConfigStore
         archive(CEREAL_NVP(main_window_width));
         archive(CEREAL_NVP(main_window_height));
         archive(CEREAL_NVP(comlynx_visisble));
+        archive(CEREAL_NVP(console_visible));
         archive(CEREAL_NVP(recent_sessions));
         archive(CEREAL_NVP(sessions));
     }

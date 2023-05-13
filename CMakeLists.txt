@@ -24,10 +24,12 @@ include("tools/cmake.dependencies")
 FetchContent_MakeAvailable(vkmemalloc)
 FetchContent_MakeAvailable(vkbootstrap)
 FetchContent_MakeAvailable(fmt)
+FetchContent_MakeAvailable(csys)
 FetchContent_Populate(miniaudio)
 FetchContent_Populate(cereal)
 FetchContent_Populate(imgui)
 FetchContent_Populate(imgui_filedialog)
+FetchContent_Populate(imgui_console)
 FetchContent_Populate(hashlib)
 
 file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
@@ -44,6 +46,7 @@ file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_filedialog_SOURCE_DIR}/ImGuiFileDialog.cpp
+    ${imgui_console_SOURCE_DIR}/src/imgui_console.cpp
     ${hashlib_SOURCE_DIR}/md5.cpp
 )
 
@@ -86,9 +89,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${zlib_BINARY_DIR}
     ${fmt_SOURCE_DIR}/include
     ${imgui_filedialog_SOURCE_DIR}
+    ${imgui_console_SOURCE_DIR}/include/imgui_console
     ${miniaudio_SOURCE_DIR}
     ${cereal_SOURCE_DIR}/include
     ${hashlib_SOURCE_DIR}
+    ${csys_SOURCE_DIR}/include
     "lynx_core/"
     "frontend/include/"
 )
@@ -101,6 +106,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
     zlibstatic
     fmt
+    csys
     )
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/shaders/lynx_render.comp.spv" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders/lynx_render.comp.spv" COPYONLY)

@@ -1,6 +1,9 @@
 #pragma once
 
-#include <iostream>
+#include "global.h"
+#include "console.h"
+#include <cstdlib>
+#include <cxxabi.h>
 
 enum typelog
 {
@@ -10,64 +13,36 @@ enum typelog
     LOG_ERROR
 };
 
-typedef struct structlog
-{
-    bool headers = false;
-    typelog level = LOG_ERROR;
-} structlog;
-
 class LOG
 {
   public:
-    LOG()
-    {
-    }
     LOG(typelog type)
+        : _console_logger(get_csys_level(type))
     {
-        msglevel = type;
-        operator<<("[" + getLabel(type) + "]");
     }
-    ~LOG()
-    {
-        if (opened)
-        {
-            std::cout << std::endl;
-        }
-        opened = false;
-    }
+
     template <class T>
     LOG &operator<<(const T &msg)
     {
-        if (msglevel >= LOGCFG.level)
-        {
-            std::cout << msg;
-            opened = true;
-        }
+        _console_logger << msg;
         return *this;
     }
 
   private:
-    structlog LOGCFG{};
-    bool opened = false;
-    typelog msglevel = LOG_ERROR;
-    inline std::string getLabel(typelog type)
+    ConsoleLogger _console_logger;
+
+    csys::ItemType get_csys_level(typelog level)
     {
-        std::string label;
-        switch (type)
+        switch (level)
         {
         case LOG_DEBUG:
-            label = "DEBUG";
-            break;
+            return csys::ItemType::LOG;
         case LOG_INFO:
-            label = "INFO ";
-            break;
+            return csys::ItemType::INFO;
         case LOG_WARN:
-            label = "WARN ";
-            break;
+            return csys::ItemType::WARNING;
         case LOG_ERROR:
-            label = "ERROR";
-            break;
+            return csys::ItemType::CSYS_ERROR;
         }
-        return label;
     }
 };

@@ -191,28 +191,29 @@ void SessionGUI::render_screen()
 
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar;
 
-    ImGui::Begin(_display_window_id.c_str(), NULL, flags);
-
-    auto size = ImGui::GetWindowSize();
-    float headerHeight = ImGui::GetFrameHeight();
-    ImVec2 frameSize = {size.x, size.y - headerHeight};
-
-    if (auto tex = _session->get_main_screen_imgui_texture_id())
+    if (ImGui::Begin(_display_window_id.c_str(), NULL, flags))
     {
-        ImVec2 tgtSize = {frameSize};
+        auto size = ImGui::GetWindowSize();
+        float headerHeight = ImGui::GetFrameHeight();
+        ImVec2 frameSize = {size.x, size.y - headerHeight};
 
-        if (tgtSize.x / ratio > tgtSize.y)
+        if (auto tex = _session->get_main_screen_imgui_texture_id())
         {
-            tgtSize.x = (float)(int)(tgtSize.y * ratio);
-        }
-        else
-        {
-            tgtSize.y = (float)(int)(tgtSize.x / ratio);
-        }
+            ImVec2 tgtSize = {frameSize};
 
-        ImVec2 pos = {(frameSize.x - tgtSize.x) / 2.0f, (frameSize.y - tgtSize.y) / 2.0f + headerHeight};
-        ImGui::SetCursorPos(pos);
-        ImGui::Image(tex, {tgtSize.x, tgtSize.y});
+            if (tgtSize.x / ratio > tgtSize.y)
+            {
+                tgtSize.x = (float)(int)(tgtSize.y * ratio);
+            }
+            else
+            {
+                tgtSize.y = (float)(int)(tgtSize.x / ratio);
+            }
+
+            ImVec2 pos = {(frameSize.x - tgtSize.x) / 2.0f, (frameSize.y - tgtSize.y) / 2.0f + headerHeight};
+            ImGui::SetCursorPos(pos);
+            ImGui::Image(tex, {tgtSize.x, tgtSize.y});
+        }
     }
 
     ImGui::End();
@@ -233,15 +234,15 @@ void SessionGUI::render_memory()
 
         std::string i = fmt::format("{}{}", _memory_window_id, memidentifier);
 
-        ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_None);
-
-        memedit->draw_contents();
-
-        if (ImGui::IsWindowFocused())
+        if (ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_None))
         {
-            _session->set_active();
-        }
+            memedit->draw_contents();
 
+            if (ImGui::IsWindowFocused())
+            {
+                _session->set_active();
+            }
+        }
         ImGui::End();
 
         if (!open)
@@ -263,13 +264,14 @@ void SessionGUI::render_disassembly()
 
         std::string i = fmt::format("{}{}", _disasm_window_id, identifier);
 
-        ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_None);
-
-        disasmedit->draw_contents();
-
-        if (ImGui::IsWindowFocused())
+        if (ImGui::Begin(i.c_str(), &open, ImGuiWindowFlags_None))
         {
-            _session->set_active();
+            disasmedit->draw_contents();
+
+            if (ImGui::IsWindowFocused())
+            {
+                _session->set_active();
+            }
         }
 
         ImGui::End();
@@ -292,15 +294,15 @@ void SessionGUI::render_single_editors()
             continue;
         }
 
-        ImGui::Begin(e.label.c_str(), e.is_open, ImGuiWindowFlags_None);
-
-        (*e.editor).render();
-
-        if (ImGui::IsWindowFocused())
+        if (ImGui::Begin(e.label.c_str(), e.is_open, ImGuiWindowFlags_None))
         {
-            _session->set_active();
-        }
+            (*e.editor).render();
 
+            if (ImGui::IsWindowFocused())
+            {
+                _session->set_active();
+            }
+        }
         ImGui::End();
     }
 }

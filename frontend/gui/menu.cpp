@@ -97,6 +97,10 @@ void Menu::initialize()
 
     std::vector<MenuItem> toolsitems{};
 
+    toolsitems.push_back({"", "Console", "", MENUITEM_TYPE_CALLBACK, [&]() {
+                              _app->gui()->switch_console_visibility();
+                          }});
+
     toolsitems.push_back({"", "ComLynx", "", MENUITEM_TYPE_CALLBACK, [&]() {
                               _app->gui()->switch_comlynx_visualizer();
                           }});
