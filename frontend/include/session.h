@@ -34,9 +34,9 @@ struct Breakpoint
 
 struct CallStackItem
 {
-    int src_address;
-    int dst_address;
-    bool is_breakpoint;
+    int src_address = 0;
+    int dst_address = 0;
+    bool is_breakpoint = false;
 };
 
 enum SessionStatus

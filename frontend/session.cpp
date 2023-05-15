@@ -284,6 +284,10 @@ ULONG Session::execute()
     }
     break;
     case RTS: {
+        if (_callstack.size() < 1)
+        {
+            break;
+        }
         if (_callstack.back().is_breakpoint || _status == SessionStatus_Step_Out)
         {
             set_status(SessionStatus_Break);
@@ -299,10 +303,10 @@ ULONG Session::execute()
     {
         cycles = _lynx->Update();
     }
-    catch(CLynxException &ex)
+    catch (CLynxException &ex)
     {
-        if(ex.Error() == LynxErrors_Illegal_Opcode && Config::getInstance().store().break_on_illegal_opcode)
-        {       
+        if (ex.Error() == LynxErrors_Illegal_Opcode && Config::getInstance().store().break_on_illegal_opcode)
+        {
             LOG(LOG_INFO) << "Session '" << identifier() << "' illegal opcode break.";
             set_status(SessionStatus_Break);
         }
