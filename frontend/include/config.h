@@ -37,6 +37,7 @@ struct BreakpointConfigStore
     uint16_t address;
     LynxMemBank bank;
     BreakPointType type;
+    std::string script;
 
     template <class Archive>
     void serialize(Archive &archive)
@@ -45,6 +46,7 @@ struct BreakpointConfigStore
         archive(CEREAL_NVP(address));
         archive(CEREAL_NVP(bank));
         archive(CEREAL_NVP(type));
+        archive(CEREAL_NVP(script));
     }
 };
 

@@ -25,12 +25,19 @@ FetchContent_MakeAvailable(vkmemalloc)
 FetchContent_MakeAvailable(vkbootstrap)
 FetchContent_MakeAvailable(fmt)
 FetchContent_MakeAvailable(csys)
+FetchContent_Populate(lua)
+FetchContent_Populate(sol2)
 FetchContent_Populate(miniaudio)
 FetchContent_Populate(cereal)
 FetchContent_Populate(imgui)
 FetchContent_Populate(imgui_filedialog)
 FetchContent_Populate(imgui_console)
 FetchContent_Populate(hashlib)
+
+set(luasrcFiles ${lua_SOURCE_DIR}/src/lapi.c ${lua_SOURCE_DIR}/src/lauxlib.c ${lua_SOURCE_DIR}/src/lbaselib.c ${lua_SOURCE_DIR}/src/lcode.c ${lua_SOURCE_DIR}/src/lcorolib.c ${lua_SOURCE_DIR}/src/lctype.c ${lua_SOURCE_DIR}/src/ldblib.c ${lua_SOURCE_DIR}/src/ldebug.c ldo.c
+${lua_SOURCE_DIR}/src/ldump.c ${lua_SOURCE_DIR}/src/lfunc.c ${lua_SOURCE_DIR}/src/lgc.c ${lua_SOURCE_DIR}/src/linit.c ${lua_SOURCE_DIR}/src/liolib.c ${lua_SOURCE_DIR}/src/llex.c ${lua_SOURCE_DIR}/src/lmathlib.c ${lua_SOURCE_DIR}/src/lmem.c ${lua_SOURCE_DIR}/src/loadlib.c ${lua_SOURCE_DIR}/src/lobject.c ${lua_SOURCE_DIR}/src/lopcodes.c
+    ${lua_SOURCE_DIR}/src/loslib.c ${lua_SOURCE_DIR}/src/lparser.c ${lua_SOURCE_DIR}/src/lstate.c ${lua_SOURCE_DIR}/src/lstring.c ${lua_SOURCE_DIR}/src/lstrlib.c ${lua_SOURCE_DIR}/src/ltable.c ${lua_SOURCE_DIR}/src/ltablib.c ${lua_SOURCE_DIR}/src/ltests.c ${lua_SOURCE_DIR}/src/ltm.c ${lua_SOURCE_DIR}/src/lundump.c
+    ${lua_SOURCE_DIR}/src/lutf8lib.c ${lua_SOURCE_DIR}/src/lvm.c ${lua_SOURCE_DIR}/src/lzio.c)
 
 file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     "frontend/*.c"
@@ -48,6 +55,7 @@ file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     ${imgui_filedialog_SOURCE_DIR}/ImGuiFileDialog.cpp
     ${imgui_console_SOURCE_DIR}/src/imgui_console.cpp
     ${hashlib_SOURCE_DIR}/md5.cpp
+    ${luasrcFiles}
 )
 
 FetchContent_GetProperties(zlib)
@@ -94,6 +102,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${cereal_SOURCE_DIR}/include
     ${hashlib_SOURCE_DIR}
     ${csys_SOURCE_DIR}/include
+    ${sol2_SOURCE_DIR}/include
+    ${lua_SOURCE_DIR}/src
     "lynx_core/"
     "frontend/include/"
 )
@@ -107,7 +117,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     zlibstatic
     fmt
     csys
-    )
+)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/shaders/lynx_render.comp.spv" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders/lynx_render.comp.spv" COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/fonts/Crisp.ttf" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/fonts/Crisp.ttf" COPYONLY)

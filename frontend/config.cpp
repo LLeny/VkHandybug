@@ -104,7 +104,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
 
         for (auto &bp : session->_session->breakpoints())
         {
-            breakpoints.push_back({bp.enabled, bp.address, bp.bank, bp.type});
+            breakpoints.push_back({bp.enabled, bp.address, bp.bank, bp.type, bp.script});
         }
 
         for (auto &w : session->_watch_editor.watches())
@@ -221,7 +221,7 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
 
     for (auto &bp : found->breakpoints)
     {
-        session->_session->breakpoints().push_back({bp.enabled, bp.address, bp.bank, bp.type});
+        session->_session->breakpoints().push_back({bp.enabled, bp.address, bp.bank, bp.type, bp.script});
     }
 
     session->_watch_editor.watches().clear();

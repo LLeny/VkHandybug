@@ -115,7 +115,7 @@ void BreakpointsEditor::render_header()
 
 void BreakpointsEditor::render_table()
 {
-    if (ImGui::BeginTable("##bpitems", 6, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##bpitems", 7, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
     {
         ImGui::TableSetupColumn("Del");
         ImGui::TableSetupColumn("E/D");
@@ -123,6 +123,7 @@ void BreakpointsEditor::render_table()
         ImGui::TableSetupColumn("Symbol");
         ImGui::TableSetupColumn("Bank");
         ImGui::TableSetupColumn("Type");
+        ImGui::TableSetupColumn("Condition");
         ImGui::TableSetupScrollFreeze(0, 1);
         ImGui::TableHeadersRow();
 
@@ -139,7 +140,7 @@ void BreakpointsEditor::render_entry(Breakpoint &bp)
     ImGui::TableNextColumn();
     ImGui::SetNextItemWidth(15);
 
-    std::string lbi = fmt::format("{}##bi{}{}{}", BootstrapIcons_trash, bp.address, (int)bp.bank, (int)bp.type);
+    std::string lbi = fmt::format("{}##bi{}", BootstrapIcons_trash, bp.identifier());
     if (ImGui::Button(lbi.c_str()))
     {
         _session->delete_breakpoint(bp.address, bp.bank, bp.type);
@@ -147,7 +148,7 @@ void BreakpointsEditor::render_entry(Breakpoint &bp)
 
     ImGui::TableNextColumn();
     ImGui::SetNextItemWidth(15);
-    std::string leni = fmt::format("{}##eni{}{}{}", bp.enabled ? BootstrapIcons_bookmark_plus : BootstrapIcons_bookmark_dash, bp.address, (int)bp.bank, (int)bp.type);
+    std::string leni = fmt::format("{}##eni{}", bp.enabled ? BootstrapIcons_bookmark_plus : BootstrapIcons_bookmark_dash, bp.identifier());
     if (ImGui::Button(leni.c_str()))
     {
         bp.enabled = !bp.enabled;
@@ -173,4 +174,59 @@ void BreakpointsEditor::render_entry(Breakpoint &bp)
 
     ImGui::TableNextColumn();
     ImGui::Text("%s", type_get_desc(bp.type));
+
+    ImGui::TableNextColumn();
+
+    std::string labelpop = fmt::format("##pop{}", bp.identifier());
+
+    if (bp.script.empty())
+    {
+        ImGui::Text("              ");
+    }
+    else
+    {
+        ImGui::Text("%s", bp.script.c_str());
+    }
+    if (ImGui::IsItemClicked() && !is_read_only())
+    {
+        memset(_script_buf, 0, sizeof(_script_buf));
+        strncpy(_script_buf, bp.script.c_str(), bp.script.length());
+        ImGui::OpenPopup(labelpop.c_str());
+    }
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, {200, 200});
+    if (ImGui::BeginPopupModal(labelpop.c_str(), NULL))
+    {
+        std::string scri = fmt::format("##scr{}", bp.identifier());
+
+        auto size = ImGui::GetWindowSize();
+        ImVec2 frameSize = {size.x, size.y - ImGui::GetFrameHeight() * 2.0f};
+        auto ypadd = ImGui::GetStyle().FramePadding.y;
+
+        ImGui::InputTextMultiline(scri.c_str(), _script_buf, sizeof(_script_buf) - 1, {frameSize.x - (ypadd * 2.0f), frameSize.y - (13 + ypadd * 2.0f)});
+
+        if (ImGui::Button("OK"))
+        {
+            auto ide = bp.identifier();
+            bp.script = _script_buf;
+            _session->set_breakpoint_script(ide, bp.script);
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Clear"))
+        {
+            auto ide = bp.identifier();
+            bp.script = "";
+            _session->set_breakpoint_script(ide, bp.script);
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+    ImGui::PopStyleVar();
 }

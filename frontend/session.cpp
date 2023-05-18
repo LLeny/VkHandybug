@@ -52,6 +52,7 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
     }
 
     _states_manager.initialize(shared_from_this());
+    _scripting.initialize(shared_from_this());
 
     _lynx->RegisterMemoryAccessCallback([&](LynxMemBank bank, uint16_t addr, bool write) { memory_access_callback(bank, addr, write); });
 
@@ -245,13 +246,25 @@ bool Session::check_for_breakpoints()
     C6502_REGS regs;
     _lynx->GetRegs(regs);
 
-    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.type == BreakPointType_EXEC && bp.address == regs.PC; }))
+    auto found = std::find_if(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.type == BreakPointType_EXEC && bp.address == regs.PC; });
+
+    if(found == _breakpoints.end())
     {
-        LOG(LOG_INFO) << "Session '" << identifier() << "' breakpoint reached.";
-        set_status(SessionStatus_Break);
-        return true;
+        return false;
     }
-    return false;
+
+    if(!found->script.empty())
+    {
+        auto id = found->identifier();
+        if(!_scripting.evaluate_breakpoint(id))
+        {
+            return false;
+        }
+    }
+
+    LOG(LOG_INFO) << "Session '" << identifier() << "' breakpoint reached.";
+    set_status(SessionStatus_Break);
+    return true;
 }
 
 ULONG Session::execute()
@@ -400,4 +413,14 @@ void Session::set_audio(bool enabled)
 bool Session::is_audio_enabled()
 {
     return _lynx->mAudioEnabled;
+}
+
+void Session::set_breakpoint_script(std::string &id, std::string &script)
+{
+    _scripting.set_breakpoint_script(id, script);
+}
+
+bool Session::evaluate_breakpoint(std::string &scriptid)
+{
+    return _scripting.evaluate_breakpoint(scriptid);
 }

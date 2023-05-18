@@ -27,6 +27,7 @@ class BreakpointsEditor : public IEditor
     const char *type_get_desc(BreakPointType type) const;
 
     char _address_buf[50]{};
+    char _script_buf[501]{};
     LynxMemBank _mem_bank = LynxMemBank_RAM;
     BreakPointType _type = BreakPointType_EXEC;
 };

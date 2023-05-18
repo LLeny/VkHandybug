@@ -4,8 +4,10 @@
 #include "system.h"
 #include "imgui.h"
 #include "symbols.h"
+#include "scripting.h"
 #include "states_manager.h"
 #include <GLFW/glfw3.h>
+#include <fmt/core.h>
 
 #define CYCLE_TIME_NS (250)
 #define RTS 0x60
@@ -30,6 +32,9 @@ struct Breakpoint
     uint16_t address = 0;
     LynxMemBank bank = LynxMemBank_RAM;
     BreakPointType type = BreakPointType_EXEC;
+    std::string script{};
+
+    std::string identifier() { return fmt::format("bp{}{}{}", address, (int)bank, (int)type); }
 };
 
 struct CallStackItem
@@ -104,6 +109,9 @@ class Session : public std::enable_shared_from_this<Session>
 
     std::vector<CallStackItem> &callstack();
 
+    void set_breakpoint_script(std::string &id, std::string &script);
+    bool evaluate_breakpoint(std::string &scriptid);
+
   private:
     static int idinc;
     int _id;
@@ -112,6 +120,7 @@ class Session : public std::enable_shared_from_this<Session>
     SessionStatus _status = SessionStatus_Break;
     Symbols _symbols{};
     StatesManager _states_manager{};
+    Scripting _scripting;
     std::filesystem::path _cartridge_file{};
     std::string _cartridge_file_name{};
     std::filesystem::path _rom_file = "./lynxboot.img";
