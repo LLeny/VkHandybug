@@ -2,6 +2,7 @@
 
 #include "global.h"
 #include "imgui.h"
+#include <sol/sol.hpp>
 
 enum typelog
 {
@@ -32,13 +33,16 @@ class Console
     bool render();
 
     void add_log(typelog type, std::string msg);
-    void clear_log();
     void exec_command(std::string cmd);
     int textedit_callback(ImGuiInputTextCallbackData *data);
     std::string get_level_label(typelog level);
 
   private:
     Console();
+
+    void cmd_help();
+    void cmd_history();
+    void cmd_clear_log();
 
     char _inputBuf[256]{};
     std::vector<ConsoleItem> _items;
@@ -48,6 +52,7 @@ class Console
     ImGuiTextFilter _filter;
     bool _autoScroll = true;
     bool _scrollToBottom = true;    
+    sol::state _lua_state;
 };
 
 class ConsoleLogger

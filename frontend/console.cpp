@@ -3,9 +3,20 @@
 
 Console::Console()
 {
+    _lua_state.set_exception_handler([](lua_State *L, sol::optional<const std::exception &> E, std::string_view S) {
+        Console::get_instance().add_log(LOG_ERROR, fmt::format("Lua: {}", S));
+        return sol::stack::push(L, S);
+    });
+
     _commands.push_back({"clear", "Clear the logs."});
     _commands.push_back({"history", "Diplay the command history."});
-    _commands.push_back({"help", "Display the help"});
+    _commands.push_back({"help", "Display the help."});
+    _commands.push_back({"log 'some text'", "Print to the console."});
+
+    _lua_state.set_function("log", [&](std::string msg) { add_log(LOG_INFO, msg); });
+    _lua_state.set_function("clear", [&]() { cmd_clear_log(); });
+    _lua_state.set_function("help", [&]() { cmd_help(); });
+    _lua_state.set_function("history", [&]() { cmd_history(); });
 }
 
 bool Console::render()
@@ -30,7 +41,7 @@ bool Console::render()
 
     if (ImGui::SmallButton("Clear"))
     {
-        clear_log();
+        cmd_clear_log();
     }
     ImGui::SameLine();
     ImGui::TextWrapped("Enter 'help' for help.");
@@ -58,7 +69,7 @@ bool Console::render()
         {
             if (ImGui::Selectable("Clear"))
             {
-                clear_log();
+                cmd_clear_log();
             }
             ImGui::EndPopup();
         }
@@ -138,10 +149,29 @@ void Console::add_log(typelog type, std::string msg)
     _items.push_back(ConsoleItem{type, msg});
 }
 
-void Console::clear_log()
+void Console::cmd_clear_log()
 {
     _items.clear();
 }
+
+void Console::cmd_help()
+{
+    add_log(LOG_INFO, "Commands:");
+    for (auto &hlpcmd : _commands)
+    {
+        const auto [c, h] = hlpcmd;
+        add_log(LOG_INFO, fmt::format("  {}: {}", c, h));
+    }
+};
+
+void Console::cmd_history()
+{
+    int first = _history.size() - 10;
+    for (int i = first > 0 ? first : 0; i < _history.size(); i++)
+    {
+        add_log(LOG_INFO, fmt::format("  {}: {}", i, _history[i]));
+    }
+};
 
 void Console::exec_command(std::string command)
 {
@@ -161,30 +191,19 @@ void Console::exec_command(std::string command)
     }
     _history.push_back(cmd);
 
-    if (iequals(cmd, "clear"))
+    if (std::any_of(_commands.begin(), _commands.end(), [&](std::tuple<std::string, std::string> &icmd) { const auto [c, h] = icmd;return iequals(cmd, c); }))
     {
-        clear_log();
+        cmd += "()";
     }
-    else if (iequals(cmd, "help"))
+
+    try
     {
-        add_log(LOG_INFO, "Commands:");
-        for (auto &hlpcmd : _commands)
-        {
-            const auto [c, h] = hlpcmd;
-            add_log(LOG_INFO, fmt::format("  {}: {}", c, h));
-        }
+        _lua_state.safe_script(cmd);
     }
-    else if (iequals(cmd, "history"))
+    catch (const sol::error &e)
     {
-        int first = _history.size() - 10;
-        for (int i = first > 0 ? first : 0; i < _history.size(); i++)
-        {
-            add_log(LOG_INFO, fmt::format("  {}: {}", i, _history[i]));
-        }
-    }
-    else
-    {
-        add_log(LOG_WARN, fmt::format("Unknown command:'{}'", cmd));
+        add_log(LOG_ERROR, e.what());
+        return;
     }
 
     _scrollToBottom = true;
