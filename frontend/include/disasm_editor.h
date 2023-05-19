@@ -50,5 +50,6 @@ class DisasmEditor
     void scroll_up();
     void scroll_down();
     DisasmEntry disassemble(uint16_t addr);
+    int16_t get_opcode_target(DisasmEntry &entry);
     int16_t next_address(int addr);
 };

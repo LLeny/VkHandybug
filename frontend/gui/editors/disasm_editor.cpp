@@ -221,8 +221,126 @@ int DisasmEditor::draw_disasm_entry(DisasmEntry &entry)
 
     ImGui::TableNextColumn();
     ImGui::Text("%s", entry.operands.c_str());
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+    {
+        auto tgt = get_opcode_target(entry);
+        if (tgt >= 0)
+        {
+            ImGui::SetTooltip("0x%02X", tgt);
+        }
+    }
 
     return itemcount;
+}
+
+int16_t DisasmEditor::get_opcode_target(DisasmEntry &entry)
+{
+    auto system = _session->system();
+    auto addr = entry.base_address;
+    uint16_t opcode, operand;
+    uint16_t count = next_address(addr) - addr;
+
+    opcode = system->mRam->Peek(addr);
+
+    switch (count)
+    {
+    case 3:
+        addr++;
+        operand = system->mRam->Peek(addr++);
+        operand += (system->mRam->Peek(addr++)) << 8;
+        break;
+    case 2:
+        addr++;
+        operand = system->mRam->Peek(addr++);
+        break;
+    case 1:
+    default:
+        addr++;
+        break;
+    }
+
+    int16_t ret = -1;
+
+    switch (mLookupTable[opcode].mode)
+    {
+    case accu:
+        break;
+    case imm:
+        break;
+    case absl:
+        ret = system->mRam->Peek(operand);
+        break;
+    case rel:
+        int scrap;
+        if (operand > 128)
+            scrap = -128 + (operand & 0x7f);
+        else
+            scrap = operand;
+        ret = system->mRam->Peek(addr + scrap);
+        break;
+    case iabs:
+        ret = system->mRam->Peek(system->mRam->PeekW(operand));
+        break;
+    case ind:
+        ret = system->mRam->Peek(system->mRam->Peek(operand));
+        break;
+    case zp:
+        ret = system->mRam->Peek(operand);
+        break;
+    case zpx: {
+        C6502_REGS regs;
+        system->mCpu->GetRegs(regs);
+        ret = system->mRam->Peek(operand + regs.X);
+    }
+    break;
+    case zpy: {
+        C6502_REGS regs;
+        system->mCpu->GetRegs(regs);
+        ret = system->mRam->Peek(operand + regs.Y);
+    }
+    break;
+    case absx: {
+        C6502_REGS regs;
+        system->mCpu->GetRegs(regs);
+        ret = system->mRam->Peek(system->mRam->PeekW(operand) + regs.X);
+    }
+    break;
+    case absy: {
+        C6502_REGS regs;
+        system->mCpu->GetRegs(regs);
+        ret = system->mRam->Peek(system->mRam->PeekW(operand) + regs.Y);
+    }
+    break;
+    case iabsx: {
+        C6502_REGS regs;
+        system->mCpu->GetRegs(regs);
+        ret = system->mRam->Peek(system->mRam->PeekW(operand + regs.X));
+    }
+    break;
+    case zrel:
+        scrap = operand >> 8;
+        if (scrap > 128)
+            scrap = -128 + (scrap & 0x7f);
+        break;
+    case indx: {
+        C6502_REGS regs;
+        system->mCpu->GetRegs(regs);
+        ret = system->mRam->Peek(system->mRam->PeekW(operand) + regs.X);
+    }
+    break;
+    case indy: {
+        C6502_REGS regs;
+        system->mCpu->GetRegs(regs);
+        ret = system->mRam->Peek(system->mRam->PeekW(operand) + regs.Y);
+    }
+    break;
+    case impl:
+    case illegal:
+    default:
+        break;
+    }
+
+    return ret;
 }
 
 DisasmEntry DisasmEditor::disassemble(uint16_t addr)
@@ -247,13 +365,8 @@ DisasmEntry DisasmEditor::disassemble(uint16_t addr)
         }
     }
 
-    for (int loop = 0; loop < count; loop++)
-    {
-        ret.data += fmt::format("{:02X} ", system->mRam->Peek(addr + loop));
-    }
-
     opcode = system->mRam->Peek(addr);
-
+    ret.data = fmt::format("{:02X}", opcode);
     ret.opcode = mLookupTable[opcode].opcode;
 
     switch (count)
@@ -262,10 +375,12 @@ DisasmEntry DisasmEditor::disassemble(uint16_t addr)
         addr++;
         operand = system->mRam->Peek(addr++);
         operand += (system->mRam->Peek(addr++)) << 8;
+        ret.data += fmt::format(" {:02X} {:02X}", operand & 0xFF, operand >> 8);
         break;
     case 2:
         addr++;
         operand = system->mRam->Peek(addr++);
+        ret.data += fmt::format(" {:02X}", operand);
         break;
     case 1:
     default:
