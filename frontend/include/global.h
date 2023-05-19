@@ -49,3 +49,8 @@ enum LynxMemBank
     LynxMemBank_EEPROM = 6,
     LynxMemBank_MAX = 7
 };
+
+bool iequals(const std::string& a, const std::string& b);
+void ltrim(std::string &s);
+void rtrim(std::string &s);
+void trim(std::string &s);

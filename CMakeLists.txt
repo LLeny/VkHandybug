@@ -24,14 +24,12 @@ include("tools/cmake.dependencies")
 FetchContent_MakeAvailable(vkmemalloc)
 FetchContent_MakeAvailable(vkbootstrap)
 FetchContent_MakeAvailable(fmt)
-FetchContent_MakeAvailable(csys)
 FetchContent_Populate(lua)
 FetchContent_Populate(sol2)
 FetchContent_Populate(miniaudio)
 FetchContent_Populate(cereal)
 FetchContent_Populate(imgui)
 FetchContent_Populate(imgui_filedialog)
-FetchContent_Populate(imgui_console)
 FetchContent_Populate(hashlib)
 
 set(luasrcFiles ${lua_SOURCE_DIR}/src/lapi.c ${lua_SOURCE_DIR}/src/lauxlib.c ${lua_SOURCE_DIR}/src/lbaselib.c ${lua_SOURCE_DIR}/src/lcode.c ${lua_SOURCE_DIR}/src/lcorolib.c ${lua_SOURCE_DIR}/src/lctype.c ${lua_SOURCE_DIR}/src/ldblib.c ${lua_SOURCE_DIR}/src/ldebug.c ldo.c
@@ -53,7 +51,6 @@ file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_filedialog_SOURCE_DIR}/ImGuiFileDialog.cpp
-    ${imgui_console_SOURCE_DIR}/src/imgui_console.cpp
     ${hashlib_SOURCE_DIR}/md5.cpp
     ${luasrcFiles}
 )
@@ -97,11 +94,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${zlib_BINARY_DIR}
     ${fmt_SOURCE_DIR}/include
     ${imgui_filedialog_SOURCE_DIR}
-    ${imgui_console_SOURCE_DIR}/include/imgui_console
     ${miniaudio_SOURCE_DIR}
     ${cereal_SOURCE_DIR}/include
     ${hashlib_SOURCE_DIR}
-    ${csys_SOURCE_DIR}/include
     ${sol2_SOURCE_DIR}/include
     ${lua_SOURCE_DIR}/src
     "lynx_core/"
@@ -116,7 +111,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
     zlibstatic
     fmt
-    csys
 )
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/shaders/lynx_render.comp.spv" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders/lynx_render.comp.spv" COPYONLY)

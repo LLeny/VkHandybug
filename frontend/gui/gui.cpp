@@ -65,7 +65,7 @@ void GUI::render(ImGuiID dockspace_id)
 
     if (_console_visible)
     {
-        Console::get_instance().render();
+        _console_visible = Console::get_instance().render();
     }
 }
 

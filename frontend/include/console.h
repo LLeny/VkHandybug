@@ -1,9 +1,22 @@
 #pragma once
 
 #include "global.h"
-#include "csys/system.h"
 #include "imgui.h"
-#include "imgui_console.h"
+
+enum typelog
+{
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR,
+    LOG_CMD
+};
+
+struct ConsoleItem
+{
+    typelog level;
+    std::string message;
+};
 
 class Console
 {
@@ -16,65 +29,48 @@ class Console
     Console(Console const &) = delete;
     void operator=(Console const &) = delete;
 
-    csys::ItemLog &logger(csys::ItemType type);
-    bool initialized();
+    bool render();
 
-    void render();
+    void add_log(typelog type, std::string msg);
+    void clear_log();
+    void exec_command(std::string cmd);
+    int textedit_callback(ImGuiInputTextCallbackData *data);
+    std::string get_level_label(typelog level);
 
   private:
-    Console(){};
+    Console();
 
-    std::shared_ptr<ImGuiConsole> _console;
-    csys::ItemLog _emptylogger;
+    char _inputBuf[256]{};
+    std::vector<ConsoleItem> _items;
+    std::vector<std::tuple<std::string, std::string>> _commands;
+    std::vector<std::string> _history;
+    int _historyPos = -1;
+    ImGuiTextFilter _filter;
+    bool _autoScroll = true;
+    bool _scrollToBottom = true;    
 };
 
 class ConsoleLogger
 {
   public:
-    ConsoleLogger(csys::ItemType type)
-        : _logger{Console::get_instance().logger(type)}
+    ConsoleLogger(typelog lvl)
     {
-        _initialized = Console::get_instance().initialized(); // imgui_console constructor requires an imgui context
+        _level = lvl;
     }
 
     ~ConsoleLogger()
     {
-        if (_initialized)
-        {
-            _logger << csys::endl;
-        }
+        Console::get_instance().add_log(_level, _buffer);
     }
 
     template <class T>
     ConsoleLogger &operator<<(const T &msg)
     {
-        if (_initialized)
-        {
-            _logger << msg;
-        }
+        _buffer += msg;
         return *this;
     }
 
   private:
-    csys::ItemLog &_logger;
-    bool _initialized = false;
-
-    std::string get_label(csys::ItemType level)
-    {
-        switch (level)
-        {
-        case csys::ItemType::COMMAND:
-            return "CMD";
-        case csys::ItemType::CSYS_ERROR:
-            return "ERR";
-        case csys::ItemType::INFO:
-            return "INF";
-        case csys::ItemType::LOG:
-            return "LOG";
-        case csys::ItemType::NONE:
-            return "   ";
-        case csys::ItemType::WARNING:
-            return "WRN";
-        }
-    }
+    std::string _buffer{};
+    typelog _level;
 };
