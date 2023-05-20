@@ -158,6 +158,7 @@ bool Scripting::evaluate_breakpoint(std::string &scriptid)
 
     if (!f.valid())
     {
+        LOG(LOG_ERROR) << "evaluate_breakpoint '" << scriptid << "' invalid.";
         return false;
     }
 

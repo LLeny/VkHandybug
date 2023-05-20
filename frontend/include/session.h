@@ -8,6 +8,7 @@
 #include "states_manager.h"
 #include <GLFW/glfw3.h>
 #include <fmt/core.h>
+#include "md5.h"
 
 #define CYCLE_TIME_NS (250)
 #define RTS 0x60
@@ -28,13 +29,37 @@ enum BreakPointType
 
 struct Breakpoint
 {
+    Breakpoint(bool e, uint16_t addr, LynxMemBank b, BreakPointType t, std::string &cond)
+    {
+        enabled = e;
+        address = addr;
+        bank = b;
+        type = t;
+        script = cond;
+        calc_id();
+    }
+
+    void set_script(std::string cond)
+    {
+        script = cond;
+        calc_id();
+    }
+
+    void calc_id()
+    {
+        MD5 md5;
+        md5.add(script.c_str(), script.length());
+        id = fmt::format("bp{}{}{}{}", address, (int)bank, (int)type, md5.getHash().substr(0, 8));
+    }
+
     bool enabled = false;
     uint16_t address = 0;
     LynxMemBank bank = LynxMemBank_RAM;
     BreakPointType type = BreakPointType_EXEC;
     std::string script{};
+    std::string id{};
 
-    std::string identifier() { return fmt::format("bp{}{}{}", address, (int)bank, (int)type); }
+    std::string identifier() { return id; }
 };
 
 struct CallStackItem
@@ -82,9 +107,9 @@ class Session : public std::enable_shared_from_this<Session>
     Symbols &symbols();
 
     std::vector<Breakpoint> &breakpoints();
-    void add_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type);
-    void delete_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type);
-    void toggle_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type);
+    void add_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type, std::string &cond);
+    void delete_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type, std::string &cond);
+    void toggle_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type, std::string &cond);
 
     StatesManager &states_manager();
 

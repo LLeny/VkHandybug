@@ -209,7 +209,8 @@ int DisasmEditor::draw_disasm_entry(DisasmEntry &entry)
     {
         if (ImGui::IsMouseDoubleClicked(0))
         {
-            _session->toggle_breakpoint(entry.base_address, LynxMemBank_RAM, BreakPointType_EXEC);
+            std::string empty;
+            _session->toggle_breakpoint(entry.base_address, LynxMemBank_RAM, BreakPointType_EXEC, empty);
         }
     }
 

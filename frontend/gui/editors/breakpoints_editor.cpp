@@ -106,8 +106,8 @@ void BreakpointsEditor::render_header()
         {
             std::from_chars(_address_buf, _address_buf + sizeof(_address_buf) - 1, addr, 16);
         }
-
-        _session->add_breakpoint((uint16_t)addr, _mem_bank, _type);
+        std::string empty;
+        _session->add_breakpoint((uint16_t)addr, _mem_bank, _type, empty);
 
         memset(_address_buf, 0, sizeof(_address_buf));
     }
@@ -143,7 +143,7 @@ void BreakpointsEditor::render_entry(Breakpoint &bp)
     std::string lbi = fmt::format("{}##bi{}", BootstrapIcons_trash, bp.identifier());
     if (ImGui::Button(lbi.c_str()))
     {
-        _session->delete_breakpoint(bp.address, bp.bank, bp.type);
+        _session->delete_breakpoint(bp.address, bp.bank, bp.type, bp.script);
     }
 
     ImGui::TableNextColumn();
@@ -207,8 +207,8 @@ void BreakpointsEditor::render_entry(Breakpoint &bp)
 
         if (ImGui::Button("OK"))
         {
+            bp.set_script(_script_buf);
             auto ide = bp.identifier();
-            bp.script = _script_buf;
             _session->set_breakpoint_script(ide, bp.script);
             ImGui::CloseCurrentPopup();
         }
@@ -220,8 +220,8 @@ void BreakpointsEditor::render_entry(Breakpoint &bp)
         ImGui::SameLine();
         if (ImGui::Button("Clear"))
         {
+            bp.set_script("");
             auto ide = bp.identifier();
-            bp.script = "";
             _session->set_breakpoint_script(ide, bp.script);
             ImGui::CloseCurrentPopup();
         }

@@ -221,7 +221,7 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
 
     for (auto &bp : found->breakpoints)
     {
-        session->_session->breakpoints().push_back({bp.enabled, bp.address, bp.bank, bp.type, bp.script});
+        session->_session->add_breakpoint(bp.address, bp.bank, bp.type, bp.script);
     }
 
     session->_watch_editor.watches().clear();

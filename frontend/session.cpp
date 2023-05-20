@@ -246,25 +246,31 @@ bool Session::check_for_breakpoints()
     C6502_REGS regs;
     _lynx->GetRegs(regs);
 
-    auto found = std::find_if(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.type == BreakPointType_EXEC && bp.address == regs.PC; });
+    auto found = std::find_if(_breakpoints.begin(), _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.type == BreakPointType_EXEC && (bp.address == 0 || bp.address == regs.PC); });
 
-    if(found == _breakpoints.end())
+    while (found != _breakpoints.end())
     {
-        return false;
-    }
-
-    if(!found->script.empty())
-    {
-        auto id = found->identifier();
-        if(!_scripting.evaluate_breakpoint(id))
+        if (found->script.empty())
         {
-            return false;
+            LOG(LOG_INFO) << "Session '" << identifier() << fmt::format("' breakpoint reached. PC = 0x{:04X}", regs.PC);
+            set_status(SessionStatus_Break);
+            return true;
         }
+        else
+        {
+            auto id = found->identifier();
+            if (_scripting.evaluate_breakpoint(id))
+            {
+                LOG(LOG_INFO) << "Session '" << identifier() << "' breakpoint reached. Condition = " << found->script;
+                set_status(SessionStatus_Break);
+                return true;
+            }
+        }
+
+        found = std::find_if(++found, _breakpoints.end(), [regs](const Breakpoint &bp) { return bp.enabled && bp.type == BreakPointType_EXEC && (bp.address == 0 || bp.address == regs.PC); });
     }
 
-    LOG(LOG_INFO) << "Session '" << identifier() << "' breakpoint reached.";
-    set_status(SessionStatus_Break);
-    return true;
+    return false;
 }
 
 ULONG Session::execute()
@@ -344,31 +350,33 @@ std::vector<Breakpoint> &Session::breakpoints()
     return _breakpoints;
 }
 
-void Session::toggle_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type)
+void Session::toggle_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type, std::string &cond)
 {
-    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr, bank, type](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type; }))
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr, bank, type, cond](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type && b.script == cond; }))
     {
-        delete_breakpoint(addr, bank, type);
+        delete_breakpoint(addr, bank, type, cond);
     }
     else
     {
-        add_breakpoint(addr, bank, type);
+        add_breakpoint(addr, bank, type, cond);
     }
 }
 
-void Session::add_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type)
+void Session::add_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type, std::string &cond)
 {
-    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr, bank, type](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type; }))
+    if (std::any_of(_breakpoints.begin(), _breakpoints.end(), [addr, bank, type, cond](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type && b.script == cond; }))
     {
         return;
     }
 
-    _breakpoints.push_back({true, addr, bank, type});
+    Breakpoint bp(true, addr, bank, type, cond);
+    _breakpoints.push_back(bp);
+    set_breakpoint_script(bp.id, bp.script);
 }
 
-void Session::delete_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type)
+void Session::delete_breakpoint(uint16_t addr, LynxMemBank bank, BreakPointType type, std::string &cond)
 {
-    std::erase_if(_breakpoints, [addr, bank, type](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type; });
+    std::erase_if(_breakpoints, [addr, bank, type, cond](const Breakpoint &b) { return b.address == addr && b.bank == bank && b.type == type && b.script == cond; });
 }
 
 std::filesystem::path Session::cartridge_file()
