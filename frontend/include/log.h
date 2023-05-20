@@ -3,7 +3,6 @@
 #include "global.h"
 #include "console.h"
 #include <cstdlib>
-#include <cxxabi.h>
 
 class LOG
 {
