@@ -260,7 +260,7 @@ void Menu::update_items()
                         ImGuiMod_Ctrl | ImGuiKey_D});
 
         subs.push_back({sessionid, "Close session", "", MENUITEM_TYPE_CALLBACK, [&, sessionid]() {
-                            LOG(LOG_DEBUG) << "Menu - close_session " << sessionid;
+                            LOG(LOGLEVEL_DEBUG) << "Menu - close_session " << sessionid;
                             _app->close_session(sessionid);
                         },
                         0});

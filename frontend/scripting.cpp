@@ -158,7 +158,7 @@ bool Scripting::evaluate_breakpoint(std::string &scriptid)
 
     if (!f.valid())
     {
-        LOG(LOG_ERROR) << "evaluate_breakpoint '" << scriptid << "' invalid.";
+        LOG(LOGLEVEL_ERROR) << "evaluate_breakpoint '" << scriptid << "' invalid.";
         return false;
     }
 
@@ -168,7 +168,7 @@ bool Scripting::evaluate_breakpoint(std::string &scriptid)
     }
     catch (std::exception &e)
     {
-        LOG(LOG_ERROR) << "evaluate_breakpoint '" << scriptid << "' error: " << e.what();
+        LOG(LOGLEVEL_ERROR) << "evaluate_breakpoint '" << scriptid << "' error: " << e.what();
         return false;
     }
 }
@@ -190,7 +190,7 @@ void Scripting::set_breakpoint_script(std::string &id, std::string &script)
     }
     catch (const sol::error &e)
     {
-        LOG(LOG_ERROR) << "set_breakpoint_script error: " << e.what() << " '" << scr << "'";
+        LOG(LOGLEVEL_ERROR) << "set_breakpoint_script error: " << e.what() << " '" << scr << "'";
     }
 }
 
@@ -199,7 +199,7 @@ void Scripting::initialize(std::shared_ptr<Session> session)
     _session = session;
 
     _lua_state.set_exception_handler([](lua_State *L, sol::optional<const std::exception &> E, std::string_view S) {
-        LOG(LOG_ERROR) << "Lua script error: " << S;
+        LOG(LOGLEVEL_ERROR) << "Lua script error: " << S;
         return sol::stack::push(L, S);
     });
 

@@ -31,7 +31,7 @@ void StatesManager::snap_state()
 
     if (dir.empty())
     {
-        LOG(LOG_ERROR) << "StatesManager - snap_state no state directory";
+        LOG(LOGLEVEL_ERROR) << "StatesManager - snap_state no state directory";
         return;
     }
 
@@ -39,13 +39,13 @@ void StatesManager::snap_state()
 
     if (statefile.empty())
     {
-        LOG(LOG_ERROR) << "StatesManager - snap_state no state file name";
+        LOG(LOGLEVEL_ERROR) << "StatesManager - snap_state no state file name";
         return;
     }
 
     if (!_session->system()->ContextSave(statefile.c_str()))
     {
-        LOG(LOG_ERROR) << "StatesManager - snap_state couldn't save state";
+        LOG(LOGLEVEL_ERROR) << "StatesManager - snap_state couldn't save state";
         return;
     }
 
@@ -58,7 +58,7 @@ std::string StatesManager::new_context_filename()
 
     if (dir.empty())
     {
-        LOG(LOG_INFO) << "StatesManager - new_context_filename no state directory";
+        LOG(LOGLEVEL_INFO) << "StatesManager - new_context_filename no state directory";
         return {};
     }
 
@@ -73,7 +73,7 @@ void StatesManager::load_state(State &state)
 {
     if (!_session->system()->ContextLoad(state.file.generic_string().c_str()))
     {
-        LOG(LOG_ERROR) << "StatesManager - load_state couldn't load state '" << state.file.generic_string() << "'";
+        LOG(LOGLEVEL_ERROR) << "StatesManager - load_state couldn't load state '" << state.file.generic_string() << "'";
     }
 }
 
@@ -81,7 +81,7 @@ void StatesManager::delete_state(State &state)
 {
     if (!std::filesystem::remove(state.file))
     {
-        LOG(LOG_ERROR) << "StatesManager - delete_state couldn't delete state '" << state.file.generic_string() << "'";
+        LOG(LOGLEVEL_ERROR) << "StatesManager - delete_state couldn't delete state '" << state.file.generic_string() << "'";
     }
     update_states_list();
 }
@@ -97,7 +97,7 @@ void StatesManager::calc_cart_hash()
         file.open(_session->cartridge_file().generic_string().c_str(), std::ios::in | std::ios::binary);
         if (!file)
         {
-            LOG(LOG_ERROR) << "StatesManager - session_directory_string can't open '" << _session->cartridge_file().generic_string() << "'";
+            LOG(LOGLEVEL_ERROR) << "StatesManager - session_directory_string can't open '" << _session->cartridge_file().generic_string() << "'";
             return;
         }
         input = &file;
@@ -118,7 +118,7 @@ void StatesManager::calc_cart_hash()
     }
     catch (std::exception &e)
     {
-        LOG(LOG_ERROR) << "StatesManager - calc_cart_hash " << e.what();
+        LOG(LOGLEVEL_ERROR) << "StatesManager - calc_cart_hash " << e.what();
         return;
     }
 }
@@ -127,7 +127,7 @@ std::string StatesManager::states_directory_string()
 {
     if (_cart_hash.empty())
     {
-        LOG(LOG_ERROR) << "StatesManager - states_directory_string, no cart hash";
+        LOG(LOGLEVEL_ERROR) << "StatesManager - states_directory_string, no cart hash";
         return {};
     }
 
@@ -141,7 +141,7 @@ std::filesystem::path StatesManager::states_directory(bool forcecreate)
 
     if (dirname.empty())
     {
-        LOG(LOG_ERROR) << "StatesManager - session_directory, no dirname";
+        LOG(LOGLEVEL_ERROR) << "StatesManager - session_directory, no dirname";
         return {};
     };
 
@@ -151,7 +151,7 @@ std::filesystem::path StatesManager::states_directory(bool forcecreate)
         {
             if (!std::filesystem::create_directories(dirname))
             {
-                LOG(LOG_ERROR) << "StatesManager - session_directory, couldn't create '" << dirname << "'";
+                LOG(LOGLEVEL_ERROR) << "StatesManager - session_directory, couldn't create '" << dirname << "'";
                 return {};
             }
         }
@@ -170,7 +170,7 @@ void StatesManager::update_states_list()
 
     if (dir.empty())
     {
-        LOG(LOG_INFO) << "StatesManager - initialize_states no state directory";
+        LOG(LOGLEVEL_INFO) << "StatesManager - initialize_states no state directory";
         return;
     }
 

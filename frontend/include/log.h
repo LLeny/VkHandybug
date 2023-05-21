@@ -8,7 +8,7 @@
 class LOG
 {
   public:
-    LOG(typelog type)
+    LOG(LOGLEVEL_ type)
         : _console_logger(type)
     {
     }

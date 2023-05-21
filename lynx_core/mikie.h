@@ -52,17 +52,16 @@
 #include "memoryaccess.h"
 
 // #include <crtdbg.h>
-// #define	TRACE_MIKIE
+#define	TRACE_MIKIE
 
 #ifdef TRACE_MIKIE
 
 #include "log.h"
-#include <fmt/core.h>
 
-#define TRACE_MIKIE0(msg)
-#define TRACE_MIKIE1(msg, arg1)
-#define TRACE_MIKIE2(msg, arg1, arg2)
-#define TRACE_MIKIE3(msg, arg1, arg2, arg3)
+#define TRACE_MIKIE0(msg) LOG(LOGLEVEL_TRACE) << string_sprintf("CMikie::" msg " (Time=%012d)", mSystem.mSystemCycleCount)
+#define TRACE_MIKIE1(msg, arg1) LOG(LOGLEVEL_TRACE) << string_sprintf("CMikie::" msg " (Time=%012d)\n", arg1, mSystem.mSystemCycleCount)
+#define TRACE_MIKIE2(msg, arg1, arg2) LOG(LOGLEVEL_TRACE) << string_sprintf("CMikie::" msg " (Time=%012d)\n", arg1, arg2, mSystem.mSystemCycleCount)
+#define TRACE_MIKIE3(msg, arg1, arg2, arg3) LOG(LOGLEVEL_TRACE) << string_sprintf("CMikie::" msg " (Time=%012d)\n", arg1, arg2, arg3, mSystem.mSystemCycleCount)
 
 #else
 

@@ -25,7 +25,7 @@ void Config::load(App *app)
     }
     catch (std::exception &e)
     {
-        LOG(LOG_ERROR) << "Config - Couldn't load config file " << filename;
+        LOG(LOGLEVEL_ERROR) << "Config - Couldn't load config file " << filename;
     }
 
     initialize();
@@ -36,6 +36,7 @@ void Config::load(App *app)
 
     app->gui()->_comlynx_visible = _store.comlynx_visisble;
     app->gui()->_console_visible = _store.console_visible;
+    Console::get_instance().set_log_level(_store.log_level);
 }
 
 void Config::save_recents(App *app)
@@ -78,6 +79,7 @@ void Config::save(App *app)
 
     _store.comlynx_visisble = app->gui()->_comlynx_visible;
     _store.console_visible = app->gui()->_console_visible;
+    _store.log_level = Console::get_instance().get_log_level();
 
     std::string filename = config_file().generic_string();
 
@@ -90,7 +92,7 @@ void Config::save(App *app)
     }
     catch (std::exception &e)
     {
-        LOG(LOG_ERROR) << "Config - Couldn't save config file " << filename;
+        LOG(LOGLEVEL_ERROR) << "Config - Couldn't save config file " << filename;
     }
 }
 
@@ -186,7 +188,7 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
 
     if (found == _store.sessions.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find session '" << session->id() << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find session '" << session->id() << "'";
         return;
     }
 
@@ -245,7 +247,7 @@ void Config::save_memory_editor(std::string sessionid, MemEditor *editor)
 
     if (found == _store.sessions.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find session '" << sessionid << "'";
         return;
     }
 
@@ -290,7 +292,7 @@ void Config::delete_memory_editor(std::string sessionid, MemEditor *editor)
 
     if (found == _store.sessions.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find session '" << sessionid << "'";
         return;
     }
 
@@ -305,7 +307,7 @@ void Config::load_memory_editor(std::string sessionid, MemEditor *editor)
 
     if (found == _store.sessions.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find session '" << sessionid << "'";
         return;
     }
 
@@ -315,7 +317,7 @@ void Config::load_memory_editor(std::string sessionid, MemEditor *editor)
 
     if (memconfig == found->mem_editors.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find mem editor '" << editorid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find mem editor '" << editorid << "'";
         return;
     }
 
@@ -337,7 +339,7 @@ void Config::save_disasm_editor(std::string sessionid, DisasmEditor *editor)
 
     if (found == _store.sessions.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find session '" << sessionid << "'";
         return;
     }
 
@@ -368,7 +370,7 @@ void Config::delete_disasm_editor(std::string sessionid, DisasmEditor *editor)
 
     if (found == _store.sessions.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find session '" << sessionid << "'";
         return;
     }
 
@@ -383,7 +385,7 @@ void Config::load_disasm_editor(std::string sessionid, DisasmEditor *editor)
 
     if (found == _store.sessions.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find session '" << sessionid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find session '" << sessionid << "'";
         return;
     }
 
@@ -393,7 +395,7 @@ void Config::load_disasm_editor(std::string sessionid, DisasmEditor *editor)
 
     if (disasmconfig == found->disasm_editors.end())
     {
-        LOG(LOG_INFO) << "Config - Couldn't find disasm editor '" << editorid << "'";
+        LOG(LOGLEVEL_INFO) << "Config - Couldn't find disasm editor '" << editorid << "'";
         return;
     }
 
@@ -413,7 +415,7 @@ std::filesystem::path Config::config_file()
     get_user_config_folder(cfgdir, sizeof(cfgdir), APP_NAME);
     if (cfgdir[0] == 0)
     {
-        LOG(LOG_ERROR) << "Config - Unable to find home directory.";
+        LOG(LOGLEVEL_ERROR) << "Config - Unable to find home directory.";
         return std::filesystem::path{};
     }
     return std::filesystem::path(cfgdir) / "config";

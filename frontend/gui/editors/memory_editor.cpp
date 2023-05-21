@@ -138,7 +138,7 @@ void MemEditor::write_changes(uint16_t offset, ImU8 data)
         _session->system()->mEEPROM->Poke(offset, data);
         break;
     default:
-        LOG(LOG_ERROR) << "MemEditor: Can't write to bank: " << (int)_memBank;
+        LOG(LOGLEVEL_ERROR) << "MemEditor: Can't write to bank: " << (int)_memBank;
         break;
     }
 }

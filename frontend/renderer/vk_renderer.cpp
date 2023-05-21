@@ -10,7 +10,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSeverity
 {
     if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
     {
-        LOG(LOG_ERROR) << messageType << ": " << pCallbackData->pMessage;
+        LOG(LOGLEVEL_ERROR) << messageType << ": " << pCallbackData->pMessage;
     }
     else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
     {
@@ -18,7 +18,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSeverity
     }
     else
     {
-        LOG(LOG_INFO) << messageType << ": " << pCallbackData->pMessage;
+        LOG(LOGLEVEL_INFO) << messageType << ": " << pCallbackData->pMessage;
     }
     return VK_FALSE;
 }
@@ -58,7 +58,7 @@ void VulkanRenderer::setup_vulkan(const char **extensions, uint32_t extensions_c
 
     if (!inst_ret)
     {
-        LOG(LOG_ERROR) << "Failed to create Vulkan instance. Error: " << inst_ret.error().message();
+        LOG(LOGLEVEL_ERROR) << "Failed to create Vulkan instance. Error: " << inst_ret.error().message();
         exit(1);
     }
 
@@ -73,7 +73,7 @@ void VulkanRenderer::setup_vulkan(const char **extensions, uint32_t extensions_c
     auto phys_ret = selector.set_minimum_version(1, 0).set_surface(_surface).select();
     if (!phys_ret)
     {
-        LOG(LOG_ERROR) << "Failed to select Vulkan Physical Device. Error: " << phys_ret.error().message();
+        LOG(LOGLEVEL_ERROR) << "Failed to select Vulkan Physical Device. Error: " << phys_ret.error().message();
         exit(1);
     }
     vkb::PhysicalDevice physicalDevice = phys_ret.value();
@@ -82,7 +82,7 @@ void VulkanRenderer::setup_vulkan(const char **extensions, uint32_t extensions_c
     auto device_ret = deviceBuilder.build();
     if (!device_ret)
     {
-        LOG(LOG_ERROR) << "Failed to create Vulkan device. Error: " << device_ret.error().message() << "\n";
+        LOG(LOGLEVEL_ERROR) << "Failed to create Vulkan device. Error: " << device_ret.error().message() << "\n";
         exit(1);
     }
     _vkbDevice = device_ret.value();
@@ -93,12 +93,12 @@ void VulkanRenderer::setup_vulkan(const char **extensions, uint32_t extensions_c
     VkPhysicalDeviceProperties props{};
     vkGetPhysicalDeviceProperties(_physicalDevice, &props);
 
-    LOG(LOG_INFO) << "Will be using Vulkan device: " << props.deviceName;
+    LOG(LOGLEVEL_INFO) << "Will be using Vulkan device: " << props.deviceName;
 
     auto qr = _vkbDevice.get_queue(vkb::QueueType::graphics);
     if (!qr)
     {
-        LOG(LOG_ERROR) << "Failed to get graphics queue. Error: " << qr.error().message() << "\n";
+        LOG(LOGLEVEL_ERROR) << "Failed to get graphics queue. Error: " << qr.error().message() << "\n";
         exit(1);
     }
     _queue = qr.value();
@@ -107,7 +107,7 @@ void VulkanRenderer::setup_vulkan(const char **extensions, uint32_t extensions_c
     auto qrc = _vkbDevice.get_queue(vkb::QueueType::compute);
     if (!qrc)
     {
-        LOG(LOG_DEBUG) << "Failed to get compute queue. Error: " << qrc.error().message() << "\n";
+        LOG(LOGLEVEL_DEBUG) << "Failed to get compute queue. Error: " << qrc.error().message() << "\n";
         _compute.queue = _queue;
         _compute.queueFamily = _queueFamily;
     }
@@ -157,7 +157,7 @@ void VulkanRenderer::setup_vulkan_window(ImGui_ImplVulkanH_Window *wd, VkSurface
     vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, _queueFamily, wd->Surface, &res);
     if (res != VK_TRUE)
     {
-        LOG(LOG_ERROR) << "Error no WSI support on physical device 0";
+        LOG(LOGLEVEL_ERROR) << "Error no WSI support on physical device 0";
         exit(-1);
     }
 
@@ -299,7 +299,7 @@ void VulkanRenderer::set_position(ImVec2 pos)
 
 void VulkanRenderer::initialize()
 {
-    glfwSetErrorCallback([](int error, const char *description) { LOG(LOG_ERROR) << "GLFW Error " << error << ": " << description; });
+    glfwSetErrorCallback([](int error, const char *description) { LOG(LOGLEVEL_ERROR) << "GLFW Error " << error << ": " << description; });
 
     if (!glfwInit())
     {
@@ -310,7 +310,7 @@ void VulkanRenderer::initialize()
     _mainWindow = glfwCreateWindow(1280, 720, "VulkanRenderer", NULL, NULL);
     if (!glfwVulkanSupported())
     {
-        LOG(LOG_ERROR) << "GLFW: Vulkan Not Supported";
+        LOG(LOGLEVEL_ERROR) << "GLFW: Vulkan Not Supported";
         return;
     }
 
@@ -343,7 +343,7 @@ void VulkanRenderer::initialize()
             return;
         }
 
-        // LOG(LOG_DEBUG) << "Renderer - key: " << key << " scancode: " << scancode << " action: " << action << " mods: " << mods;
+        // LOG(LOGLEVEL_DEBUG) << "Renderer - key: " << key << " scancode: " << scancode << " action: " << action << " mods: " << mods;
 
         switch (action)
         {
@@ -464,7 +464,7 @@ VkPipelineShaderStageCreateInfo VulkanRenderer::load_shader(std::string fileName
 
     if (!is.is_open())
     {
-        LOG(LOG_ERROR) << "Error: Could not open shader file \"" << fileName << "\"";
+        LOG(LOGLEVEL_ERROR) << "Error: Could not open shader file \"" << fileName << "\"";
         abort();
     }
 
@@ -811,7 +811,7 @@ void VulkanRenderer::render_screen_view(int id, uint8_t *screen_buff, uint8_t *p
 
     if (found == _views.end())
     {
-        LOG(LOG_ERROR) << "VkTextureView " << id << " not found.";
+        LOG(LOGLEVEL_ERROR) << "VkTextureView " << id << " not found.";
         return;
     }
 

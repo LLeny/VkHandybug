@@ -24,7 +24,7 @@ bool Symbols::load_symbols(std::filesystem::path symbol_file)
 {
     if (!std::filesystem::exists(symbol_file))
     {
-        LOG(LOG_ERROR) << "Symbols - could not find '" << symbol_file.generic_string() << "'";
+        LOG(LOGLEVEL_ERROR) << "Symbols - could not find '" << symbol_file.generic_string() << "'";
         return false;
     }
 

@@ -4,7 +4,7 @@
 Console::Console()
 {
     _lua_state.set_exception_handler([](lua_State *L, sol::optional<const std::exception &> E, std::string_view S) {
-        Console::get_instance().add_log(LOG_ERROR, fmt::format("Lua: {}", S));
+        Console::get_instance().add_log(LOGLEVEL_ERROR, fmt::format("Lua: {}", S));
         return sol::stack::push(L, S);
     });
 
@@ -13,7 +13,7 @@ Console::Console()
     _commands.push_back({"help", "Display the help."});
     _commands.push_back({"log 'some text'", "Print to the console."});
 
-    _lua_state.set_function("log", [&](std::string msg) { add_log(LOG_INFO, msg); });
+    _lua_state.set_function("log", [&](std::string msg) { add_log(LOGLEVEL_INFO, msg); });
     _lua_state.set_function("clear", [&]() { cmd_clear_log(); });
     _lua_state.set_function("help", [&]() { cmd_help(); });
     _lua_state.set_function("history", [&]() { cmd_history(); });
@@ -59,6 +59,19 @@ bool Console::render()
         ImGui::OpenPopup("Options");
     }
     ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    if (ImGui::BeginCombo("##consolelevel", _level_labels[_log_level], ImGuiComboFlags_HeightLargest))
+    {
+        for (int n = 0; n < LOGLEVEL_ITEMCOUNT; n++)
+        {
+            if (ImGui::Selectable(_level_labels[n], _log_level == n))
+            {
+                set_log_level((LOGLEVEL_)n);
+            }
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::SameLine();
     _filter.Draw("Filter (\"incl,-excl\") (\"error\")", 180);
     ImGui::Separator();
 
@@ -76,35 +89,38 @@ bool Console::render()
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
 
-        for (auto &item : _items)
         {
-            auto msg = get_level_label(item.level) + item.message;
+            std::unique_lock<std::mutex> lock{_mutex};
+            for (auto &item : _items)
+            {
+                auto msg = _level_prefixes[item.level] + item.message;
 
-            if (!_filter.PassFilter(msg.c_str()))
-            {
-                continue;
-            }
+                if (!_filter.PassFilter(msg.c_str()))
+                {
+                    continue;
+                }
 
-            ImVec4 color;
-            bool has_color = false;
-            if (item.level == LOG_ERROR)
-            {
-                color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
-                has_color = true;
-            }
-            else if (item.level == LOG_CMD)
-            {
-                color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f);
-                has_color = true;
-            }
-            if (has_color)
-            {
-                ImGui::PushStyleColor(ImGuiCol_Text, color);
-            }
-            ImGui::TextUnformatted(msg.c_str());
-            if (has_color)
-            {
-                ImGui::PopStyleColor();
+                ImVec4 color;
+                bool has_color = false;
+                if (item.level == LOGLEVEL_ERROR)
+                {
+                    color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                    has_color = true;
+                }
+                else if (item.level == LOGLEVEL_CMD)
+                {
+                    color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f);
+                    has_color = true;
+                }
+                if (has_color)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, color);
+                }
+                ImGui::TextUnformatted(msg.c_str());
+                if (has_color)
+                {
+                    ImGui::PopStyleColor();
+                }
             }
         }
 
@@ -144,23 +160,29 @@ bool Console::render()
     return open;
 }
 
-void Console::add_log(typelog type, std::string msg)
+void Console::add_log(LOGLEVEL_ type, std::string msg)
 {
+    std::unique_lock<std::mutex> lock{_mutex};
+    if (_items.size() >= MAX_ITEMS)
+    {
+        _items.pop_front();
+    }
     _items.push_back(ConsoleItem{type, msg});
 }
 
 void Console::cmd_clear_log()
 {
+    std::unique_lock<std::mutex> lock{_mutex};
     _items.clear();
 }
 
 void Console::cmd_help()
 {
-    add_log(LOG_INFO, "Commands:");
+    add_log(LOGLEVEL_INFO, "Commands:");
     for (auto &hlpcmd : _commands)
     {
         const auto [c, h] = hlpcmd;
-        add_log(LOG_INFO, fmt::format("  {}: {}", c, h));
+        add_log(LOGLEVEL_INFO, fmt::format("  {}: {}", c, h));
     }
 };
 
@@ -169,7 +191,7 @@ void Console::cmd_history()
     int first = _history.size() - 10;
     for (int i = first > 0 ? first : 0; i < _history.size(); i++)
     {
-        add_log(LOG_INFO, fmt::format("  {}: {}", i, _history[i]));
+        add_log(LOGLEVEL_INFO, fmt::format("  {}: {}", i, _history[i]));
     }
 };
 
@@ -178,7 +200,7 @@ void Console::exec_command(std::string command)
     auto cmd = command;
     trim(cmd);
 
-    add_log(LOG_CMD, cmd);
+    add_log(LOGLEVEL_CMD, cmd);
 
     _historyPos = -1;
     for (int i = _history.size() - 1; i >= 0; i--)
@@ -202,7 +224,7 @@ void Console::exec_command(std::string command)
     }
     catch (const sol::error &e)
     {
-        add_log(LOG_ERROR, e.what());
+        add_log(LOGLEVEL_ERROR, e.what());
         return;
     }
 
@@ -241,7 +263,7 @@ int Console::textedit_callback(ImGuiInputTextCallbackData *data)
         if (candidates.empty())
         {
             auto inp = std::string(word_start, (int)(word_end - word_start));
-            add_log(LOG_WARN, fmt::format("No match for '{}'!", inp));
+            add_log(LOGLEVEL_WARN, fmt::format("No match for '{}'!", inp));
         }
         else if (candidates.size() == 1)
         {
@@ -278,10 +300,10 @@ int Console::textedit_callback(ImGuiInputTextCallbackData *data)
                 data->InsertChars(data->CursorPos, candidates[0].c_str(), candidates[0].c_str() + match_len);
             }
 
-            add_log(LOG_INFO, "Possible matches:\n");
+            add_log(LOGLEVEL_INFO, "Possible matches:\n");
             for (auto &c : candidates)
             {
-                add_log(LOG_INFO, fmt::format("  {}", c));
+                add_log(LOGLEVEL_INFO, fmt::format("  {}", c));
             }
         }
 
@@ -320,10 +342,4 @@ int Console::textedit_callback(ImGuiInputTextCallbackData *data)
     }
     }
     return 0;
-}
-
-std::string Console::get_level_label(typelog level)
-{
-    const std::string lvls[] = {"[DBG] ", "[INF] ", "[WRN] ", "[ERR] ", "[CMD] "};
-    return lvls[level];
 }

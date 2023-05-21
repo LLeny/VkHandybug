@@ -14,6 +14,8 @@
 #include <utility>
 #include <functional>
 #include <unordered_map>
+#include <queue>
+#include <deque>
 #include <chrono>
 #include <thread>
 #include <exception>
@@ -54,3 +56,16 @@ bool iequals(const std::string& a, const std::string& b);
 void ltrim(std::string &s);
 void rtrim(std::string &s);
 void trim(std::string &s);
+
+template <typename... Args>
+std::string string_sprintf(const char *format, Args... args)
+{
+    int length = std::snprintf(nullptr, 0, format, args...);
+
+    char *buf = new char[length + 1];
+    std::snprintf(buf, length + 1, format, args...);
+
+    std::string str(buf);
+    delete[] buf;
+    return str;
+}

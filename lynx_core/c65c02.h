@@ -50,15 +50,14 @@
 #define C65C02_H
 
 // #include <crtdbg.h>
-// #define	TRACE_CPU
+#define	TRACE_CPU
 
 #ifdef TRACE_CPU
 
-#define TRACE_CPU0(msg) _RPT1(_CRT_WARN, "C65C02::" msg " (Time=%012d)\n", mSystem.mSystemCycleCount)
-#define TRACE_CPU1(msg, arg1) _RPT2(_CRT_WARN, "C65C02::" msg " (Time=%012d)\n", arg1, mSystem.mSystemCycleCount)
-#define TRACE_CPU2(msg, arg1, arg2) _RPT3(_CRT_WARN, "C65C02::" msg " (Time=%012d)\n", arg1, arg2, mSystem.mSystemCycleCount)
-#define TRACE_CPU3(msg, arg1, arg2, arg3) \
-    _RPT4(_CRT_WARN, "C65C02::" msg " (Time=%012d)\n", arg1, arg2, arg3, mSystem.mSystemCycleCount)
+#define TRACE_CPU0(msg) LOG(LOGLEVEL_TRACE) << string_sprintf("C65C02::" msg " (Time=%012d)", mSystem.mSystemCycleCount)
+#define TRACE_CPU1(msg, arg1) LOG(LOGLEVEL_TRACE) << string_sprintf("C65C02::" msg " (Time=%012d)\n", arg1, mSystem.mSystemCycleCount)
+#define TRACE_CPU2(msg, arg1, arg2) LOG(LOGLEVEL_TRACE) << string_sprintf("C65C02::" msg " (Time=%012d)\n", arg1, arg2, mSystem.mSystemCycleCount)
+#define TRACE_CPU3(msg, arg1, arg2, arg3) LOG(LOGLEVEL_TRACE) << string_sprintf("C65C02::" msg " (Time=%012d)\n", arg1, arg2, arg3, mSystem.mSystemCycleCount)
 
 #else
 
@@ -1778,7 +1777,7 @@ class C65C02
     {
         char addr[1024];
         snprintf(addr, 1024, "C65C02::Update() - Illegal opcode (%02x) at PC=$%04x.", mOpcode, mPC);
-        LOG(LOG_ERROR) << std::string(addr);
+        LOG(LOGLEVEL_ERROR) << std::string(addr);
 
         CLynxException lynxerr;
         lynxerr.Message() << addr;

@@ -30,7 +30,7 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
     }
     catch (CLynxException &err)
     {
-        LOG(LOG_ERROR) << "Session - initialize() " << err.mMsg << ": " << err.mDesc;
+        LOG(LOGLEVEL_ERROR) << "Session - initialize() " << err.mMsg << ": " << err.mDesc;
         return false;
     }
 
@@ -252,7 +252,7 @@ bool Session::check_for_breakpoints()
     {
         if (found->script.empty())
         {
-            LOG(LOG_INFO) << "Session '" << identifier() << fmt::format("' breakpoint reached. PC = 0x{:04X}", regs.PC);
+            LOG(LOGLEVEL_INFO) << "Session '" << identifier() << fmt::format("' breakpoint reached. PC = 0x{:04X}", regs.PC);
             set_status(SessionStatus_Break);
             return true;
         }
@@ -261,7 +261,7 @@ bool Session::check_for_breakpoints()
             auto id = found->identifier();
             if (_scripting.evaluate_breakpoint(id))
             {
-                LOG(LOG_INFO) << "Session '" << identifier() << "' breakpoint reached. Condition = " << found->script;
+                LOG(LOGLEVEL_INFO) << "Session '" << identifier() << "' breakpoint reached. Condition = " << found->script;
                 set_status(SessionStatus_Break);
                 return true;
             }
@@ -326,7 +326,7 @@ ULONG Session::execute()
     {
         if (ex.Error() == LynxErrors_Illegal_Opcode && Config::getInstance().store().break_on_illegal_opcode)
         {
-            LOG(LOG_INFO) << "Session '" << identifier() << "' illegal opcode break.";
+            LOG(LOGLEVEL_INFO) << "Session '" << identifier() << "' " << ex.Message().str();
             set_status(SessionStatus_Break);
         }
     }

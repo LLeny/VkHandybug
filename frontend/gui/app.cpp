@@ -55,7 +55,7 @@ void App::close()
 
 void App::close_session(std::string session_identifier)
 {
-    LOG(LOG_DEBUG) << "App - close_session " << session_identifier;
+    LOG(LOGLEVEL_DEBUG) << "App - close_session " << session_identifier;
 
     auto found = std::find_if(_sessions.begin(), _sessions.end(), [session_identifier](const std::shared_ptr<Session> &s) { return s->identifier() == session_identifier; });
 
@@ -93,7 +93,7 @@ void App::initialize()
 
     if (!sound_initialize())
     {
-        LOG(LOG_ERROR) << "Could not initialize sound.";
+        LOG(LOGLEVEL_ERROR) << "Could not initialize sound.";
     }
 
     _renderer->register_key_event_callback([&](int glfw_key, int mods, bool glfw_action) {
@@ -156,11 +156,11 @@ void App::open_file(std::string file)
 {
     std::filesystem::path path(file);
 
-    LOG(LOG_INFO) << "App - opening '" << path.generic_string() << "'";
+    LOG(LOGLEVEL_INFO) << "App - opening '" << path.generic_string() << "'";
 
     if (!std::filesystem::exists(path))
     {
-        LOG(LOG_INFO) << "App - '" << path.generic_string() << "' doesn't exist...";
+        LOG(LOGLEVEL_INFO) << "App - '" << path.generic_string() << "' doesn't exist...";
         return;
     }
 
@@ -224,11 +224,11 @@ void App::new_session(std::filesystem::path file)
 
     if (!session->initialize(_renderer))
     {
-        LOG(LOG_ERROR) << "App - couldn't initialize session '" << file.generic_string() << "'";
+        LOG(LOGLEVEL_ERROR) << "App - couldn't initialize session '" << file.generic_string() << "'";
         return;
     }
 
-    LOG(LOG_INFO) << "App - session initialized '" << file.generic_string() << "'";
+    LOG(LOGLEVEL_INFO) << "App - session initialized '" << file.generic_string() << "'";
 
     session->register_main_screen();
 

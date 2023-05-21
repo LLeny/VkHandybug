@@ -25,7 +25,7 @@
         VkResult err = x;                                            \
         if (err)                                                     \
         {                                                            \
-            LOG(LOG_ERROR) << "Detected Vulkan error: " << (int)err; \
+            LOG(LOGLEVEL_ERROR) << "Detected Vulkan error: " << (int)err; \
             abort();                                                 \
         }                                                            \
     } while (0)
