@@ -50,7 +50,7 @@
 #define C65C02_H
 
 // #include <crtdbg.h>
-#define	TRACE_CPU
+#define TRACE_CPU
 
 #ifdef TRACE_CPU
 
@@ -88,7 +88,7 @@
 
 // #define CPU_PEEK(m) (((m < 0xfc00) ? mRamPointer[m] : mSystem.Peek_CPU(m)))
 // #define CPU_PEEKW(m) (((m < 0xfc00) ? (mRamPointer[m] + (mRamPointer[m + 1] << 8)) : mSystem.PeekW_CPU(m)))
-// #define CPU_POKE(m1, m2)              \
+ // #define CPU_POKE(m1, m2)              \
     {                                 \
         if (m1 < 0xfc00)              \
             mRamPointer[m1] = m2;     \
@@ -328,11 +328,12 @@ class C65C02
         case 0x02:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
             mPC++;
+            assertLynx2();
             break;
         case 0x03:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x04:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
@@ -352,7 +353,7 @@ class C65C02
         case 0x07:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x08:
@@ -373,7 +374,7 @@ class C65C02
         case 0x0B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x0C:
             mSystem.mSystemCycleCount += (1 + (5 * CPU_RDWR_CYC));
@@ -392,6 +393,7 @@ class C65C02
             break;
         case 0x0F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBR(0);
             break;
@@ -417,7 +419,7 @@ class C65C02
         case 0x13:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x14:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
@@ -437,7 +439,7 @@ class C65C02
         case 0x17:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x18:
@@ -458,7 +460,7 @@ class C65C02
         case 0x1B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x1C:
             mSystem.mSystemCycleCount += (1 + (5 * CPU_RDWR_CYC));
@@ -477,6 +479,7 @@ class C65C02
             break;
         case 0x1F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBR(1);
             break;
@@ -497,11 +500,12 @@ class C65C02
         case 0x22:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
             mPC++;
+            assertLynx2();
             break;
         case 0x23:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x24:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -521,7 +525,7 @@ class C65C02
         case 0x27:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x28:
@@ -542,7 +546,7 @@ class C65C02
         case 0x2B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x2C:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -561,6 +565,7 @@ class C65C02
             break;
         case 0x2F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBR(2);
             break;
@@ -586,7 +591,7 @@ class C65C02
         case 0x33:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x34:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -606,7 +611,7 @@ class C65C02
         case 0x37:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x38:
@@ -627,7 +632,7 @@ class C65C02
         case 0x3B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x3C:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -646,6 +651,7 @@ class C65C02
             break;
         case 0x3F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBR(3);
             break;
@@ -684,11 +690,12 @@ class C65C02
         case 0x42:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
             mPC++;
+            assertLynx2();
             break;
         case 0x43:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x44:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -707,7 +714,7 @@ class C65C02
         case 0x47:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x48:
@@ -728,7 +735,7 @@ class C65C02
         case 0x4B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x4C:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -747,6 +754,7 @@ class C65C02
             break;
         case 0x4F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBR(4);
             break;
@@ -772,7 +780,7 @@ class C65C02
         case 0x53:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x54:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -790,7 +798,7 @@ class C65C02
         case 0x57:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x58:
@@ -811,7 +819,7 @@ class C65C02
         case 0x5B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x5C:
             mSystem.mSystemCycleCount += (1 + (7 * CPU_RDWR_CYC));
@@ -829,6 +837,7 @@ class C65C02
             break;
         case 0x5F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBR(5);
             break;
@@ -849,11 +858,12 @@ class C65C02
         case 0x62:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
             mPC++;
+            assertLynx2();
             break;
         case 0x63:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x64:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -873,7 +883,7 @@ class C65C02
         case 0x67:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x68:
@@ -894,7 +904,7 @@ class C65C02
         case 0x6B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x6C:
             mSystem.mSystemCycleCount += (1 + (5 * CPU_RDWR_CYC));
@@ -913,6 +923,7 @@ class C65C02
             break;
         case 0x6F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBR(6);
             break;
@@ -938,7 +949,7 @@ class C65C02
         case 0x73:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x74:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -958,7 +969,7 @@ class C65C02
         case 0x77:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x78:
@@ -979,7 +990,7 @@ class C65C02
         case 0x7B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x7C:
             mSystem.mSystemCycleCount += (1 + (5 * CPU_RDWR_CYC));
@@ -1018,11 +1029,12 @@ class C65C02
         case 0x82:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
             mPC++;
+            assertLynx2();
             break;
         case 0x83:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x84:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -1042,7 +1054,7 @@ class C65C02
         case 0x87:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x88:
@@ -1063,7 +1075,7 @@ class C65C02
         case 0x8B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x8C:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1082,6 +1094,7 @@ class C65C02
             break;
         case 0x8F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(0);
             break;
@@ -1107,7 +1120,7 @@ class C65C02
         case 0x93:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x94:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1127,7 +1140,7 @@ class C65C02
         case 0x97:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0x98:
@@ -1148,7 +1161,7 @@ class C65C02
         case 0x9B:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0x9C:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1167,6 +1180,7 @@ class C65C02
             break;
         case 0x9F:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(1);
             break;
@@ -1192,7 +1206,7 @@ class C65C02
         case 0xA3:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xA4:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -1212,7 +1226,7 @@ class C65C02
         case 0xA7:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0xA8:
@@ -1233,7 +1247,7 @@ class C65C02
         case 0xAB:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xAC:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1252,6 +1266,7 @@ class C65C02
             break;
         case 0xAF:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(2);
             break;
@@ -1277,7 +1292,7 @@ class C65C02
         case 0xB3:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xB4:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1297,7 +1312,7 @@ class C65C02
         case 0xB7:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0xB8:
@@ -1318,7 +1333,7 @@ class C65C02
         case 0xBB:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xBC:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1337,6 +1352,7 @@ class C65C02
             break;
         case 0xBF:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(3);
             break;
@@ -1357,11 +1373,12 @@ class C65C02
         case 0xC2:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
             mPC++;
+            assertLynx2();
             break;
         case 0xC3:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xC4:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -1381,7 +1398,7 @@ class C65C02
         case 0xC7:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0xC8:
@@ -1421,6 +1438,7 @@ class C65C02
             break;
         case 0xCF:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(4);
             break;
@@ -1446,7 +1464,7 @@ class C65C02
         case 0xD3:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xD4:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1465,7 +1483,7 @@ class C65C02
         case 0xD7:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0xD8:
@@ -1505,6 +1523,7 @@ class C65C02
             break;
         case 0xDF:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(5);
             break;
@@ -1525,11 +1544,12 @@ class C65C02
         case 0xE2:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
             mPC++;
+            assertLynx2();
             break;
         case 0xE3:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xE4:
             mSystem.mSystemCycleCount += (1 + (2 * CPU_RDWR_CYC));
@@ -1549,7 +1569,7 @@ class C65C02
         case 0xE7:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0xE8:
@@ -1570,7 +1590,7 @@ class C65C02
         case 0xEB:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xEC:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1589,6 +1609,7 @@ class C65C02
             break;
         case 0xEF:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(6);
             break;
@@ -1614,7 +1635,7 @@ class C65C02
         case 0xF3:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xF4:
             mSystem.mSystemCycleCount += (1 + (3 * CPU_RDWR_CYC));
@@ -1633,7 +1654,7 @@ class C65C02
         case 0xF7:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
 
         case 0xF8:
@@ -1654,7 +1675,7 @@ class C65C02
         case 0xFB:
             mSystem.mSystemCycleCount += (1 + (1 * CPU_RDWR_CYC));
             // *** ILLEGAL ***
-            xILLEGAL();
+            xUndocumented();
             break;
         case 0xFC:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
@@ -1673,6 +1694,7 @@ class C65C02
             break;
         case 0xFF:
             mSystem.mSystemCycleCount += (1 + (4 * CPU_RDWR_CYC));
+            assertLynx2();
             xZEROPAGE();
             xBBS(7);
             break;
@@ -1773,16 +1795,31 @@ class C65C02
         return mPC;
     }
 
-    inline void xILLEGAL(void)
+    inline void xUndocumented(void)
     {
-        char addr[1024];
-        snprintf(addr, 1024, "C65C02::Update() - Illegal opcode (%02x) at PC=$%04x.", mOpcode, mPC);
+        char addr[256];
+        snprintf(addr, 256, "C65C02::Update() - Undocumented opcode (%02x) at PC=$%04x.", mOpcode, mPC);
         LOG(LOGLEVEL_ERROR) << std::string(addr);
 
         CLynxException lynxerr;
         lynxerr.Message() << addr;
-        lynxerr.Error() = LynxErrors_Illegal_Opcode;
+        lynxerr.Error() = LynxErrors_Undocumented_Opcode;
         throw(lynxerr);
+    }
+
+    inline void assertLynx2(void)
+    {
+        if (mSystem.GetLynxVersion() < LynxVersion_2)
+        {
+            char addr[256];
+            snprintf(addr, 256, "C65C02::Update() - Illegal opcode (%02x) at PC=$%04x.", mOpcode, mPC);
+            LOG(LOGLEVEL_ERROR) << std::string(addr);
+
+            CLynxException lynxerr;
+            lynxerr.Message() << addr;
+            lynxerr.Error() = LynxErrors_Illegal_Opcode;
+            throw(lynxerr);
+        }
     }
 
   private:

@@ -394,7 +394,7 @@ void VulkanRenderer::initialize()
     init_info.Allocator = _allocationCallbacks;
     ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
 
-    Config::getInstance().apply_font();
+    Config::get_instance().apply_font();
 
     VkCommandPool command_pool = wd->Frames[wd->FrameIndex].CommandPool;
     VkCommandBuffer command_buffer = wd->Frames[wd->FrameIndex].CommandBuffer;
@@ -725,7 +725,7 @@ void VulkanRenderer::render_ImGui(std::shared_ptr<GUI> ui)
 
     if (ui->menu().settings().update_pending())
     {
-        Config::getInstance().initialize();
+        Config::get_instance().initialize();
         ui->menu().settings().set_update_pending(false);
     }
 

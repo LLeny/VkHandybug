@@ -16,13 +16,13 @@ DisasmEditor::DisasmEditor(int id)
 
 DisasmEditor::~DisasmEditor()
 {
-    Config::getInstance().delete_disasm_editor(_session->identifier(), this);
+    Config::get_instance().delete_disasm_editor(_session->identifier(), this);
 }
 
 void DisasmEditor::set_session(std::shared_ptr<Session> session)
 {
     _session = session;
-    Config::getInstance().load_disasm_editor(_session->identifier(), this);
+    Config::get_instance().load_disasm_editor(_session->identifier(), this);
 }
 
 int DisasmEditor::id()

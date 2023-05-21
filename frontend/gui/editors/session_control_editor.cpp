@@ -101,6 +101,20 @@ void SessionControlEditor::render()
 
         ImGui::EndTable();
     }
+
+    ImGui::Text("Version");
+    ImGui::SameLine();
+
+    int version = _session->get_lynx_version();
+    if (ImGui::RadioButton("Lynx I", version == LynxVersion_1))
+    {
+        _session->set_lynx_version(LynxVersion_1);
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Lynx II", version == LynxVersion_2))
+    {
+        _session->set_lynx_version(LynxVersion_2);
+    }
 }
 
 bool SessionControlEditor::create_button(std::string text, ImVec2 size, std::string tooltip)

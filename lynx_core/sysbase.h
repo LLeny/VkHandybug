@@ -70,6 +70,15 @@ class CSystemBase
 
     virtual UBYTE *GetRamPointer(void) = 0;
 
+    void SetLynxVersion(LynxVersion_ vers)
+    {
+        mLynxVersion = vers;
+    }
+    LynxVersion_ GetLynxVersion()
+    {
+        return mLynxVersion;
+    }
+
 #ifdef _LYNXDBG
     virtual void DebugTrace(int address) = 0;
 #endif
@@ -96,6 +105,7 @@ class CSystemBase
     UBYTE mAudioBuffer[HANDY_AUDIO_BUFFER_SIZE];
     ULONG mAudioBufferPointer;
     ULONG mAudioLastUpdateCycle;
+    LynxVersion_ mLynxVersion;
 };
 
 #endif

@@ -424,6 +424,7 @@ class CSystem : public CSystemBase
     {
         return mRam->GetRamPointer();
     };
+
 #ifdef _LYNXDBG
     void DebugTrace(int address);
 

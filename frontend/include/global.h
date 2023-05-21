@@ -9,8 +9,9 @@
 #include <stack>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
-#include <string>
+#include <iostream> 
+#include <string> 
+#include <sstream> 
 #include <utility>
 #include <functional>
 #include <unordered_map>
@@ -50,6 +51,14 @@ enum LynxMemBank
     LynxMemBank_CART = 5,
     LynxMemBank_EEPROM = 6,
     LynxMemBank_MAX = 7
+};
+
+enum LynxVersion_
+{
+    LynxVersion_Unknown = 0,
+    LynxVersion_1 = 1,
+    LynxVersion_2 = 2,
+    LynxVersion_Max = 3
 };
 
 bool iequals(const std::string& a, const std::string& b);

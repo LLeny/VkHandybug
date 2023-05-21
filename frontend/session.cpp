@@ -22,7 +22,8 @@ Session::~Session()
 bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
 {
     _renderer = renderer;
-    _rom_file = Config::getInstance().store().lynx_rom_file;
+    _rom_file = Config::get_instance().store().lynx_rom_file;
+    _lynx_version =Config::get_instance().store().default_lynx_version;
 
     try
     {
@@ -324,9 +325,14 @@ ULONG Session::execute()
     }
     catch (CLynxException &ex)
     {
-        if (ex.Error() == LynxErrors_Illegal_Opcode && Config::getInstance().store().break_on_illegal_opcode)
+        if (ex.Error() == LynxErrors_Undocumented_Opcode && Config::get_instance().store().break_on_undocumented_opcode)
         {
-            LOG(LOGLEVEL_INFO) << "Session '" << identifier() << "' " << ex.Message().str();
+            LOG(LOGLEVEL_INFO) << fmt::format("Session '{}' {}", identifier(), ex.Message().str());
+            set_status(SessionStatus_Break);
+        }
+        else if (ex.Error() == LynxErrors_Illegal_Opcode)
+        {
+            LOG(LOGLEVEL_ERROR) << fmt::format("Session '{}' {}", identifier(), ex.Message().str());
             set_status(SessionStatus_Break);
         }
     }
@@ -431,4 +437,16 @@ void Session::set_breakpoint_script(std::string &id, std::string &script)
 bool Session::evaluate_breakpoint(std::string &scriptid)
 {
     return _scripting.evaluate_breakpoint(scriptid);
+}
+
+void Session::set_lynx_version(LynxVersion_ ver)
+{
+    _lynx_version = ver;
+    _lynx->SetLynxVersion(ver);
+    LOG(LOGLEVEL_INFO) << fmt::format("Session '{}' version set to: {}", identifier(), (int)ver);
+}
+
+LynxVersion_ Session::get_lynx_version()
+{
+    return _lynx_version;
 }

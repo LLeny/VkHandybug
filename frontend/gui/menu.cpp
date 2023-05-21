@@ -83,7 +83,7 @@ void Menu::initialize()
     _settings.initialize(_app);
 
     mainitems.push_back({"", "New Session...", "Ctrl+N", MENUITEM_TYPE_CALLBACK, [&]() {
-                             ImGuiFileDialog::Instance()->OpenDialog("ChooseCartridge", "Cartridge", ".lnx,.o", Config::getInstance().store().last_rom_folder, 1, nullptr, ImGuiFileDialogFlags_Modal);
+                             ImGuiFileDialog::Instance()->OpenDialog("ChooseCartridge", "Cartridge", ".lnx,.o", Config::get_instance().store().last_rom_folder, 1, nullptr, ImGuiFileDialogFlags_Modal);
                          },
                          ImGuiMod_Ctrl | ImGuiKey_N});
     mainitems.push_back({"", "Settings...", "", MENUITEM_TYPE_CALLBACK, [&]() {
@@ -120,7 +120,7 @@ void Menu::render_popups()
     {
         ImGui::OpenPopup(_settings_popup_id);
 
-        ImGui::SetNextWindowSize({400, 150});
+        ImGui::SetNextWindowSize({450, 175});
         if (ImGui::BeginPopupModal(_settings_popup_id))
         {
             if (!_settings.render())
@@ -143,7 +143,7 @@ void Menu::render_popups()
             auto sep = std::wstring(&std::filesystem::path::preferred_separator);
             Config::getInstance().store().last_rom_folder = ImGuiFileDialog::Instance()->GetCurrentPath() + std::string(sep.begin(), sep.end());
 #else
-            Config::getInstance().store().last_rom_folder = ImGuiFileDialog::Instance()->GetCurrentPath() + std::filesystem::path::preferred_separator;
+            Config::get_instance().store().last_rom_folder = ImGuiFileDialog::Instance()->GetCurrentPath() + std::filesystem::path::preferred_separator;
 #endif
             call_fileopen_callback(ImGuiFileDialog::Instance()->GetFilePathName());
         }

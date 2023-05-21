@@ -136,11 +136,15 @@ class Session : public std::enable_shared_from_this<Session>
 
     void set_breakpoint_script(std::string &id, std::string &script);
     bool evaluate_breakpoint(std::string &scriptid);
+    
+    void set_lynx_version(LynxVersion_ version);
+    LynxVersion_ get_lynx_version();
 
   private:
     static int idinc;
     int _id;
     int _main_screen_id;
+    LynxVersion_ _lynx_version;
     uint8_t _palette[32];
     SessionStatus _status = SessionStatus_Break;
     Symbols _symbols{};

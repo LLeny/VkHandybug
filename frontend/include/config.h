@@ -115,6 +115,8 @@ struct SessionConfigStore
     bool muted;
     bool comlynx_connected;
 
+    LynxVersion_ lynx_version;
+
     std::vector<SessionMemEditorConfigStore> mem_editors{};
     std::vector<SessionDisasmEditorConfigStore> disasm_editors{};
     std::vector<BreakpointConfigStore> breakpoints;
@@ -141,6 +143,7 @@ struct SessionConfigStore
         archive(CEREAL_NVP(watches));
         archive(CEREAL_NVP(buttons_mapping));
         archive(CEREAL_NVP(muted));
+        archive(CEREAL_NVP(lynx_version));
         archive(CEREAL_NVP(comlynx_connected));
     }
 };
@@ -151,12 +154,13 @@ struct ConfigStore
     std::string theme = "dark";
     std::string last_rom_folder = ".";
     std::string lynx_rom_file = "./lynxboot.img";
-    bool break_on_illegal_opcode = true;
+    bool break_on_undocumented_opcode = false;
     int main_window_x_pos = 10, main_window_y_pos = 10;
     int main_window_width = 800, main_window_height = 600;
     bool comlynx_visisble = false;
     bool console_visible = false;
     LOGLEVEL_ log_level = LOGLEVEL_WARN;
+    LynxVersion_ default_lynx_version = LynxVersion_2;
     std::vector<std::string> recent_sessions{};
 
     std::vector<SessionConfigStore> sessions{};
@@ -168,7 +172,7 @@ struct ConfigStore
         archive(CEREAL_NVP(theme));
         archive(CEREAL_NVP(last_rom_folder));
         archive(CEREAL_NVP(lynx_rom_file));
-        archive(CEREAL_NVP(break_on_illegal_opcode));
+        archive(CEREAL_NVP(break_on_undocumented_opcode));
         archive(CEREAL_NVP(main_window_x_pos));
         archive(CEREAL_NVP(main_window_y_pos));
         archive(CEREAL_NVP(main_window_width));
@@ -177,6 +181,7 @@ struct ConfigStore
         archive(CEREAL_NVP(console_visible));
         archive(CEREAL_NVP(recent_sessions));
         archive(CEREAL_NVP(log_level));
+        archive(CEREAL_NVP(default_lynx_version));
         archive(CEREAL_NVP(sessions));
     }
 };
@@ -184,7 +189,7 @@ struct ConfigStore
 class Config
 {
   public:
-    static Config &getInstance()
+    static Config &get_instance()
     {
         static Config instance;
         return instance;

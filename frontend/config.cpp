@@ -142,6 +142,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             store.breakpoints = breakpoints;
             store.watches = watches;
             store.buttons_mapping = buttons_mapping;
+            store.lynx_version = session->_session->get_lynx_version();
 
             _store.sessions.push_back(store);
         }
@@ -163,6 +164,7 @@ void Config::save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions)
             found->breakpoints = breakpoints;
             found->watches = watches;
             found->buttons_mapping = buttons_mapping;
+            found->lynx_version = session->_session->get_lynx_version();
         }
 
         for (auto memedit : session->_mem_editors)
@@ -239,6 +241,8 @@ void Config::load_session(std::shared_ptr<SessionGUI> session)
     {
         session->_session->buttons_mapping()[m.first] = (LynxButtons)m.second;
     }
+
+    session->_session->set_lynx_version(found->lynx_version);
 }
 
 void Config::save_memory_editor(std::string sessionid, MemEditor *editor)

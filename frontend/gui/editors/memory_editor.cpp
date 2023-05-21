@@ -22,13 +22,13 @@ MemEditor::MemEditor(int id)
 
 MemEditor::~MemEditor()
 {
-    Config::getInstance().delete_memory_editor(_session->identifier(), this);
+    Config::get_instance().delete_memory_editor(_session->identifier(), this);
 }
 
 void MemEditor::set_session(std::shared_ptr<Session> session)
 {
     _session = session;
-    Config::getInstance().load_memory_editor(_session->identifier(), this);
+    Config::get_instance().load_memory_editor(_session->identifier(), this);
 }
 
 bool MemEditor::enabled()

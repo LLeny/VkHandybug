@@ -44,8 +44,8 @@ void App::close()
 
     sound_stop();
 
-    Config::getInstance().save_sessions(_gui->sessions());
-    Config::getInstance().save(this);
+    Config::get_instance().save_sessions(_gui->sessions());
+    Config::get_instance().save(this);
 
     for (auto session : _sessions)
     {
@@ -89,7 +89,7 @@ void App::initialize()
 
     _renderer->setTitle(APP_NAME " " APP_VERSION);
 
-    Config::getInstance().load(this);
+    Config::get_instance().load(this);
 
     if (!sound_initialize())
     {
@@ -234,7 +234,7 @@ void App::new_session(std::filesystem::path file)
 
     auto sessiongui = _gui->register_session(session);
 
-    Config::getInstance().load_session(sessiongui);
+    Config::get_instance().load_session(sessiongui);
 
     _sessions.push_back(std::move(session));
 }

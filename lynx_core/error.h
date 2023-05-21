@@ -55,7 +55,8 @@
 enum LynxErrors_
 {
   LynxErrors_None = 0,
-  LynxErrors_Illegal_Opcode = 1,
+  LynxErrors_Undocumented_Opcode = 1,
+  LynxErrors_Illegal_Opcode = 2,
   LynxErrors_MAX
 };
 

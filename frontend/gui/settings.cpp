@@ -15,21 +15,23 @@ Settings::~Settings()
 
 bool Settings::render()
 {
+    ImGui::AlignTextToFramePadding();
+
     if (ImGui::BeginTable("#settingstable", 2, ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_SizingStretchProp))
     {
         ImGui::TableNextColumn();
         ImGui::Text("Dark theme");
 
         ImGui::TableNextColumn();
-        bool darktheme = Config::getInstance().store().theme == "dark";
+        bool darktheme = Config::get_instance().store().theme == "dark";
         toggle_button("##darkthemetoggle", &darktheme);
         if (darktheme)
         {
-            Config::getInstance().store().theme = "dark";
+            Config::get_instance().store().theme = "dark";
         }
         else
         {
-            Config::getInstance().store().theme = "light";
+            Config::get_instance().store().theme = "light";
         }
 
         ImGui::TableNextColumn();
@@ -37,22 +39,37 @@ bool Settings::render()
 
         ImGui::TableNextColumn();
         std::string buf(1024, '\0');
-        strcpy(buf.data(), Config::getInstance().store().lynx_rom_file.data());
+        strcpy(buf.data(), Config::get_instance().store().lynx_rom_file.data());
         if (ImGui::InputText("##lynxromfile", buf.data(), buf.length()))
         {
-            Config::getInstance().store().lynx_rom_file = fmt::format("{}", buf);
+            Config::get_instance().store().lynx_rom_file = fmt::format("{}", buf);
         }
         ImGui::SameLine();
         if (ImGui::Button("..."))
         {
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseROM", "ROM", ".img,.rom,.bin", Config::getInstance().store().lynx_rom_file, 1, nullptr, ImGuiFileDialogFlags_Modal);
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseROM", "ROM", ".img,.rom,.bin", Config::get_instance().store().lynx_rom_file, 1, nullptr, ImGuiFileDialogFlags_Modal);
         }
 
         ImGui::TableNextColumn();
-        ImGui::Text("Break on illegal opcode");
+        ImGui::Text("Break on undocumented opcode");
 
         ImGui::TableNextColumn();
-        toggle_button("##breakillegal", &(Config::getInstance().store().break_on_illegal_opcode));
+        toggle_button("##breakundoc", &(Config::get_instance().store().break_on_undocumented_opcode));
+
+        ImGui::TableNextColumn();
+        ImGui::Text("Default Lynx version");
+
+        ImGui::TableNextColumn();
+        int version = Config::get_instance().store().default_lynx_version;
+        if (ImGui::RadioButton("Lynx I", version == LynxVersion_1))
+        {
+            Config::get_instance().store().default_lynx_version = LynxVersion_1;
+        }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Lynx II", version == LynxVersion_2))
+        {
+            Config::get_instance().store().default_lynx_version = LynxVersion_2;
+        }
 
         ImGui::EndTable();
     }
@@ -61,7 +78,7 @@ bool Settings::render()
     {
         if (ImGuiFileDialog::Instance()->IsOk())
         {
-            Config::getInstance().store().lynx_rom_file = ImGuiFileDialog::Instance()->GetFilePathName();
+            Config::get_instance().store().lynx_rom_file = ImGuiFileDialog::Instance()->GetFilePathName();
         }
         ImGuiFileDialog::Instance()->Close();
     }
