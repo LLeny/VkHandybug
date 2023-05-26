@@ -216,10 +216,14 @@ class Config
     void save_disasm_editor(std::string sessionid, DisasmEditor *editor);
     void delete_disasm_editor(std::string sessionid, DisasmEditor *editor);
 
+    char *imgui_ini();
+
   private:
-    Config(){};
+    Config();
 
     std::filesystem::path config_file();
+    std::filesystem::path imgui_ini_file();
+    char _imgui_ini_file[512];
 
     ConfigStore _store{};
 };

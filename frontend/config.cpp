@@ -13,6 +13,12 @@
 #include "breakpoints_editor.h"
 #include "watch_editor.h"
 
+Config::Config()
+{
+    auto imgui_ini_str = imgui_ini_file().generic_string();
+    strncpy(_imgui_ini_file, imgui_ini_str.c_str(), MIN(imgui_ini_str.length(), sizeof(_imgui_ini_file)));
+}
+
 void Config::load(App *app)
 {
     std::string filename = config_file().generic_string();
@@ -423,6 +429,23 @@ std::filesystem::path Config::config_file()
         return std::filesystem::path{};
     }
     return std::filesystem::path(cfgdir) / "config";
+}
+
+char *Config::imgui_ini()
+{
+    return _imgui_ini_file;
+}
+
+std::filesystem::path Config::imgui_ini_file()
+{
+    char cfgdir[512];
+    get_user_config_folder(cfgdir, sizeof(cfgdir), APP_NAME);
+    if (cfgdir[0] == 0)
+    {
+        LOG(LOGLEVEL_ERROR) << "Config - Unable to find home directory.";
+        return std::filesystem::path{};
+    }
+    return std::filesystem::path(cfgdir) / "imgui.ini";
 }
 
 void Config::apply_theme()

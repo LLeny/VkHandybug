@@ -377,6 +377,7 @@ void VulkanRenderer::initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.IniFilename = Config::get_instance().imgui_ini();
 
     ImGui_ImplGlfw_InitForVulkan(_mainWindow, true);
     ImGui_ImplVulkan_InitInfo init_info = {};
