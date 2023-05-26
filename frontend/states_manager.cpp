@@ -4,6 +4,7 @@
 #include "log.h"
 #include <fmt/core.h>
 #include <fmt/chrono.h>
+#include "cfgpath.h"
 
 StatesManager::StatesManager()
 {
@@ -131,7 +132,15 @@ std::string StatesManager::states_directory_string()
         return {};
     }
 
-    auto path = std::filesystem::path(".") / "states" / _cart_hash;
+    char cfgdir[512];
+    get_user_config_folder(cfgdir, sizeof(cfgdir), APP_NAME);
+    if (cfgdir[0] == 0)
+    {
+        LOG(LOGLEVEL_ERROR) << "StatesManager - Unable to find home directory.";
+        return {};
+    }
+
+    auto path = std::filesystem::path(cfgdir) / "states" / _cart_hash;
     return path.generic_string();
 }
 
