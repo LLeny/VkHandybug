@@ -115,3 +115,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/shaders/lynx_render.comp.spv" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders/lynx_render.comp.spv" COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/fonts/Crisp.ttf" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/fonts/Crisp.ttf" COPYONLY)
+
+add_custom_target(
+    ${PROJECT_NAME}.AppImage
+    COMMAND ${CMAKE_COMMAND}
+    ARGS -P "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_appimage.cmake"
+    DEPENDS ${PROJECT_NAME}
+    )
