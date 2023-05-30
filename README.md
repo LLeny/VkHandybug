@@ -7,7 +7,7 @@ Based on ImGui, GLFW/Vulkan, reasonably cross platform (Linux - GCC 12.1, Window
 ![](/assets/screen1.jpg)
 
 # Binaries
-Latest Windows binaries can currently be found on the [releases](https://github.com/LLeny/VkHandybug/releases) page.
+Latest Windows binaries and Linux AppImage can be found on the [releases](https://github.com/LLeny/VkHandybug/releases) page.
 
 # Usage
 ## First run
