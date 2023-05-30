@@ -141,7 +141,7 @@ void Menu::render_popups()
         {
 #ifdef _MSC_VER
             auto sep = std::wstring(&std::filesystem::path::preferred_separator);
-            Config::getInstance().store().last_rom_folder = ImGuiFileDialog::Instance()->GetCurrentPath() + std::string(sep.begin(), sep.end());
+            Config::get_instance().store().last_rom_folder = ImGuiFileDialog::Instance()->GetCurrentPath() + std::string(sep.begin(), sep.end());
 #else
             Config::get_instance().store().last_rom_folder = ImGuiFileDialog::Instance()->GetCurrentPath() + std::filesystem::path::preferred_separator;
 #endif

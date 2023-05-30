@@ -26,6 +26,10 @@
 #include <iterator>
 #include <future>
 
+#ifndef MIN
+#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+#endif
+
 enum LynxButtons
 {
     LynxButtons_Up = 0,
