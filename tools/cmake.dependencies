@@ -94,6 +94,16 @@ FetchContent_Declare(
   URL_HASH  SHA256=7d5ea1b9cb6aa0b59ca3dde1c6adcb57ef83a1ba8e5432c0ecd06bf439b3ad88
 )
 
+FetchContent_MakeAvailable(vkmemalloc)
+FetchContent_MakeAvailable(vkbootstrap)
+FetchContent_MakeAvailable(fmt)
+FetchContent_Populate(lua)
+FetchContent_Populate(sol2)
+FetchContent_Populate(miniaudio)
+FetchContent_Populate(cereal)
+FetchContent_Populate(imgui)
+FetchContent_Populate(imgui_filedialog)
+FetchContent_Populate(hashlib)
 
 file(READ "${FETCHCONTENT_BASE_DIR}/vkmemalloc-src/src/CMakeLists.txt" FILE_CONTENTS)
 string(REPLACE "CXX_STANDARD 14" "CXX_STANDARD 20" FILE_CONTENTS "${FILE_CONTENTS}")
