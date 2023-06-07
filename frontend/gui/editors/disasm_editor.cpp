@@ -303,13 +303,13 @@ int16_t DisasmEditor::get_opcode_target(DisasmEntry &entry)
     case absx: {
         C6502_REGS regs;
         system->mCpu->GetRegs(regs);
-        ret = system->mRam->Peek(system->mRam->PeekW(operand) + regs.X);
+        ret = system->mRam->Peek(operand + regs.X);
     }
     break;
     case absy: {
         C6502_REGS regs;
         system->mCpu->GetRegs(regs);
-        ret = system->mRam->Peek(system->mRam->PeekW(operand) + regs.Y);
+        ret = system->mRam->Peek(operand + regs.Y);
     }
     break;
     case iabsx: {
