@@ -18,6 +18,9 @@ void SymbolsEditor::render()
         return;
     }
 
+    _filter.Draw("Filter (\"incl,-excl\")", 180);
+    ImGui::Separator();
+
     if (ImGui::BeginTable("##symbolsitems", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit))
     {
         ImGui::TableSetupColumn("Address");
@@ -27,7 +30,14 @@ void SymbolsEditor::render()
 
         for (uint16_t i = 0; i < 0xffff; ++i)
         {
-            draw_symbol_entry(i, _session->symbols().get_symbol(i));
+            auto &sym = _session->symbols().get_symbol(i);
+
+            if (!_filter.PassFilter(sym.symbol.c_str()))
+            {
+                continue;
+            }
+
+            draw_symbol_entry(i, sym);
         }
 
         ImGui::EndTable();

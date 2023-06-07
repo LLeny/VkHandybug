@@ -15,4 +15,6 @@ class SymbolsEditor : public IEditor
 
   private:
     void draw_symbol_entry(uint16_t addr, Symbol &symbol);
+
+    ImGuiTextFilter _filter;
 };
