@@ -1,16 +1,12 @@
 name: Create release
-
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 env:
   BUILD_TYPE: Release
-
 jobs:
-        
   Flatpak:
     runs-on: ubuntu-latest
     steps:
@@ -30,12 +26,10 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: io.github.lleny.vkhandybug.flatpak
+        name: io.github.lleny.vkhandybug.${{ github.ref_name }}.flatpak
         path: ${{github.workspace}}/io.github.lleny.vkhandybug.flatpak
-      
   Windowsbinaries:
     runs-on: windows-latest
-    
     steps:
     - uses: actions/checkout@v3
     - name: Prepare Vulkan SDK
@@ -54,5 +48,5 @@ jobs:
     - name: Create binary artefact
       uses: actions/upload-artifact@v3
       with:
-        name: windows-binary
+        name: windows-binaries-${{ github.ref_name }}
         path: ${{github.workspace}}/build/bin
