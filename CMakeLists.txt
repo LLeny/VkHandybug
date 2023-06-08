@@ -13,7 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
 
-project(vkhandybug VERSION "0.6.2")
+project(vkhandybug VERSION "0.6.4")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/configure.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/frontend/configure.h")
 
