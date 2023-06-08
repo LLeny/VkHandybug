@@ -35,7 +35,7 @@ jobs:
     - name: Add flathub
       run: flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - name: Install flatpak dependencies
-      run: flatpak install --user flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.freedesktop.Platform.GL.default/x86_64/22.08
+      run: flatpak install --user --assumeyes flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.freedesktop.Platform.GL.default/x86_64/22.08
     - name: Build
       run: flatpak-builder --user --force-clean flatpak io.github.lleny.vkhandybug.yml
     - name: Export
