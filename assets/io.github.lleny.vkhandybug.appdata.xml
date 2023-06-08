@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>io.github.lleny.vkhandybug</id>
+  <name>VkHandybug</name>
+  <metadata_license>CC0-1.0</metadata_license>
+  <summary>Debugger for the Atari Lynx emulator Handy</summary>
+  <description><p>Debugger for the Atari Lynx emulator Handy.</p></description>
+  <url type="homepage">https://github.com/LLeny/VkHandybug</url>
+  <screenshots>
+    <screenshot type="default">https://github.com/LLeny/VkHandybug/blob/eefc3dfa4f4da36d8d6084ce95d720ab05cdad06/assets/screen1.jpg</screenshot>
+  </screenshots>
+  <launchable type="desktop-id">io.github.lleny.vkhandybug.desktop</launchable>
+  <project_license>MIT</project_license>
+  <developer_name>LLeny</developer_name>
+  <releases>
+    <release version="0.6.2" date="2023-06-07"/>
+  </releases>
+</component>

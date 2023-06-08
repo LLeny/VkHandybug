@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=VkHandybug
+Icon=io.github.lleny.vkhandybug
+Path=/app/bin
+Exec=vkhandybug
+Categories=Development;
