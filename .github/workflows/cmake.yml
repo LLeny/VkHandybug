@@ -37,4 +37,10 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+  
+    - name: Create binary artefact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{matrix.os}}-binary
+        path: ${{github.workspace}}/build/bin
 
