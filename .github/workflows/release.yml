@@ -32,8 +32,10 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: sudo apt -y install make autoconf gcc cmake libvulkan-dev git libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev glslang-tools mesa-common-dev libfuse2 flatpak flatpak-builder
+    - name: Add flathub
+      run: flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - name: Install flatpak dependencies
-      run: flatpak install flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.freedesktop.Platform.GL//22.08
+      run: flatpak install --user flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.freedesktop.Platform.GL//22.08
     - name: Build
       run: flatpak-builder --user --force-clean flatpak io.github.lleny.vkhandybug.yml
     - name: Export
