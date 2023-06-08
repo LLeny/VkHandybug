@@ -56,8 +56,10 @@ modules:
             url: https://github.com/KhronosGroup/SPIRV-Tools.git
             tag: v2023.2
     cleanup:
-      - 'files/'
+      - 'files/lib/debug/*'
+      - '*.debug'
       - '*.a'
       - '*.h'
       - '*.cpp'
+      - '*.c'
       - '*.cmake'
