@@ -10,16 +10,18 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
-
+  os_matrix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        
+    runs-on: ${{ matrix.os }}
+    
     steps:
     - uses: actions/checkout@v3
 
     - name: Install dependencies
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: sudo apt -y install make autoconf gcc cmake libvulkan-dev git libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev glslang-tools mesa-common-dev libfuse2
 
     - name: Configure CMake
