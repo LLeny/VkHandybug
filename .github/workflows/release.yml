@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: sudo apt -y install make autoconf gcc cmake libvulkan-dev git libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev glslang-tools mesa-common-dev libfuse2
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
@@ -30,11 +32,12 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: sudo apt -y install make autoconf gcc cmake libvulkan-dev git libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev glslang-tools mesa-common-dev libfuse2 flatpak flatpak-builder
-    - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
-      with:
-        bundle: io.github.lleny.vkhandybug.flatpak
-        manifest-path: io.github.lleny.vkhandybug.yml
-        cache-key: flatpak-builder-${{ github.sha }}
+    - name: Build
+      run: flatpak-builder --user --install --force-clean flatpak io.github.lleny.vkhandybug.yml
+    - name: Export
+      run: flatpak build-export flatpak-export flatpak
+    - name: Bundle
+      run: flatpak build-bundle flatpak-export io.github.lleny.vkhandybug.flatpak io.github.lleny.vkhandybug
     - name: upload artefact
       uses: actions/upload-artifact@v3
       with:
