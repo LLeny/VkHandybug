@@ -20,7 +20,7 @@ jobs:
     - name: Build
       run: flatpak-builder --user --force-clean flatpak io.github.lleny.vkhandybug.yml
     - name: Export
-      run: flatpak-builder --export-only --repo=flatpak flatpak-export io.github.lleny.vkhandybug.yml
+      run: flatpak-builder --export-only --repo=flatpak-export flatpak io.github.lleny.vkhandybug.yml
     - name: Bundle
       run: flatpak build-bundle flatpak-export io.github.lleny.vkhandybug.flatpak io.github.lleny.vkhandybug
     - name: Upload artifact
