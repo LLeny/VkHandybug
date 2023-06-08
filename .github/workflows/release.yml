@@ -20,10 +20,10 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=vkhandybug.AppImage
-    - name: upload artefact
+    - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{matrix.os}}-binary
+        name: vkhandybug.AppImage
         path: ${{github.workspace}}/build/bin/vkhandybug.AppImage
         
   Flatpak:
@@ -32,16 +32,16 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: sudo apt -y install make autoconf gcc cmake libvulkan-dev git libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev glslang-tools mesa-common-dev libfuse2 flatpak flatpak-builder
+    - name: Install flatpak dependencies
+      run: flatpak install flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08 org.freedesktop.Platform.GL//22.08
     - name: Build
-      run: flatpak-builder --user --install --force-clean flatpak io.github.lleny.vkhandybug.yml
+      run: flatpak-builder --user --force-clean flatpak io.github.lleny.vkhandybug.yml
     - name: Export
       run: flatpak build-export flatpak-export flatpak
     - name: Bundle
       run: flatpak build-bundle flatpak-export io.github.lleny.vkhandybug.flatpak io.github.lleny.vkhandybug
-    - name: upload artefact
+    - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{matrix.os}}-binary
+        name: io.github.lleny.vkhandybug.flatpak
         path: ${{github.workspace}}/io.github.lleny.vkhandybug.flatpak
-
-
