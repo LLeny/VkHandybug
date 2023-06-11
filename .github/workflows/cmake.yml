@@ -23,7 +23,7 @@ jobs:
       run: sudo apt -y install make autoconf gcc cmake libvulkan-dev git libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev glslang-tools mesa-common-dev libfuse2
 
     - name: Prepare Vulkan SDK
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: ${{ matrix.os == 'windows-latest' || matrix.os == 'macos-latest' }}
       uses: humbletim/setup-vulkan-sdk@v1.2.0
       with:
         vulkan-query-version: latest
