@@ -2,7 +2,7 @@
 
 Debugger for the Atari Lynx emulator [Handy](https://handy.sourceforge.net/).
 
-Based on ImGui, GLFW/Vulkan, reasonably cross platform (Linux - GCC 12.1, Windows - Visual Studio 2022).
+Based on ImGui, GLFW/Vulkan, reasonably cross platform (Linux - GCC 12.1, Windows - Visual Studio 2022, macOS - Xcode 14.2).
 
 ![](/assets/screen1.jpg)
 
