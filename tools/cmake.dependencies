@@ -27,7 +27,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   vkmemalloc
   GIT_REPOSITORY       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-  GIT_TAG              0e89587db3ebee4d463f191bd296374c5fafc8ea
+  GIT_TAG              v3.0.1
   GIT_SHALLOW          TRUE
   GIT_PROGRESS         TRUE
 )
