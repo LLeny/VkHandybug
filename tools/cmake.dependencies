@@ -116,4 +116,8 @@ if(NOT APPLE)
   string(REPLACE "sizeof(pData->deviceName), 0, FALSE)" "sizeof(pData->deviceName), 0, 0)" FILE_CONTENTS "${FILE_CONTENTS}")
   string(REPLACE "sizeof(guidStr), 0, FALSE)" "sizeof(guidStr), 0, 0)" FILE_CONTENTS "${FILE_CONTENTS}")
   file(WRITE "${FETCHCONTENT_BASE_DIR}/miniaudio-src/miniaudio.h" "${FILE_CONTENTS}")
+else
+  file(READ "${FETCHCONTENT_BASE_DIR}/hashlib-src/md5.cpp" FILE_CONTENTS)
+  string(REPLACE "#ifndef _MSC_VER" "#if !defined(_MSC_VER) && !defined(__APPLE__)" FILE_CONTENTS "${FILE_CONTENTS}")
+  file(WRITE "${FETCHCONTENT_BASE_DIR}/hashlib-src/md5.cpp" "${FILE_CONTENTS}")
 endif()
