@@ -77,11 +77,11 @@ class CRam : public CLynxBase, public IMemoryAccess
 
     void Poke(ULONG addr, UBYTE data)
     {
-        mRamData[addr] = data;
+        mRamData[addr & 0xFFFF] = data;
     };
     UBYTE Peek(ULONG addr)
     {
-        return (mRamData[addr]);
+        return (mRamData[addr & 0xFFFF]);
     };
     ULONG ReadCycle(void)
     {
