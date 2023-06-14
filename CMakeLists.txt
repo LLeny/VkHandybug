@@ -70,6 +70,11 @@ if (HAVE_RETURN_TYPE)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-return-type)
 endif (HAVE_RETURN_TYPE)
 
+if(MSVC)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC _SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING)
+endif()
+
 target_glsl_shaders(${PROJECT_NAME} PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/frontend/resources/shaders/lynx_render.comp"
 )
