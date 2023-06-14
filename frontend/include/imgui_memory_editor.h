@@ -75,15 +75,16 @@ struct MemoryEditor
     };
 
     // Settings
-    bool Open;                                                      // = true   // set to false when DrawWindow() was closed. ignore if not using DrawWindow().
-    bool ReadOnly;                                                  // = false  // disable any editing.
-    int Cols;                                                       // = 16     // number of columns to display.
-    bool OptShowOptions;                                            // = true   // display options button/context menu. when disabled, options will be locked unless you provide your own UI for them.
-    bool OptShowDataPreview;                                        // = false  // display a footer previewing the decimal/binary/hex/float representation of the currently selected bytes.
-    bool OptShowHexII;                                              // = false  // display values in HexII representation instead of regular hexadecimal: hide null/zero bytes, ascii values as ".X".
-    bool OptShowAscii;                                              // = true   // display ASCII representation on the right side.
-    bool OptGreyOutZeroes;                                          // = true   // display null/zero bytes using the TextDisabled color.
-    bool OptUpperCaseHex;                                           // = true   // display hexadecimal values as "FF" instead of "ff".
+    bool Open;               // = true   // set to false when DrawWindow() was closed. ignore if not using DrawWindow().
+    bool ReadOnly;           // = false  // disable any editing.
+    int Cols;                // = 16     // number of columns to display.
+    bool OptShowOptions;     // = true   // display options button/context menu. when disabled, options will be locked unless you provide your own UI for them.
+    bool OptShowDataPreview; // = false  // display a footer previewing the decimal/binary/hex/float representation of the currently selected bytes.
+    bool OptShowHexII;       // = false  // display values in HexII representation instead of regular hexadecimal: hide null/zero bytes, ascii values as ".X".
+    bool OptShowAscii;       // = true   // display ASCII representation on the right side.
+    bool OptGreyOutZeroes;   // = true   // display null/zero bytes using the TextDisabled color.
+    bool OptUpperCaseHex;    // = true   // display hexadecimal values as "FF" instead of "ff".
+    bool OptHighlightChanges;
     int OptMidColsCount;                                            // = 8      // set to 0 to disable extra spacing between every mid-cols.
     int OptAddrDigitsCount;                                         // = 0      // number of addr digits to display (default calculated based on maximum displayed addr).
     float OptFooterExtraHeight;                                     // = 0      // space to reserve at the bottom of the widget to add custom widgets
@@ -104,6 +105,8 @@ struct MemoryEditor
     size_t HighlightMin, HighlightMax;
     int PreviewEndianess;
     ImGuiDataType PreviewDataType;
+    ImU8 PreviousStates[0xFFFF + 1]{};
+    ImU8 HighlightDecay[0xFFFF + 1]{};
 
     MemoryEditor()
     {
@@ -117,6 +120,7 @@ struct MemoryEditor
         OptShowAscii = true;
         OptGreyOutZeroes = true;
         OptUpperCaseHex = true;
+        OptHighlightChanges = true;
         OptMidColsCount = 8;
         OptAddrDigitsCount = 0;
         OptFooterExtraHeight = 0.0f;
@@ -324,8 +328,8 @@ struct MemoryEditor
                         if (DataEditingTakeFocus)
                         {
                             ImGui::SetKeyboardFocusHere(0);
-                            snprintf(AddrInputBuf,sizeof(AddrInputBuf), format_data, s.AddrDigitsCount, base_display_addr + addr);
-                            snprintf(DataInputBuf,sizeof(DataInputBuf), format_byte, ReadFn ? ReadFn(mem_data, addr, HandlersContext) : mem_data[addr]);
+                            snprintf(AddrInputBuf, sizeof(AddrInputBuf), format_data, s.AddrDigitsCount, base_display_addr + addr);
+                            snprintf(DataInputBuf, sizeof(DataInputBuf), format_byte, ReadFn ? ReadFn(mem_data, addr, HandlersContext) : mem_data[addr]);
                         }
                         struct UserData
                         {
@@ -383,6 +387,30 @@ struct MemoryEditor
                     {
                         // NB: The trailing space is not visible but ensure there's no gap that the mouse cannot click on.
                         ImU8 b = ReadFn ? ReadFn(mem_data, addr, HandlersContext) : mem_data[addr];
+
+                        if (OptHighlightChanges)
+                        {
+                            if (PreviousStates[addr] != b)
+                            {
+                                HighlightDecay[addr] = 60;
+                            }
+
+                            PreviousStates[addr] = b;
+
+                            if (HighlightDecay[addr])
+                            {
+                                ImVec2 pos = ImGui::GetCursorScreenPos();
+                                float highlight_width = s.GlyphWidth * 2;
+                                if (n + 1 == Cols)
+                                {
+                                    highlight_width = s.HexCellWidth;
+                                    if (OptMidColsCount > 0 && n > 0 && (n + 1) < Cols && ((n + 1) % OptMidColsCount) == 0)
+                                        highlight_width += s.SpacingBetweenMidCols;
+                                }
+                                draw_list->AddRectFilled(pos, ImVec2(pos.x + highlight_width, pos.y + s.LineHeight), IM_COL32(255, 0, 255, HighlightDecay[addr] * 4));
+                                --HighlightDecay[addr];
+                            }
+                        }
 
                         if (OptShowHexII)
                         {
@@ -494,6 +522,7 @@ struct MemoryEditor
             }
             ImGui::Checkbox("Grey out zeroes", &OptGreyOutZeroes);
             ImGui::Checkbox("Uppercase Hex", &OptUpperCaseHex);
+            ImGui::Checkbox("Highlight changes", &OptHighlightChanges);
 
             ImGui::EndPopup();
         }

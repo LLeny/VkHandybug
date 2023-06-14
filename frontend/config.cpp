@@ -278,6 +278,7 @@ void Config::save_memory_editor(std::string sessionid, MemEditor *editor)
         memconfig->optShowHexII = editor->_memoryEditor.OptShowHexII;
         memconfig->optShowOptions = editor->_memoryEditor.OptShowOptions;
         memconfig->optUpperCaseHex = editor->_memoryEditor.OptUpperCaseHex;
+        memconfig->optHighlightChanges = editor->_memoryEditor.OptHighlightChanges;
         memconfig->selected_bank = editor->_memBank;
     }
     else
@@ -293,6 +294,7 @@ void Config::save_memory_editor(std::string sessionid, MemEditor *editor)
         store.optShowHexII = editor->_memoryEditor.OptShowHexII;
         store.optShowOptions = editor->_memoryEditor.OptShowOptions;
         store.optUpperCaseHex = editor->_memoryEditor.OptUpperCaseHex;
+        store.optHighlightChanges = editor->_memoryEditor.OptHighlightChanges;
         store.selected_bank = editor->_memBank;
         found->mem_editors.push_back(store);
     }
@@ -342,6 +344,7 @@ void Config::load_memory_editor(std::string sessionid, MemEditor *editor)
     editor->_memoryEditor.OptShowHexII = memconfig->optShowHexII;
     editor->_memoryEditor.OptShowOptions = memconfig->optShowOptions;
     editor->_memoryEditor.OptUpperCaseHex = memconfig->optUpperCaseHex;
+    editor->_memoryEditor.OptHighlightChanges = memconfig->optHighlightChanges;
     editor->_memBank = (LynxMemBank)memconfig->selected_bank;
 }
 

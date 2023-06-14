@@ -76,6 +76,7 @@ struct SessionMemEditorConfigStore
     bool optShowAscii;
     bool optGreyOutZeroes;
     bool optUpperCaseHex;
+    bool optHighlightChanges;
     int optMidColsCount;
     int optAddrDigitsCount;
     float optFooterExtraHeight;
@@ -93,6 +94,7 @@ struct SessionMemEditorConfigStore
         archive(CEREAL_NVP(optUpperCaseHex));
         archive(CEREAL_NVP(optMidColsCount));
         archive(CEREAL_NVP(optAddrDigitsCount));
+        archive(CEREAL_NVP(optHighlightChanges));
         archive(CEREAL_NVP(optFooterExtraHeight));
         archive(CEREAL_NVP(selected_bank));
     }
