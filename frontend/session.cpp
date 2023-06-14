@@ -23,7 +23,6 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
 {
     _renderer = renderer;
     _rom_file = Config::get_instance().store().lynx_rom_file;
-    _lynx_version =Config::get_instance().store().default_lynx_version;
 
     try
     {
@@ -34,6 +33,8 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
         LOG(LOGLEVEL_ERROR) << "Session - initialize() " << err.mMsg << ": " << err.mDesc;
         return false;
     }
+
+    set_lynx_version(Config::get_instance().store().default_lynx_version);
 
     _status = SessionStatus_Break;
 
