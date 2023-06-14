@@ -78,6 +78,7 @@ void App::initialize()
 {
     _gui = std::make_shared<GUI>();
     _gui->initialize();
+    _gui->sessions_control().set_app(shared_from_this());
     _gui->menu().set_app(shared_from_this());
     _gui->menu().register_file_open_callback([&](std::string file) { open_file(file); });
 

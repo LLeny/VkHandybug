@@ -42,6 +42,7 @@ void Config::load(App *app)
 
     app->gui()->_comlynx_visible = _store.comlynx_visisble;
     app->gui()->_console_visible = _store.console_visible;
+    app->gui()->_sessionscontrol_visible = _store.sessionscontrol_visible;
     Console::get_instance().set_log_level(_store.log_level);
 }
 
@@ -85,6 +86,7 @@ void Config::save(App *app)
 
     _store.comlynx_visisble = app->gui()->_comlynx_visible;
     _store.console_visible = app->gui()->_console_visible;
+    _store.sessionscontrol_visible = app->gui()->_sessionscontrol_visible;
     _store.log_level = Console::get_instance().get_log_level();
 
     std::string filename = config_file().generic_string();

@@ -101,6 +101,10 @@ void Menu::initialize()
                               _app->gui()->switch_console_visibility();
                           }});
 
+    toolsitems.push_back({"", "Sessions control", "", MENUITEM_TYPE_CALLBACK, [&]() {
+                              _app->gui()->switch_sessionscontrol_visibility();
+                          }});
+
     toolsitems.push_back({"", "ComLynx", "", MENUITEM_TYPE_CALLBACK, [&]() {
                               _app->gui()->switch_comlynx_visualizer();
                           }});

@@ -158,6 +158,7 @@ struct ConfigStore
     int main_window_x_pos = 10, main_window_y_pos = 10;
     int main_window_width = 800, main_window_height = 600;
     bool comlynx_visisble = false;
+    bool sessionscontrol_visible = false;
     bool console_visible = false;
     LOGLEVEL_ log_level = LOGLEVEL_WARN;
     LynxVersion_ default_lynx_version = LynxVersion_2;
@@ -178,6 +179,7 @@ struct ConfigStore
         archive(CEREAL_NVP(main_window_width));
         archive(CEREAL_NVP(main_window_height));
         archive(CEREAL_NVP(comlynx_visisble));
+        archive(CEREAL_NVP(sessionscontrol_visible));
         archive(CEREAL_NVP(console_visible));
         archive(CEREAL_NVP(recent_sessions));
         archive(CEREAL_NVP(log_level));

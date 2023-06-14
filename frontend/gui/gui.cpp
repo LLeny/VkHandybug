@@ -23,6 +23,11 @@ Menu &GUI::menu()
     return _menu;
 }
 
+SessionsControl &GUI::sessions_control()
+{
+    return _sessionscontrol;
+}
+
 std::vector<std::shared_ptr<SessionGUI>> GUI::sessions()
 {
     return _sessions;
@@ -67,6 +72,11 @@ void GUI::render(ImGuiID dockspace_id)
     {
         _console_visible = Console::get_instance().render();
     }
+
+    if (_sessionscontrol_visible)
+    {
+        _sessionscontrol_visible = _sessionscontrol.render();
+    }
 }
 
 std::shared_ptr<ComLynxVisualizer> GUI::comlynx_visualizer()
@@ -82,6 +92,11 @@ void GUI::switch_comlynx_visualizer()
 void GUI::switch_console_visibility()
 {
     _console_visible = !_console_visible;
+}
+
+void GUI::switch_sessionscontrol_visibility()
+{
+    _sessionscontrol_visible = !_sessionscontrol_visible;
 }
 
 std::shared_ptr<SessionGUI> GUI::register_session(std::shared_ptr<Session> session)
