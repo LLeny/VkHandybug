@@ -58,6 +58,16 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
     return true;
 }
 
+void Session::load_symbols()
+{
+    if (!std::filesystem::exists(_symbols_file_name))
+    {
+        LOG(LOGLEVEL_ERROR) << "Session - load_symbols() no symbols previously loaded";
+        return;
+    }
+    load_symbols(_symbols_file_name);
+}
+
 void Session::load_symbols(std::string symbol_file)
 {
     if (!std::filesystem::exists(symbol_file))
@@ -65,7 +75,20 @@ void Session::load_symbols(std::string symbol_file)
         LOG(LOGLEVEL_ERROR) << "Session - load_symbols() '" << symbol_file << "' not found.";
         return;
     }
+    _symbols_file_name = symbol_file;
     _symbols.load_symbols(symbol_file);
+}
+
+void Session::reload_symbols()
+{
+    if (_symbols_file_name.empty())
+    {
+        LOG(LOGLEVEL_ERROR) << "Session - reload_symbols() no symbols previously loaded";
+        return;
+    }
+
+    auto guisession = _app->gui()->get_session(identifier());
+    guisession->reload_symbols();
 }
 
 void Session::memory_access_callback(LynxMemBank bank, uint16_t addr, bool write)

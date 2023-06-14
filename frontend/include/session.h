@@ -144,6 +144,8 @@ class Session : public std::enable_shared_from_this<Session>
     LynxVersion_ get_lynx_version();
 
     void load_symbols(std::string symbol_file);
+    void load_symbols();
+    void reload_symbols();
 
   private:
     static int idinc;
@@ -157,6 +159,7 @@ class Session : public std::enable_shared_from_this<Session>
     Scripting _scripting;
     std::filesystem::path _cartridge_file{};
     std::string _cartridge_file_name{};
+    std::string _symbols_file_name{};
     std::filesystem::path _rom_file = "./lynxboot.img";
     std::shared_ptr<App> _app;
     std::shared_ptr<CSystem> _lynx = nullptr;

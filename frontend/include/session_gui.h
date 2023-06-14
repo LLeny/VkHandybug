@@ -46,6 +46,7 @@ class SessionGUI
     void add_disasm_editor(int i);
 
     void load_symbols(std::string symbol_file);
+    void reload_symbols();
 
   private:
     std::shared_ptr<Session> _session;

@@ -97,6 +97,7 @@ void SessionControlEditor::render()
         {
             _session->set_status(SessionStatus_Break);
             _session->system()->ReloadCart();
+            _session->reload_symbols();
         }
 
         ImGui::EndTable();

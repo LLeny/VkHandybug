@@ -126,6 +126,62 @@ void SessionGUI::load_symbols(std::string symbol_file)
     _session->load_symbols(symbol_file);
 }
 
+void SessionGUI::reload_symbols()
+{
+    std::vector<std::tuple<std::string, WatchItem &>> watches{};
+    std::vector<std::tuple<std::string, Breakpoint &>> breakpoints{};
+
+    for (auto &w : _watch_editor.watches())
+    {
+        auto &symb = _session->symbols().get_symbol(w.address);
+
+        if (!symb.override)
+        {
+            continue;
+        }
+
+        watches.push_back({symb.symbol, w});
+    }
+
+    for (auto &bp : _session->breakpoints())
+    {
+        auto &symb = _session->symbols().get_symbol(bp.address);
+
+        if (!symb.override)
+        {
+            continue;
+        }
+
+        breakpoints.push_back({symb.symbol, bp});
+    }
+
+    _session->load_symbols();
+
+    for (auto watch : watches)
+    {
+        auto addr = _session->symbols().get_addr(std::get<0>(watch));
+
+        if (addr < 0)
+        {
+            continue;
+        }
+
+        std::get<1>(watch).address = addr;
+    }
+
+    for (auto bp : breakpoints)
+    {
+        auto addr = _session->symbols().get_addr(std::get<0>(bp));
+
+        if (addr < 0)
+        {
+            continue;
+        }
+
+        std::get<1>(bp).address = addr;
+    }
+}
+
 void SessionGUI::render()
 {
     render_screen();
