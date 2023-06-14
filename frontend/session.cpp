@@ -48,7 +48,7 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
     auto symbol_file = _cartridge_file;
     symbol_file.replace_extension("lbl");
 
-    load_symbols(symbol_file);
+    load_symbols(symbol_file.generic_string());
 
     _states_manager.initialize(shared_from_this());
     _scripting.initialize(shared_from_this());
