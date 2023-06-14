@@ -45,6 +45,8 @@ class SessionGUI
     void add_memory_editor(int i);
     void add_disasm_editor(int i);
 
+    void load_symbols(std::string symbol_file);
+
   private:
     std::shared_ptr<Session> _session;
     std::vector<SessionSingleEditor> _single_editors{};

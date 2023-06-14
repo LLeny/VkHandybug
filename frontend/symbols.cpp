@@ -5,7 +5,15 @@
 Symbols::Symbols()
 {
     _line_regex.assign(("([0-9a-fA-F]+)\\s+(.+)"));
+    reset();
+}
 
+Symbols::~Symbols()
+{
+}
+
+void Symbols::reset()
+{
     for (int i = 0; i < 0x100; ++i)
     {
         _symbols[i] = {false, (uint16_t)i, fmt::format("${:02X}", i)};
@@ -14,32 +22,40 @@ Symbols::Symbols()
     {
         _symbols[i] = {false, (uint16_t)i, fmt::format("${:04X}", i)};
     }
-}
 
-Symbols::~Symbols()
-{
+    _override_symbols.clear();
 }
 
 bool Symbols::load_symbols(std::filesystem::path symbol_file)
 {
     if (!std::filesystem::exists(symbol_file))
     {
-        LOG(LOGLEVEL_ERROR) << "Symbols - could not find '" << symbol_file.generic_string() << "'";
+        LOG(LOGLEVEL_ERROR) << "Symbols - load_symbols(), could not find '" << symbol_file.generic_string() << "'";
         return false;
     }
 
-    std::ifstream infile(symbol_file);
+    reset();
 
-    std::string line;
-
-    while (std::getline(infile, line))
+    try
     {
-        parse_line(line);
+        std::ifstream infile(symbol_file);
+
+        std::string line;
+
+        while (std::getline(infile, line))
+        {
+            parse_line(line);
+        }
+
+        std::sort(_override_symbols.begin(), _override_symbols.end());
+
+        return true;
     }
-
-    std::sort(_override_symbols.begin(), _override_symbols.end());
-
-    return true;
+    catch (const std::exception &e)
+    {
+        LOG(LOGLEVEL_ERROR) << "Symbols - load_symbols(), '" << e.what() << "'";
+        return false;
+    }
 }
 
 void Symbols::parse_line(std::string line)

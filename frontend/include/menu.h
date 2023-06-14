@@ -57,4 +57,6 @@ class Menu
 
     void add_bool_callback_item(std::string session_identifier, std::vector<MenuItem> &list, bool *selected, std::string header, std::string shortcut, ImGuiKeyChord keycord);
     void call_fileopen_callback(std::string file);
+
+    void load_symbols(std::string sessionid, std::string path);
 };

@@ -121,6 +121,11 @@ void SessionGUI::build_dock()
     ImGui::DockSpace(sessiondockid);
 }
 
+void SessionGUI::load_symbols(std::string symbol_file)
+{
+    _session->load_symbols(symbol_file);
+}
+
 void SessionGUI::render()
 {
     render_screen();

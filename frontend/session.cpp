@@ -48,10 +48,7 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
     auto symbol_file = _cartridge_file;
     symbol_file.replace_extension("lbl");
 
-    if (std::filesystem::exists(symbol_file))
-    {
-        _symbols.load_symbols(symbol_file);
-    }
+    load_symbols(symbol_file);
 
     _states_manager.initialize(shared_from_this());
     _scripting.initialize(shared_from_this());
@@ -59,6 +56,16 @@ bool Session::initialize(std::shared_ptr<VulkanRenderer> renderer)
     _lynx->RegisterMemoryAccessCallback([&](LynxMemBank bank, uint16_t addr, bool write) { memory_access_callback(bank, addr, write); });
 
     return true;
+}
+
+void Session::load_symbols(std::string symbol_file)
+{
+    if (!std::filesystem::exists(symbol_file))
+    {
+        LOG(LOGLEVEL_ERROR) << "Session - load_symbols() '" << symbol_file << "' not found.";
+        return;
+    }
+    _symbols.load_symbols(symbol_file);
 }
 
 void Session::memory_access_callback(LynxMemBank bank, uint16_t addr, bool write)

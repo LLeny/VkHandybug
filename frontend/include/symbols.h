@@ -26,4 +26,5 @@ class Symbols
     std::regex _line_regex{};
 
     void parse_line(std::string line);
+    void reset();
 };

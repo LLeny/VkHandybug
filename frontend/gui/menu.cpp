@@ -134,6 +134,17 @@ void Menu::render_popups()
         }
     }
 
+    // Symbols
+    if (ImGuiFileDialog::Instance()->Display("ChooseSymbolsFile", ImGuiWindowFlags_None, {600, 300}))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            SessionGUI *sessg = (SessionGUI *)ImGuiFileDialog::Instance()->GetUserDatas();
+            load_symbols(sessg->id(), ImGuiFileDialog::Instance()->GetFilePathName());
+        }
+        ImGuiFileDialog::Instance()->Close();
+    }
+
     // Cartridge chooser
     if (ImGuiFileDialog::Instance()->Display("ChooseCartridge", ImGuiWindowFlags_None, {600, 300}))
     {
@@ -237,6 +248,13 @@ void Menu::update_items()
 
         auto guisession = _app->gui()->get_session(sessionid);
 
+        subs.push_back({sessionid, "Reload symbols file", "Ctrl+L", MENUITEM_TYPE_CALLBACK, [guisession]() {
+                            ImGuiFileDialog::Instance()->OpenDialog("ChooseSymbolsFile", "Symbols", ".*", Config::get_instance().store().last_rom_folder, 1, (IGFD::UserDatas)guisession.get(), ImGuiFileDialogFlags_Modal);
+                        },
+                        ImGuiMod_Ctrl | ImGuiKey_L});
+
+        subs.push_back({sessionid, "", "", MENUITEM_TYPE_SEPARATOR});
+
         add_bool_callback_item(sessionid, subs, &guisession->_breakpoints_open, "breakpoints", "Ctrl+B", ImGuiMod_Ctrl | ImGuiKey_B);
         add_bool_callback_item(sessionid, subs, &guisession->_callstack_open, "callstack", "Ctrl+A", ImGuiMod_Ctrl | ImGuiKey_A);
         add_bool_callback_item(sessionid, subs, &guisession->_cart_info_open, "cart information", "Ctrl+I", ImGuiMod_Ctrl | ImGuiKey_I);
@@ -249,6 +267,8 @@ void Menu::update_items()
         add_bool_callback_item(sessionid, subs, &guisession->_symbols_open, "symbols", "Ctrl+S", ImGuiMod_Ctrl | ImGuiKey_S);
         add_bool_callback_item(sessionid, subs, &guisession->_watch_open, "watch", "Ctrl+W", ImGuiMod_Ctrl | ImGuiKey_W);
 
+        subs.push_back({sessionid, "", "", MENUITEM_TYPE_SEPARATOR});
+
         subs.push_back({sessionid, "New memory editor", "Ctrl+M", MENUITEM_TYPE_CALLBACK, [guisession]() {
                             guisession->add_memory_editor(-1);
                         },
@@ -258,6 +278,8 @@ void Menu::update_items()
                             guisession->add_disasm_editor(-1);
                         },
                         ImGuiMod_Ctrl | ImGuiKey_D});
+
+        subs.push_back({sessionid, "", "", MENUITEM_TYPE_SEPARATOR});
 
         subs.push_back({sessionid, "Close session", "", MENUITEM_TYPE_CALLBACK, [&, sessionid]() {
                             LOG(LOGLEVEL_DEBUG) << "Menu - close_session " << sessionid;
@@ -275,4 +297,22 @@ void Menu::add_bool_callback_item(std::string session_identifier, std::vector<Me
                         *selected = !*selected;
                     },
                     keycord});
+}
+
+void Menu::load_symbols(std::string sessionid, std::string path)
+{
+    if (sessionid.empty() || path.empty())
+    {
+        LOG(LOGLEVEL_ERROR) << "Menu - load_symbols('" << sessionid << "', '" << path << "') arguments error.";
+    }
+
+    auto guisession = _app->gui()->get_session(sessionid);
+
+    if (!std::filesystem::exists(path))
+    {
+        LOG(LOGLEVEL_ERROR) << "Menu - load_symbols() '" << path << "' not found.";
+        return;
+    }
+
+    guisession->load_symbols(path);
 }

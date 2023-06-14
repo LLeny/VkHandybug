@@ -59,7 +59,10 @@ struct Breakpoint
     std::string script{};
     std::string id{};
 
-    std::string identifier() { return id; }
+    std::string identifier()
+    {
+        return id;
+    }
 };
 
 struct CallStackItem
@@ -136,9 +139,11 @@ class Session : public std::enable_shared_from_this<Session>
 
     void set_breakpoint_script(std::string &id, std::string &script);
     bool evaluate_breakpoint(std::string &scriptid);
-    
+
     void set_lynx_version(LynxVersion_ version);
     LynxVersion_ get_lynx_version();
+
+    void load_symbols(std::string symbol_file);
 
   private:
     static int idinc;
