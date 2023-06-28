@@ -15,6 +15,7 @@ class MikeyEditor : public IEditor
     void render_timers();
     void render_audio();
     void render_misc();
+    void render_comlynx();
     void render_timer(uint8_t timerid);
     void render_audio(uint8_t audioid);
 };

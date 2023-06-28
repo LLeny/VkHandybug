@@ -52,7 +52,7 @@
 #include "memoryaccess.h"
 
 // #include <crtdbg.h>
-#define	TRACE_MIKIE
+#define TRACE_MIKIE
 
 #ifdef TRACE_MIKIE
 
@@ -156,8 +156,12 @@ enum
     MIKIE_ROTATE_R
 };
 
+class MikeyEditor;
+
 class CMikie : public CLynxBase, public IMemoryAccess
 {
+    friend MikeyEditor;
+
   public:
     CMikie(CSystem &parent);
     ~CMikie();

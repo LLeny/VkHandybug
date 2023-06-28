@@ -20,9 +20,77 @@ void MikeyEditor::render()
     {
         render_audio();
     }
+    if (ImGui::CollapsingHeader("UART"))
+    {
+        render_comlynx();
+    }
     if (ImGui::CollapsingHeader("Misc"))
     {
         render_misc();
+    }
+}
+
+void MikeyEditor::render_comlynx()
+{
+    if (ImGui::BeginTable("##mikeycmtable", 6, ImGuiTableFlags_SizingFixedFit))
+    {
+        auto mikie = _session->system()->mMikie;
+
+        ImGui::TableNextColumn();
+        ImGui::Text("TXRDY");
+        ImGui::TableNextColumn();
+        bool txrdy = mikie->mUART_TX_COUNTDOWN & UART_TX_INACTIVE > 0;
+        ImGui::Checkbox("##txrdy", &txrdy);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("RXRDY");
+        ImGui::TableNextColumn();
+        bool rxrdy = mikie->mUART_RX_READY > 0;
+        ImGui::Checkbox("##rxrdy", &rxrdy);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("TXEMPTY");
+        ImGui::TableNextColumn();
+        bool txempty = mikie->mUART_TX_COUNTDOWN & UART_TX_INACTIVE > 0;
+        ImGui::Checkbox("##txempty", &txempty);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("PARERR");
+        ImGui::TableNextColumn();
+        bool parerr = false;
+        ImGui::Checkbox("##parerr", &parerr);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("OVERRUN");
+        ImGui::TableNextColumn();
+        bool ovrrun = mikie->mUART_Rx_overun_error > 0;
+        ImGui::Checkbox("##ovrrun", &ovrrun);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("FRAMERR");
+        ImGui::TableNextColumn();
+        bool framerr = mikie->mUART_Rx_framing_error > 0;
+        ImGui::Checkbox("##framerr", &framerr);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("RXBRK");
+        ImGui::TableNextColumn();
+        bool rxbrk = mikie->mUART_RX_DATA & UART_BREAK_CODE > 0;
+        ImGui::Checkbox("##rxbrk", &rxbrk);
+
+        ImGui::TableNextColumn();
+        ImGui::Text("PARBIT");
+        ImGui::TableNextColumn();
+        bool par = mikie->mUART_RX_DATA & 0x0100 > 0;
+        ImGui::Checkbox("##par", &par);
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::Text("SERDAT");
+        ImGui::TableNextColumn();
+        ImGui::Text("TX %2X / RX %2X", mikie->mUART_TX_DATA, mikie->mUART_RX_DATA);
+
+        ImGui::EndTable();
     }
 }
 

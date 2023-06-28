@@ -183,32 +183,51 @@ void App::execute()
     auto sleepFrame = std::chrono::system_clock::now() + frames{0};
     auto targetFrame = sleepFrame + frames{0};
     int64_t count = 0;
-    ULONG cycles = 0;
+    int max_cycles;
+    int cycles[10]{};
+    int cycle;
 
     while (!_closing)
     {
-        _comlynx_hub.process_queue();
-
         sleepFrame = std::chrono::system_clock::now();
-        cycles = 0;
+        max_cycles = 0;
 
-        for (auto session : _sessions)
+        for (int i = 0; i < _sessions.size(); ++i)
         {
+            auto &session = _sessions[i];
+
             if (!session || !session->_lynx)
             {
                 continue;
             }
 
-            cycles = std::max(cycles, session->execute());
+            cycles[i] = session->execute();
+
+            max_cycles = std::max(max_cycles, cycles[i]);
         }
 
-        if (!cycles)
+        if (!max_cycles)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         else
         {
-            targetFrame = sleepFrame + frames{cycles};
+            for (int i = 0; i < _sessions.size(); ++i)
+            {
+                while (cycles[i] < max_cycles)
+                {
+                    cycle = _sessions[i]->execute();
+                    if (!cycle)
+                    {
+                        cycles[i] = max_cycles;
+                        continue;
+                    }
+                    cycles[i] += cycle;
+                }
+            }
+
+            _comlynx_hub.process_queue();
+            targetFrame = sleepFrame + frames{max_cycles};
             do
             {
                 count++;
