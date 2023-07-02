@@ -265,13 +265,18 @@ void CCart::InitializeGameData(UBYTE *gamedata, ULONG gamesize)
 
     memcpy(mCartBank0, gamedata + (headersize), bank0size);
 
-    memcpy(mCartBank1, gamedata + (headersize + bank0size), bank1size);
+    cartsize = cartsize < bank0size ? 0 : cartsize - bank0size;
+
+    memcpy(mCartBank1, gamedata + (headersize + bank0size), cartsize < bank1size ? cartsize : bank1size);
+    cartsize = cartsize < bank1size ? 0 : cartsize - bank1size;
 
     if (mAudinFlag)
     { // TODO clean up code
-        memcpy(mCartBank0A, gamedata + (headersize + bank0size + bank1size), bank0size);
+        memcpy(mCartBank0A, gamedata + (headersize + bank0size + bank1size), cartsize < bank0size ? cartsize : bank0size);
+        cartsize = cartsize < bank0size ? 0 : cartsize - bank0size;
 
-        memcpy(mCartBank1A, gamedata + (headersize + bank0size + bank1size + bank0size), bank1size);
+        memcpy(mCartBank1A, gamedata + (headersize + bank0size + bank1size + bank0size), cartsize < bank1size ? cartsize : bank1size);
+        cartsize = cartsize < bank1size ? 0 : cartsize - bank1size;
     }
 
     if (bank0size == 0)

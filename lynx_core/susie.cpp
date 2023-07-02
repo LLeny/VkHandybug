@@ -813,8 +813,8 @@ ULONG CSusie::PaintSprites(void)
             int screen_v_start = (SWORD)mVOFF.Word;
             int screen_v_end = (SWORD)mVOFF.Word + SCREEN_HEIGHT;
 
-            int world_h_mid = screen_h_start + 0x8000 + (SCREEN_WIDTH / 2);
-            int world_v_mid = screen_v_start + 0x8000 + (SCREEN_HEIGHT / 2);
+            int world_h_mid = screen_h_start + (SCREEN_WIDTH / 2);
+            int world_v_mid = screen_v_start + (SCREEN_HEIGHT / 2);
 
             TRACE_SUSIE2("PaintSprites() screen_h_start $%04x screen_h_end $%04x", screen_h_start, screen_h_end);
             TRACE_SUSIE2("PaintSprites() screen_v_start $%04x screen_v_end $%04x", screen_v_start, screen_v_end);
@@ -927,19 +927,19 @@ ULONG CSusie::PaintSprites(void)
                     switch (modquad)
                     {
                     case 3:
-                        if ((sprite_h >= screen_h_start || sprite_h < world_h_mid) && (sprite_v < screen_v_end || sprite_v > world_v_mid))
+                        if ((sprite_h >= screen_h_start || sprite_h <= world_h_mid) && (sprite_v < screen_v_end || sprite_v >= world_v_mid))
                             render = TRUE;
                         break;
                     case 2:
-                        if ((sprite_h >= screen_h_start || sprite_h < world_h_mid) && (sprite_v >= screen_v_start || sprite_v < world_v_mid))
+                        if ((sprite_h >= screen_h_start || sprite_h <= world_h_mid) && (sprite_v >= screen_v_start || sprite_v <= world_v_mid))
                             render = TRUE;
                         break;
                     case 1:
-                        if ((sprite_h < screen_h_end || sprite_h > world_h_mid) && (sprite_v >= screen_v_start || sprite_v < world_v_mid))
+                        if ((sprite_h < screen_h_end || sprite_h >= world_h_mid) && (sprite_v >= screen_v_start || sprite_v <= world_v_mid))
                             render = TRUE;
                         break;
                     default:
-                        if ((sprite_h < screen_h_end || sprite_h > world_h_mid) && (sprite_v < screen_v_end || sprite_v > world_v_mid))
+                        if ((sprite_h < screen_h_end || sprite_h >= world_h_mid) && (sprite_v < screen_v_end || sprite_v >= world_v_mid))
                             render = TRUE;
                         break;
                     }

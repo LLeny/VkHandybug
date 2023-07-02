@@ -1277,7 +1277,7 @@ ULONG CMikie::DisplayRenderLine(void)
         mLynxLineDMACounter--;
 
         // Cycle hit for a 80 RAM access in rendering a line
-        work_done += 80 * DMA_RDWR_CYC;
+        work_done += (80 + 100) * DMA_RDWR_CYC;
     }
     return work_done;
 }
@@ -1287,6 +1287,12 @@ ULONG CMikie::DisplayEndOfFrame(void)
     // Stop any further line rendering
     mLynxLineDMACounter = 0;
     mLynxLine = mTIM_2_BKUP;
+
+    if (mSystem.mCPUWakeupTime)
+    {
+        mSystem.mCPUWakeupTime = 0;
+        ClearCPUSleep();
+    }
 
     // Set the timer status flag
     if (mTimerInterruptMask & 0x04)
@@ -1573,13 +1579,6 @@ void CMikie::Poke(ULONG addr, UBYTE data)
         break;
 
     case (AUD0VOL & 0xff):
-        // Counter is disabled when volume is zero for optimisation
-        // reasons, we must update the last use position to stop problems
-        if (!mAUDIO_0_VOLUME && data)
-        {
-            mAUDIO_0_LAST_COUNT = mSystem.mSystemCycleCount;
-            mSystem.mNextTimerEvent = mSystem.mSystemCycleCount;
-        }
         mAUDIO_0_VOLUME = (SBYTE)data;
         TRACE_MIKIE2("Poke(AUD0VOL,%02x) at PC=%04x", data, mSystem.mCpu->GetPC());
         break;
@@ -1639,13 +1638,6 @@ void CMikie::Poke(ULONG addr, UBYTE data)
         break;
 
     case (AUD1VOL & 0xff):
-        // Counter is disabled when volume is zero for optimisation
-        // reasons, we must update the last use position to stop problems
-        if (!mAUDIO_1_VOLUME && data)
-        {
-            mAUDIO_1_LAST_COUNT = mSystem.mSystemCycleCount;
-            mSystem.mNextTimerEvent = mSystem.mSystemCycleCount;
-        }
         mAUDIO_1_VOLUME = (SBYTE)data;
         TRACE_MIKIE2("Poke(AUD1VOL,%02x) at PC=%04x", data, mSystem.mCpu->GetPC());
         break;
@@ -1705,13 +1697,6 @@ void CMikie::Poke(ULONG addr, UBYTE data)
         break;
 
     case (AUD2VOL & 0xff):
-        // Counter is disabled when volume is zero for optimisation
-        // reasons, we must update the last use position to stop problems
-        if (!mAUDIO_2_VOLUME && data)
-        {
-            mAUDIO_2_LAST_COUNT = mSystem.mSystemCycleCount;
-            mSystem.mNextTimerEvent = mSystem.mSystemCycleCount;
-        }
         mAUDIO_2_VOLUME = (SBYTE)data;
         TRACE_MIKIE2("Poke(AUD2VOL,%02x) at PC=%04x", data, mSystem.mCpu->GetPC());
         break;
@@ -1771,13 +1756,6 @@ void CMikie::Poke(ULONG addr, UBYTE data)
         break;
 
     case (AUD3VOL & 0xff):
-        // Counter is disabled when volume is zero for optimisation
-        // reasons, we must update the last use position to stop problems
-        if (!mAUDIO_3_VOLUME && data)
-        {
-            mAUDIO_3_LAST_COUNT = mSystem.mSystemCycleCount;
-            mSystem.mNextTimerEvent = mSystem.mSystemCycleCount;
-        }
         mAUDIO_3_VOLUME = (SBYTE)data;
         TRACE_MIKIE2("Poke(AUD3VOL,%02x) at PC=%04x", data, mSystem.mCpu->GetPC());
         break;
@@ -2735,7 +2713,7 @@ UBYTE CMikie::Peek(ULONG addr)
     case (0xfd97 & 0xff):
         TRACE_MIKIE2("Peek(%04x) - **** HANDY DETECT ATTEMPTED **** at PC=$%04x", addr, mSystem.mCpu->GetPC());
         //			gError->Warning("EMULATOR DETECT REGISTER HAS BEEN READ");
-        return 0x42;
+        // return 0x42;
         break;
 
         // Errors on illegal location accesses
@@ -3628,7 +3606,7 @@ void CMikie::Update(void)
         // Audio 0
         //
         //				if(mAUDIO_0_ENABLE_COUNT && !mAUDIO_0_TIMER_DONE && mAUDIO_0_VOLUME && mAUDIO_0_BKUP)
-        if (mAUDIO_0_ENABLE_COUNT && (mAUDIO_0_ENABLE_RELOAD || !mAUDIO_0_TIMER_DONE) && mAUDIO_0_VOLUME && mAUDIO_0_BKUP)
+        if (mAUDIO_0_ENABLE_COUNT && (mAUDIO_0_ENABLE_RELOAD || !mAUDIO_0_TIMER_DONE))
         {
             decval = 0;
 
@@ -3672,7 +3650,8 @@ void CMikie::Update(void)
                     //
                     // Update audio circuitry
                     //
-                    mAUDIO_0_WAVESHAPER = GetLfsrNext(mAUDIO_0_WAVESHAPER);
+                    if (mAUDIO_0_BKUP || mAUDIO_0_LINKING)
+                        mAUDIO_0_WAVESHAPER = GetLfsrNext(mAUDIO_0_WAVESHAPER);
 
                     if (mAUDIO_0_INTEGRATE_ENABLE)
                     {
@@ -3735,7 +3714,7 @@ void CMikie::Update(void)
         // Audio 1
         //
         //				if(mAUDIO_1_ENABLE_COUNT && !mAUDIO_1_TIMER_DONE && mAUDIO_1_VOLUME && mAUDIO_1_BKUP)
-        if (mAUDIO_1_ENABLE_COUNT && (mAUDIO_1_ENABLE_RELOAD || !mAUDIO_1_TIMER_DONE) && mAUDIO_1_VOLUME && mAUDIO_1_BKUP)
+        if (mAUDIO_1_ENABLE_COUNT && (mAUDIO_1_ENABLE_RELOAD || !mAUDIO_1_TIMER_DONE))
         {
             decval = 0;
 
@@ -3779,7 +3758,8 @@ void CMikie::Update(void)
                     //
                     // Update audio circuitry
                     //
-                    mAUDIO_1_WAVESHAPER = GetLfsrNext(mAUDIO_1_WAVESHAPER);
+                    if (mAUDIO_1_BKUP || mAUDIO_1_LINKING)
+                        mAUDIO_1_WAVESHAPER = GetLfsrNext(mAUDIO_1_WAVESHAPER);
 
                     if (mAUDIO_1_INTEGRATE_ENABLE)
                     {
@@ -3842,7 +3822,7 @@ void CMikie::Update(void)
         // Audio 2
         //
         //				if(mAUDIO_2_ENABLE_COUNT && !mAUDIO_2_TIMER_DONE && mAUDIO_2_VOLUME && mAUDIO_2_BKUP)
-        if (mAUDIO_2_ENABLE_COUNT && (mAUDIO_2_ENABLE_RELOAD || !mAUDIO_2_TIMER_DONE) && mAUDIO_2_VOLUME && mAUDIO_2_BKUP)
+        if (mAUDIO_2_ENABLE_COUNT && (mAUDIO_2_ENABLE_RELOAD || !mAUDIO_2_TIMER_DONE))
         {
             decval = 0;
 
@@ -3886,7 +3866,8 @@ void CMikie::Update(void)
                     //
                     // Update audio circuitry
                     //
-                    mAUDIO_2_WAVESHAPER = GetLfsrNext(mAUDIO_2_WAVESHAPER);
+                    if (mAUDIO_2_BKUP || mAUDIO_2_LINKING)
+                        mAUDIO_2_WAVESHAPER = GetLfsrNext(mAUDIO_2_WAVESHAPER);
 
                     if (mAUDIO_2_INTEGRATE_ENABLE)
                     {
@@ -3949,7 +3930,7 @@ void CMikie::Update(void)
         // Audio 3
         //
         //				if(mAUDIO_3_ENABLE_COUNT && !mAUDIO_3_TIMER_DONE && mAUDIO_3_VOLUME && mAUDIO_3_BKUP)
-        if (mAUDIO_3_ENABLE_COUNT && (mAUDIO_3_ENABLE_RELOAD || !mAUDIO_3_TIMER_DONE) && mAUDIO_3_VOLUME && mAUDIO_3_BKUP)
+        if (mAUDIO_3_ENABLE_COUNT && (mAUDIO_3_ENABLE_RELOAD || !mAUDIO_3_TIMER_DONE))
         {
             decval = 0;
 
@@ -3993,7 +3974,8 @@ void CMikie::Update(void)
                     //
                     // Update audio circuitry
                     //
-                    mAUDIO_3_WAVESHAPER = GetLfsrNext(mAUDIO_3_WAVESHAPER);
+                    if (mAUDIO_3_BKUP || mAUDIO_3_LINKING)
+                        mAUDIO_3_WAVESHAPER = GetLfsrNext(mAUDIO_3_WAVESHAPER);
 
                     if (mAUDIO_3_INTEGRATE_ENABLE)
                     {
@@ -4055,6 +4037,13 @@ void CMikie::Update(void)
 
     //			if(mSystem.mSystemCycleCount==mSystem.mNextTimerEvent) gError->Warning("CMikie::Update() - mSystem.mSystemCycleCount==mSystem.mNextTimerEvent, system lock likely");
     //			TRACE_MIKIE1("Update() - NextTimerEvent = %012d",mSystem.mNextTimerEvent);
+
+    // Update system IRQ status as a result of timer activity
+    mSystem.mSystemIRQ = (mTimerStatusFlags) ? true : false;
+    if (mSystem.mSystemIRQ && mSystem.mSystemCPUSleep)
+    {
+        ClearCPUSleep();
+    }
 
     // Now all the timer updates are done we can increment the system
     // counter for any work done within the Update() function, mSystem.mSystemCycleCounter
