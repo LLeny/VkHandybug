@@ -9,9 +9,9 @@
 #include <stack>
 #include <filesystem>
 #include <fstream>
-#include <iostream> 
-#include <string> 
-#include <sstream> 
+#include <iostream>
+#include <string>
+#include <sstream>
 #include <utility>
 #include <functional>
 #include <unordered_map>
@@ -65,10 +65,11 @@ enum LynxVersion_
     LynxVersion_Max = 3
 };
 
-bool iequals(const std::string& a, const std::string& b);
+bool iequals(const std::string &a, const std::string &b);
 void ltrim(std::string &s);
 void rtrim(std::string &s);
 void trim(std::string &s);
+unsigned int crc32b(unsigned char *message, int size);
 
 template <typename... Args>
 std::string string_sprintf(const char *format, Args... args)

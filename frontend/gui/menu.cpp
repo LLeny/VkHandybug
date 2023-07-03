@@ -83,7 +83,7 @@ void Menu::initialize()
     _settings.initialize(_app);
 
     mainitems.push_back({"", "New Session...", "Ctrl+N", MENUITEM_TYPE_CALLBACK, [&]() {
-                             ImGuiFileDialog::Instance()->OpenDialog("ChooseCartridge", "Cartridge", ".lnx,.o", Config::get_instance().store().last_rom_folder, 1, nullptr, ImGuiFileDialogFlags_Modal);
+                             ImGuiFileDialog::Instance()->OpenDialog("ChooseCartridge", "Cartridge", ".lnx,.o,.zip", Config::get_instance().store().last_rom_folder, 1, nullptr, ImGuiFileDialogFlags_Modal);
                          },
                          ImGuiMod_Ctrl | ImGuiKey_N});
     mainitems.push_back({"", "Settings...", "", MENUITEM_TYPE_CALLBACK, [&]() {

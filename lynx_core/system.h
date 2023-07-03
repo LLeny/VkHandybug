@@ -143,7 +143,7 @@ class CSystem : public CSystemBase
     void Reset(void);
     bool ContextSave(const char *context);
     bool ContextLoad(const char *context);
-    bool IsZip(char *filename);
+    bool IsZip(const char *filename);
     bool ReloadCart();
     bool ReadCart();
 

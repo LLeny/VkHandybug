@@ -41,9 +41,9 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-  zlib
-  GIT_REPOSITORY       https://github.com/madler/zlib.git
-  GIT_TAG              04f42ceca40f73e2978b50e93806c2a18c1281fc
+  libzip
+  GIT_REPOSITORY       https://github.com/nih-at/libzip.git
+  GIT_TAG              v1.10.0
   GIT_SHALLOW          TRUE
   GIT_PROGRESS         TRUE
 )
@@ -97,6 +97,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(vkmemalloc)
 FetchContent_MakeAvailable(vkbootstrap)
 FetchContent_MakeAvailable(fmt)
+FetchContent_MakeAvailable(libzip)
 FetchContent_Populate(lua)
 FetchContent_Populate(sol2)
 FetchContent_Populate(miniaudio)

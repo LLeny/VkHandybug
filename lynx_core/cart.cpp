@@ -52,7 +52,6 @@
 #include <string.h>
 #include "system.h"
 #include "cart.h"
-#include "zlib.h"
 
 CCart::CCart(CSystemBase &parent)
     : mSystem{parent}
@@ -79,8 +78,7 @@ void CCart::InitializeGameData(UBYTE *gamedata, ULONG gamesize)
     mCartRAM = FALSE;
     mHeaderLess = 0;
     mEEPROMType = 0;
-    mCRC32 = 0;
-    mCRC32 = crc32(mCRC32, gamedata, gamesize);
+    mCRC32 = crc32b(gamedata, gamesize);
 
     // Open up the file
 

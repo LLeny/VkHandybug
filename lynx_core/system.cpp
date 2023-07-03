@@ -59,6 +59,7 @@
 #include "global.h"
 #include "system.h"
 #include "error.h"
+#include "zip.h"
 
 extern void lynx_decrypt(unsigned char *result, const unsigned char *encrypted, const int length);
 
@@ -201,109 +202,69 @@ bool CSystem::ReadCart()
         filesize = 0;
         filememory = NULL;
     }
-    // TODO
-    //  else if (IsZip(gamefile))
-    //  {
-    //      // Try and find a file in the zip
-    //      unzFile *fp;
-    //      unz_file_info info;
-    //      char filename_buf[0x100], *ptr;
-    //      bool gotIt;
+    else if (IsZip(mGamefile.generic_string().c_str()))
+    {
+        struct zip *zip_file;
+        struct zip_file *file_in_zip;
+        int err;
 
-    //      if ((fp = (unzFile *)unzOpen(gamefile)) != NULL)
-    //      {
-    //          if (unzGoToFirstFile(fp) != UNZ_OK)
-    //          {
-    //              unzClose(fp);
-    //              CLynxException lynxerr;
-    //              lynxerr.Message() << "Handy Error: ZIP File select problems";
-    //              lynxerr.Description() << "The file you selected could not be read." << std::endl
-    //                                    << "(The ZIP file may be corrupted)." << std::endl;
-    //              throw(lynxerr);
-    //          }
+        zip_file = zip_open(mGamefile.generic_string().c_str(), 0, &err);
+        if (!zip_file)
+        {
+            CLynxException lynxerr;
+            lynxerr.Message() << "Handy Error: ZIP problems";
+            lynxerr.Description() << "Can't open zip : " << mGamefile.generic_string().c_str() << ", error:" << err << std::endl;
+            throw(lynxerr);
+        };
 
-    //          gotIt = FALSE;
-    //          for (;;)
-    //          {
-    //              // Get file descriptor and analyse
-    //              if (unzGetCurrentFileInfo(fp, &info, filename_buf, 0x100, NULL, 0, NULL, 0) != UNZ_OK)
-    //              {
-    //                  break;
-    //              }
-    //              else
-    //              {
-    //                  ptr = strchr(filename_buf, '.');
-    //                  if (ptr != NULL)
-    //                  {
-    //                      char buf[4];
+        int files_total = zip_get_num_entries(zip_file, 0);
 
-    //                      ptr++;
-    //                      buf[0] = tolower(*ptr);
-    //                      ptr++;
-    //                      buf[1] = tolower(*ptr);
-    //                      ptr++;
-    //                      buf[2] = tolower(*ptr);
-    //                      buf[3] = 0;
-    //                      if (!strcmp(buf, "lnx") || !strcmp(buf, "com") || !strcmp(buf, "o"))
-    //                      {
-    //                          // Found a likely file so signal
-    //                          gotIt = TRUE;
-    //                          break;
-    //                      }
-    //                  }
+        for (int i = 0; i < files_total; ++i)
+        {
+            zip_stat_t stats;
+            if (zip_stat_index(zip_file, i, ZIP_FL_NOCASE | ZIP_FL_NODIR, &stats) < 0)
+            {
+                continue;
+            }
 
-    //                  // No match so lets try the next file
-    //                  if (unzGoToNextFile(fp) != UNZ_OK)
-    //                      break;
-    //              }
-    //          }
+            auto ptr = strchr(stats.name, '.');
+            if (ptr != NULL)
+            {
+                char buf[4];
 
-    //          // Did we strike gold ?
-    //          if (gotIt)
-    //          {
-    //              if (unzOpenCurrentFile(fp) == UNZ_OK)
-    //              {
-    //                  // Allocate memory for the rom
-    //                  filesize = info.uncompressed_size;
-    //                  filememory = (UBYTE *)new UBYTE[filesize];
+                ptr++;
+                buf[0] = tolower(*ptr);
+                ptr++;
+                buf[1] = tolower(*ptr);
+                ptr++;
+                buf[2] = tolower(*ptr);
+                buf[3] = 0;
+                if (!strcmp(buf, "lnx") || !strcmp(buf, "com") || !strcmp(buf, "o"))
+                {
+                    filesize = stats.size;
+                    filememory = (UBYTE *)new UBYTE[filesize];
 
-    //                  // Read it into memory
-    //                  if (unzReadCurrentFile(fp, filememory, filesize) != (int)info.uncompressed_size)
-    //                  {
-    //                      unzCloseCurrentFile(fp);
-    //                      unzClose(fp);
-    //                      delete filememory;
-    //                      // Throw a wobbly
-    //                      CLynxException lynxerr;
-    //                      lynxerr.Message() << "Handy Error: ZIP File load problems";
-    //                      lynxerr.Description() << "The zip file you selected could not be loaded." << std::endl
-    //                                            << "(The ZIP file may be corrupted)." << std::endl;
-    //                      throw(lynxerr);
-    //                  }
+                    file_in_zip = zip_fopen_index(zip_file, i, 0);
 
-    //                  // Got it!
-    //                  unzCloseCurrentFile(fp);
-    //                  unzClose(fp);
-    //              }
-    //          }
-    //          else
-    //          {
-    //              CLynxException lynxerr;
-    //              lynxerr.Message() << "Handy Error: ZIP File load problems";
-    //              lynxerr.Description() << "The file you selected could not be loaded." << std::endl
-    //                                    << "Could not find a Lynx file in the ZIP archive." << std::endl;
-    //              throw(lynxerr);
-    //          }
-    //      }
-    //      else
-    //      {
-    //          CLynxException lynxerr;
-    //          lynxerr.Message() << "Handy Error: ZIP File open problems";
-    //          lynxerr.Description() << "The file you selected could not be opened." << std::endl
-    //                                << "(The ZIP file may be corrupted)." << std::endl;
-    //          throw(lynxerr);
-    //      }
-    //  }
+                    zip_fread(file_in_zip, filememory, filesize);
+
+                    zip_fclose(file_in_zip);
+                    break;
+                }
+            }
+        }
+
+        zip_close(zip_file);
+
+        if (!filesize)
+        {
+            CLynxException lynxerr;
+            lynxerr.Message() << "Handy Error: ZIP File load problems";
+            lynxerr.Description() << "The file you selected could not be loaded." << std::endl
+                                  << "Could not find a Lynx file in the ZIP archive." << std::endl;
+            throw(lynxerr);
+        }
+    }
     else
     {
         // Open the file and load the file
@@ -482,7 +443,7 @@ bool CSystem::ReloadCart()
     return true;
 }
 
-bool CSystem::IsZip(char *filename)
+bool CSystem::IsZip(const char *filename)
 {
     UBYTE buf[2];
     FILE *fp;

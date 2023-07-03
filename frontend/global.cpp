@@ -29,3 +29,24 @@ void trim(std::string &s)
     rtrim(s);
     ltrim(s);
 }
+
+unsigned int crc32b(unsigned char *message, int size)
+{
+    int i, j;
+    unsigned int byte, crc, mask;
+
+    i = 0;
+    crc = 0xFFFFFFFF;
+    while (i < size)
+    {
+        byte = message[i]; // Get next byte.
+        crc = crc ^ byte;
+        for (j = 7; j >= 0; j--)
+        { // Do eight times.
+            mask = -(crc & 1);
+            crc = (crc >> 1) ^ (0xEDB88320 & mask);
+        }
+        i = i + 1;
+    }
+    return ~crc;
+}

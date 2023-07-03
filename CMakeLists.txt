@@ -45,12 +45,6 @@ file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     ${luasrcFiles}
 )
 
-FetchContent_GetProperties(zlib)
-if(NOT zlib_POPULATED)
-  FetchContent_Populate(zlib)
-  add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-
 FetchContent_GetProperties(glfw)
 if(NOT glfw_POPULATED)
   FetchContent_Populate(glfw)
@@ -80,13 +74,14 @@ target_glsl_shaders(${PROJECT_NAME} PRIVATE
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
+    "lynx_core/"
+    "frontend/include/"
     ${Vulkan_INCLUDE_DIRS}
     ${vkbootstrap_SOURCE_DIR}/src
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
     ${vkmemalloc_SOURCE_DIR}/include
-    ${zlib_SOURCE_DIR}
-    ${zlib_BINARY_DIR}
+    ${libzip_SOURCE_DIR}/lib
     ${fmt_SOURCE_DIR}/include
     ${imgui_filedialog_SOURCE_DIR}
     ${miniaudio_SOURCE_DIR}
@@ -94,8 +89,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${hashlib_SOURCE_DIR}
     ${sol2_SOURCE_DIR}/include
     ${lua_SOURCE_DIR}/src
-    "lynx_core/"
-    "frontend/include/"
+    ${libzip_BINARY_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -104,7 +98,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     vk-bootstrap::vk-bootstrap
     VulkanMemoryAllocator
     glfw
-    zlibstatic
+    zip
     fmt
 )
 
