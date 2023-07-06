@@ -11,7 +11,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   imgui
   GIT_REPOSITORY       https://github.com/ocornut/imgui.git
-  GIT_TAG              530134d1253c97bd33268b5932b6c67d0ad47d09
+  GIT_TAG              dc3e531ff28450bff73fde0163b1d076b6bb5605
   GIT_SHALLOW          FALSE
   GIT_PROGRESS         TRUE
 )
