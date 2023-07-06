@@ -20,7 +20,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/frontend/configure.h.in" "${CMAKE_CU
 find_package(Vulkan REQUIRED)
 find_package(Threads REQUIRED)
 
-include("tools/cmake.dependencies")
+include("tools/dependencies.cmake")
 
 set(luasrcFiles ${lua_SOURCE_DIR}/src/lapi.c ${lua_SOURCE_DIR}/src/lauxlib.c ${lua_SOURCE_DIR}/src/lbaselib.c ${lua_SOURCE_DIR}/src/lcode.c ${lua_SOURCE_DIR}/src/lcorolib.c ${lua_SOURCE_DIR}/src/lctype.c ${lua_SOURCE_DIR}/src/ldblib.c ${lua_SOURCE_DIR}/src/ldebug.c ${lua_SOURCE_DIR}/src/ldo.c
 ${lua_SOURCE_DIR}/src/ldump.c ${lua_SOURCE_DIR}/src/lfunc.c ${lua_SOURCE_DIR}/src/lgc.c ${lua_SOURCE_DIR}/src/linit.c ${lua_SOURCE_DIR}/src/liolib.c ${lua_SOURCE_DIR}/src/llex.c ${lua_SOURCE_DIR}/src/lmathlib.c ${lua_SOURCE_DIR}/src/lmem.c ${lua_SOURCE_DIR}/src/loadlib.c ${lua_SOURCE_DIR}/src/lobject.c ${lua_SOURCE_DIR}/src/lopcodes.c
@@ -44,12 +44,6 @@ file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     ${hashlib_SOURCE_DIR}/md5.cpp
     ${luasrcFiles}
 )
-
-FetchContent_GetProperties(glfw)
-if(NOT glfw_POPULATED)
-  FetchContent_Populate(glfw)
-  add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
 
 add_executable(${PROJECT_NAME} ${vkhandybug_SOURCES})
 
@@ -92,6 +86,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${libzip_BINARY_DIR}
 )
 
+if(DEFINED ZLIB_INTERN)
+    add_dependencies(${PROJECT_NAME} zlibstatic)
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Vulkan::Vulkan
     Threads::Threads
@@ -115,3 +113,4 @@ add_custom_target(
     ARGS -P "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_appimage.cmake"
     DEPENDS ${PROJECT_NAME}
     )
+

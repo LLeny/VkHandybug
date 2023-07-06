@@ -41,6 +41,14 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+  zlib
+  GIT_REPOSITORY       https://github.com/madler/zlib.git
+  GIT_TAG              04f42ceca40f73e2978b50e93806c2a18c1281fc
+  GIT_SHALLOW          TRUE
+  GIT_PROGRESS         TRUE
+)
+
+FetchContent_Declare(
   libzip
   GIT_REPOSITORY       https://github.com/nih-at/libzip.git
   GIT_TAG              v1.10.0
@@ -97,7 +105,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(vkmemalloc)
 FetchContent_MakeAvailable(vkbootstrap)
 FetchContent_MakeAvailable(fmt)
-FetchContent_MakeAvailable(libzip)
 FetchContent_Populate(lua)
 FetchContent_Populate(sol2)
 FetchContent_Populate(miniaudio)
@@ -105,6 +112,37 @@ FetchContent_Populate(cereal)
 FetchContent_Populate(imgui)
 FetchContent_Populate(imgui_filedialog)
 FetchContent_Populate(hashlib)
+
+FetchContent_GetProperties(glfw)
+if(NOT glfw_POPULATED)
+  FetchContent_Populate(glfw)
+  add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+find_package(ZLIB)
+if(NOT ZLIB_FOUND)
+  FetchContent_Populate(zlib)
+  add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
+  configure_file("${zlib_BINARY_DIR}/zconf.h" "${zlib_SOURCE_DIR}/zconf.h" COPYONLY)
+  set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR})  
+  if(MSVC)
+    set(ZLIB_LIBRARY "${zlib_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_STATIC_LIBRARY_PREFIX}zlibstatic${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  else()
+    set(ZLIB_LIBRARY "${zlib_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}zlibstatic${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endif()
+  set(ZLIB_INTERN ON)
+endif()
+
+if(NOT libzip_POPULATED)
+  FetchContent_Populate(libzip)
+  set(BUILD_TOOLS OFF CACHE BOOL "Build tools in the src directory (zipcmp, zipmerge, ziptool)" FORCE)
+  set(BUILD_REGRESS OFF CACHE BOOL "Build regression tests" FORCE)
+  set(BUILD_EXAMPLES OFF CACHE BOOL "Build examples" FORCE)
+  set(BUILD_DOC OFF CACHE BOOL "Build documentation" FORCE)
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
+  set(LIBZIP_DO_INSTALL OFF CACHE BOOL "Install libzip and the related files" FORCE)
+  add_subdirectory(${libzip_SOURCE_DIR} ${libzip_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
 
 if(NOT APPLE)
   file(READ "${FETCHCONTENT_BASE_DIR}/vkmemalloc-src/src/CMakeLists.txt" FILE_CONTENTS)
