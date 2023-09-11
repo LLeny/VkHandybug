@@ -57,7 +57,20 @@ class CEEPROM : public CLynxBase, public IMemoryAccess
     void Poke(ULONG addr, UBYTE data){};
     UBYTE Peek(ULONG addr)
     {
-        return (0);
+        ULONG dst = addr >> 1;
+        if (dst > 1024 - 1)
+        {
+            return 0;
+        }
+
+        if (addr % 2)
+        {
+            return (uint8_t)(romdata[dst] >> 8);
+        }
+        else
+        {
+            return (uint8_t)(romdata[dst] & 0xff);
+        }
     };
 
     void SetFilename(char *f)
