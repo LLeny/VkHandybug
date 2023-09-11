@@ -206,7 +206,7 @@ class Config
     void save(App *app);
 
     void apply_theme();
-    void apply_font();
+    void apply_font(float scale);
     void load_recents(App *app);
     void save_recents(App *app);
     void initialize();
@@ -221,7 +221,7 @@ class Config
     void delete_disasm_editor(std::string sessionid, DisasmEditor *editor);
 
     char *imgui_ini();
-
+    
   private:
     Config();
 

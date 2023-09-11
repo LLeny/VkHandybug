@@ -14,8 +14,9 @@ SessionControlEditor::~SessionControlEditor()
 
 void SessionControlEditor::render()
 {
-    float buttonHeight = 20;
-    float buttonWidth = 50;
+    float font_size = ImGui::GetFontSize();
+    float buttonHeight = font_size * 1.8;
+    float buttonWidth = font_size * 3.5;
 
     if (ImGui::BeginTable("#controltable", 5, ImGuiTableFlags_NoBordersInBody))
     {

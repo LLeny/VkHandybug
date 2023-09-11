@@ -5,9 +5,6 @@
 #include "system.h"
 #include "editor.h"
 
-#define LABEL_WIDTH (35)
-#define ITEM_WIDTH (40)
-
 class CPUEditor : public IEditor
 {
   public:
@@ -27,4 +24,7 @@ class CPUEditor : public IEditor
     void draw_register(const char *label, uint8_t reg);
     void draw_PS(const char *label, uint16_t ps);
     void draw_flag(const char *label, bool enabled, bool *b);
+
+    float LABEL_WIDTH = ImGui::GetFontSize() * 2;
+    float ITEM_WIDTH = ImGui::GetFontSize() * 2.5;
 };

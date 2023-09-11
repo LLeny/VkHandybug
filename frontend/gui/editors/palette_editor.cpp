@@ -36,7 +36,9 @@ void PaletteEditor::draw_palette_entry(int id, uint16_t entry)
     uint8_t gf = (g << 4) | (g & 0x0f);
     uint8_t rf = (br << 4) | (br & 0x0f);
     uint8_t bf = (br >> 4) | (br & 0xf0);
+    
+    float font_size = ImGui::GetFontSize();
 
-    ImGui::ColorButton(label.c_str(), {(float)rf / 255.0f, (float)gf / 255.0f, (float)bf / 255.0f, 1.0f}, ImGuiColorEditFlags_None, {16, 16});
+    ImGui::ColorButton(label.c_str(), {(float)rf / 255.0f, (float)gf / 255.0f, (float)bf / 255.0f, 1.0f}, ImGuiColorEditFlags_None, {font_size, font_size});
     ImGui::SameLine();
 }

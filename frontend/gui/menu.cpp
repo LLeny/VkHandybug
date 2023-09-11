@@ -124,7 +124,9 @@ void Menu::render_popups()
     {
         ImGui::OpenPopup(_settings_popup_id);
 
-        ImGui::SetNextWindowSize({450, 175});
+        auto font_size = ImGui::GetFontSize();
+
+        ImGui::SetNextWindowSize({30 * font_size, 12 * font_size});
         if (ImGui::BeginPopupModal(_settings_popup_id))
         {
             if (!_settings.render())

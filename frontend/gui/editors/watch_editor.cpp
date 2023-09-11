@@ -318,19 +318,21 @@ void WatchEditor::render()
     char labelBuf[10];
     WatchItem item{};
 
+    auto font_size = ImGui::GetFontSize();
+
     ImGui::AlignTextToFramePadding();
 
     ImGui::Text("Label");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(120);
+    ImGui::SetNextItemWidth(font_size * 8);
     ImGui::InputText("##watchlabel", _newItemLabelBuf, 49);
 
     ImGui::SameLine();
     ImGui::Text("Address");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(120);
+    ImGui::SetNextItemWidth(font_size * 8);
     if (imgui_autocomplete_input("##watchaddr", _newItemAddrBuf, sizeof(_newItemAddrBuf), _session->symbols().overrides(), ImGuiInputTextFlags_None) && !_newItemLabelBuf[0])
     {
         strncpy(_newItemLabelBuf, _newItemAddrBuf, sizeof(_newItemAddrBuf));
@@ -340,7 +342,7 @@ void WatchEditor::render()
     ImGui::Text("Bank");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(70);
+    ImGui::SetNextItemWidth(font_size * 5);
     if (ImGui::BeginCombo("##watchbank", mem_bank_get_desc(_new_item_meme_bank), ImGuiComboFlags_HeightLargest))
     {
         for (int n = 0; n < LynxMemBank_MAX; n++)
@@ -353,7 +355,7 @@ void WatchEditor::render()
     ImGui::Text("Type");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(70);
+    ImGui::SetNextItemWidth(font_size * 5);
     if (ImGui::BeginCombo("##watchtype", dataType_get_desc(_newItemDataType), ImGuiComboFlags_HeightLargest))
     {
         for (int n = 0; n < ImGuiDataType_COUNT; n++)
@@ -363,7 +365,7 @@ void WatchEditor::render()
     }
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(50);
+    ImGui::SetNextItemWidth(font_size * 4);
     if (!is_read_only() && ImGui::Button("Add"))
     {
         if (strlen(_newItemLabelBuf) <= 0 || is_read_only())

@@ -65,7 +65,9 @@ void DisasmEditor::draw_contents()
 
 void DisasmEditor::draw_options()
 {
-    ImGui::SetCursorPosY(ImGui::GetWindowHeight() - (int)ImGuiStyleVar_CellPadding - 10);
+    auto font_size = ImGui::GetFontSize();
+
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() - (int)ImGuiStyleVar_CellPadding - font_size);
     ImGui::Separator();
     if (ImGui::Button("Options"))
     {
@@ -81,7 +83,7 @@ void DisasmEditor::draw_options()
     ImGui::Text("Jump to");
     ImGui::SameLine();
     ImGui::BeginDisabled(_follow_pc);
-    ImGui::SetNextItemWidth(120);
+    ImGui::SetNextItemWidth(font_size * 8);
     if (imgui_autocomplete_input("##disasmtableaddr", _address_buf, sizeof(_address_buf), _session->symbols().overrides(), ImGuiInputTextFlags_None) && _address_buf[0])
     {
         if (strlen(_address_buf) <= 0 || is_read_only())
@@ -110,7 +112,7 @@ void DisasmEditor::draw_disasm_table()
 
     auto tableSize = ImGui::GetWindowSize();
 
-    tableSize.y -= (ImGuiStyleVar_CellPadding + 10 + ImGui::GetFrameHeight()); // options height
+    tableSize.y -= (ImGuiStyleVar_CellPadding + ImGui::GetFontSize() + ImGui::GetFrameHeight()); // options height
 
     int itemCount = (int)(tableSize.y / rowHeight) + 1;
 

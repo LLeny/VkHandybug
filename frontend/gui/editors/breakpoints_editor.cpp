@@ -50,10 +50,12 @@ const char *BreakpointsEditor::type_get_desc(BreakPointType type) const
 
 void BreakpointsEditor::render_header()
 {
+    auto font_size = ImGui::GetFontSize();
+
     ImGui::Text("Add breakpoint, Address");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(120);
+    ImGui::SetNextItemWidth(font_size * 8);
 
     imgui_autocomplete_input("##bpaddr", _address_buf, sizeof(_address_buf), _session->symbols().overrides(), ImGuiInputTextFlags_None);
 
@@ -61,7 +63,7 @@ void BreakpointsEditor::render_header()
     ImGui::Text("Bank");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(70);
+    ImGui::SetNextItemWidth(font_size * 5);
     if (ImGui::BeginCombo("##bpbank", mem_bank_get_desc(_mem_bank), ImGuiComboFlags_HeightLargest))
     {
         for (int n = 0; n < LynxMemBank_MAX; n++)
@@ -78,7 +80,7 @@ void BreakpointsEditor::render_header()
     ImGui::Text("Type");
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(70);
+    ImGui::SetNextItemWidth(font_size * 5);
     if (ImGui::BeginCombo("##bptype", type_get_desc(_type), ImGuiComboFlags_HeightLargest))
     {
         for (int n = 0; n < BreakPointType_MAX; n++)
@@ -92,7 +94,7 @@ void BreakpointsEditor::render_header()
     }
 
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(50);
+    ImGui::SetNextItemWidth(font_size * 4);
     if (!is_read_only() && ImGui::Button("Add"))
     {
         if (strlen(_address_buf) <= 0 || is_read_only())

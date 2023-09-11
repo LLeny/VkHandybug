@@ -39,6 +39,7 @@ void ControlsEditor::render()
 void ControlsEditor::render_button_mapping(LynxButtons btn)
 {
     int glfw_key = get_mapping(btn);
+    float font_size = ImGui::GetFontSize();
 
     ImGui::TableNextColumn();
     ImGui::Text("%s", get_description(btn).c_str());
@@ -46,7 +47,7 @@ void ControlsEditor::render_button_mapping(LynxButtons btn)
     ImGui::TableNextColumn();
     std::string label = fmt::format("{}##btn{}", get_description(glfw_key).c_str(), (int)btn);
     std::string labelpop = fmt::format("##pop{}", (int)btn);
-    if (ImGui::Button(label.c_str(), {70, 0}))
+    if (ImGui::Button(label.c_str(), {5 * font_size, 0}))
     {
         _selected_key = glfw_key;
         ImGui::OpenPopup(labelpop.c_str());
@@ -54,7 +55,7 @@ void ControlsEditor::render_button_mapping(LynxButtons btn)
 
     bool open = true;
 
-    ImGui::SetNextWindowSize({250, 100});
+    ImGui::SetNextWindowSize({15 * font_size, 8 * font_size});
     if (ImGui::BeginPopupModal(labelpop.c_str(), &open))
     {
         int pressed = _session->_app->get_pressed_key();

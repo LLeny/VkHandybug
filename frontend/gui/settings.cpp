@@ -83,7 +83,9 @@ bool Settings::render()
         ImGuiFileDialog::Instance()->Close();
     }
 
-    if (ImGui::Button("OK", {50, 25}))
+    float fontsize = ImGui::GetFontSize();
+
+    if (ImGui::Button("OK", {3 * fontsize, 2 * fontsize}))
     {
         return false;
     }

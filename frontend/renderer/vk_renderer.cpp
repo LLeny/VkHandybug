@@ -307,6 +307,8 @@ void VulkanRenderer::initialize()
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+
     _mainWindow = glfwCreateWindow(1280, 720, "VulkanRenderer", NULL, NULL);
     if (!glfwVulkanSupported())
     {
@@ -395,7 +397,10 @@ void VulkanRenderer::initialize()
     init_info.Allocator = _allocationCallbacks;
     ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
 
-    Config::get_instance().apply_font();
+    float xscale, yscale;
+    glfwGetWindowContentScale(_mainWindow, &xscale, &yscale);
+
+    Config::get_instance().apply_font(yscale);
 
     VkCommandPool command_pool = wd->Frames[wd->FrameIndex].CommandPool;
     VkCommandBuffer command_buffer = wd->Frames[wd->FrameIndex].CommandBuffer;

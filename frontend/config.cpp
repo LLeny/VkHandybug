@@ -465,18 +465,22 @@ void Config::apply_theme()
     }
 }
 
-void Config::apply_font()
+void Config::apply_font(float scale)
 {
     ImGuiIO &io = ImGui::GetIO();
 
     io.Fonts->Clear();
 
+    int font_size = scale * 16;
+
     ImFontConfig cfg;
     cfg.MergeMode = true;
     cfg.GlyphOffset = {0.f, -4.f};
-    cfg.GlyphMinAdvanceX = 16.0f;
+    cfg.GlyphMinAdvanceX = font_size;
 
-    io.Fonts->AddFontFromFileTTF(_store.font.c_str(), 16.0f);
-    ImFont *font = BootstrapIcons::Font::Load(io, 16.f, &cfg);
+    io.Fonts->AddFontFromFileTTF(_store.font.c_str(), font_size);
+    ImFont *font = BootstrapIcons::Font::Load(io, font_size, &cfg);
     io.Fonts->Build();
+
+    ImGui::GetStyle().ScaleAllSizes(2.0);
 }

@@ -32,6 +32,7 @@ void SuzyEditor::render_sprite()
     const uint16_t spr_addr[] = {0, 0xFC00, 0, 0xFC02, 0, 0xFC04, 0xFC06, 0, 0xFC08, 0xFC0A, 0, 0xFC0C, 0xFC0E, 0, 0xFC10, 0, 0xFC12, 0, 0xFC14, 0xFC16, 0, 0xFC18, 0xFC1A, 0, 0xFC1C, 0xFC1E, 0, 0xFC20, 0xFC22, 0, 0xFC24, 0, 0xFC26, 0, 0xFC28, 0xFC2A, 0, 0xFC2C, 0, 0xFC2E};
 
     auto suzy = _session->system()->mSusie;
+    auto label_width = ImGui::GetFontSize() * 6;
 
     if (ImGui::BeginTable("##sprs", 4, ImGuiTableFlags_SizingFixedSame))
     {
@@ -45,10 +46,10 @@ void SuzyEditor::render_sprite()
 
             ImGui::TableNextColumn();
             imgui_char_hex(
-                spr_str[i] + "L", *suzy, spr_addr[i], [&]() { return is_read_only(); }, 100);
+                spr_str[i] + "L", *suzy, spr_addr[i], [&]() { return is_read_only(); }, label_width);
             ImGui::TableNextColumn();
             imgui_char_hex(
-                spr_str[i] + "H", *suzy, spr_addr[i] + 1, [&]() { return is_read_only(); }, 100);
+                spr_str[i] + "H", *suzy, spr_addr[i] + 1, [&]() { return is_read_only(); }, label_width);
         }
 
         ImGui::EndTable();
