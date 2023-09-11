@@ -18,6 +18,7 @@ class VulkanRenderer;
 class App;
 class Config;
 class ControlsEditor;
+class SessionGUI;
 
 enum BreakPointType
 {
@@ -87,6 +88,7 @@ class Session : public std::enable_shared_from_this<Session>
 {
     friend App;
     friend ControlsEditor;
+    friend SessionGUI;
 
   public:
     Session(std::filesystem::path file);

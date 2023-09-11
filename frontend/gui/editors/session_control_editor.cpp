@@ -1,7 +1,9 @@
 #include "session_control_editor.h"
 #include "imgui.h"
+#include "app.h"
 #include "session.h"
 #include "bootstrap-icons.h"
+#include "error.h"
 #include <fmt/core.h>
 
 SessionControlEditor::SessionControlEditor()
@@ -97,8 +99,16 @@ void SessionControlEditor::render()
         if (create_button("Rld", {buttonWidth, buttonHeight}, "Reload cart from disk"))
         {
             _session->set_status(SessionStatus_Break);
-            _session->system()->ReloadCart();
-            _session->reload_symbols();
+            try
+            {
+                _session->system()->ReloadCart();
+                _session->reload_symbols();
+            }
+            catch (CLynxException &e)
+            {
+                LOG(LOGLEVEL_ERROR) << "Session - Couldn't reload cart";
+                _app->close_session(_session->identifier());            
+            }
         }
 
         ImGui::EndTable();
@@ -127,4 +137,9 @@ bool SessionControlEditor::create_button(std::string text, ImVec2 size, std::str
         ImGui::SetTooltip("%s", tooltip.c_str());
     }
     return ret;
+}
+
+void SessionControlEditor::set_app(std::shared_ptr<App> app)
+{
+    _app = app;
 }

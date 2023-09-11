@@ -58,6 +58,8 @@ void SessionGUI::initialize(std::shared_ptr<Session> session)
     _single_editors.push_back({_mikey_window_id, &_mikie_editor, &_mikie_open});
     _single_editors.push_back({_suzy_window_id, &_suzy_editor, &_suzy_open});
     _single_editors.push_back({_callstack_window_id, &_callstack_editor, &_callstack_open});
+
+    _session_control_editor.set_app(session->_app);
 }
 
 std::string SessionGUI::id()
