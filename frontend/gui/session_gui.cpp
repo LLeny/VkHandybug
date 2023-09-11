@@ -289,6 +289,11 @@ void SessionGUI::render_memory()
 {
     for (auto memedit : _mem_editors)
     {
+        if (!memedit)
+        {
+            continue;
+        }
+
         bool open = true;
 
         auto memidentifier = memedit->identifer();
