@@ -2,6 +2,5 @@
 Type=Application
 Name=VkHandybug
 Icon=io.github.lleny.vkhandybug
-Path=/app/bin
-Exec=vkhandybug
+Exec=/app/bin/vkhandybug.sh
 Categories=Development;
