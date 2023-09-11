@@ -482,5 +482,5 @@ void Config::apply_font(float scale)
     ImFont *font = BootstrapIcons::Font::Load(io, font_size, &cfg);
     io.Fonts->Build();
 
-    ImGui::GetStyle().ScaleAllSizes(2.0);
+    ImGui::GetStyle().ScaleAllSizes(scale);
 }
