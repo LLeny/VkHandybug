@@ -41,6 +41,7 @@ file(GLOB_RECURSE vkhandybug_SOURCES CONFIGURE_DEPENDS
     ${imgui_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_filedialog_SOURCE_DIR}/ImGuiFileDialog.cpp
+    ${vkmemalloc_SOURCE_DIR}/src/VmaUsage.cpp
     ${hashlib_SOURCE_DIR}/md5.cpp
     ${luasrcFiles}
 )

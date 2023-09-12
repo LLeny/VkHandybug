@@ -27,7 +27,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   vkmemalloc
   GIT_REPOSITORY       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-  GIT_TAG              v3.0.1
+  GIT_TAG              2f382df218d7e8516dee3b3caccb819a62b571a2
   GIT_SHALLOW          TRUE
   GIT_PROGRESS         TRUE
 )
@@ -145,10 +145,6 @@ if(NOT libzip_POPULATED)
 endif()
 
 if(NOT APPLE)
-  file(READ "${FETCHCONTENT_BASE_DIR}/vkmemalloc-src/src/CMakeLists.txt" FILE_CONTENTS)
-  string(REPLACE "CXX_STANDARD 14" "CXX_STANDARD 20" FILE_CONTENTS "${FILE_CONTENTS}")
-  file(WRITE "${FETCHCONTENT_BASE_DIR}/vkmemalloc-src/src/CMakeLists.txt" "${FILE_CONTENTS}")
-
   #miniaudio MSVC
   file(READ "${FETCHCONTENT_BASE_DIR}/miniaudio-src/miniaudio.h" FILE_CONTENTS)
   string(REPLACE "sizeof(pInfo->name), 0, FALSE)" "sizeof(pInfo->name), 0, 0)" FILE_CONTENTS "${FILE_CONTENTS}")
