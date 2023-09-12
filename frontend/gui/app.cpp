@@ -76,6 +76,8 @@ void App::close_session(std::string session_identifier)
 
 void App::initialize()
 {
+    Config::get_instance().load(this);
+
     _gui = std::make_shared<GUI>();
     _gui->initialize();
     _gui->sessions_control().set_app(shared_from_this());
@@ -90,7 +92,7 @@ void App::initialize()
 
     _renderer->setTitle(APP_NAME " " APP_VERSION);
 
-    Config::get_instance().load(this);
+    Config::get_instance().initialize(this);
 
     if (!sound_initialize())
     {

@@ -14,7 +14,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSeverity
     }
     else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
     {
-        L_WARNING << messageType << ": " << pCallbackData->pMessage;
+        LOG(LOGLEVEL_WARN) << messageType << ": " << pCallbackData->pMessage;
     }
     else
     {
@@ -731,8 +731,8 @@ void VulkanRenderer::render_ImGui(std::shared_ptr<GUI> ui)
 
     if (ui->menu().settings().update_pending())
     {
-        Config::get_instance().initialize();
         ui->menu().settings().set_update_pending(false);
+        Config::get_instance().update_ui_settings();
     }
 
     ImGui_ImplVulkan_NewFrame();

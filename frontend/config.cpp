@@ -33,17 +33,6 @@ void Config::load(App *app)
     {
         LOG(LOGLEVEL_ERROR) << "Config - Couldn't load config file " << filename;
     }
-
-    initialize();
-    load_recents(app);
-
-    app->set_dimensions({(float)_store.main_window_width, (float)_store.main_window_height});
-    app->set_position({(float)_store.main_window_x_pos, (float)_store.main_window_y_pos});
-
-    app->gui()->_comlynx_visible = _store.comlynx_visisble;
-    app->gui()->_console_visible = _store.console_visible;
-    app->gui()->_sessionscontrol_visible = _store.sessionscontrol_visible;
-    Console::get_instance().set_log_level(_store.log_level);
 }
 
 void Config::save_recents(App *app)
@@ -66,7 +55,22 @@ void Config::load_recents(App *app)
     }
 }
 
-void Config::initialize()
+void Config::initialize(App *app)
+{
+    load_recents(app);
+
+    app->set_dimensions({(float)_store.main_window_width, (float)_store.main_window_height});
+    app->set_position({(float)_store.main_window_x_pos, (float)_store.main_window_y_pos});
+
+    app->gui()->_comlynx_visible = _store.comlynx_visisble;
+    app->gui()->_console_visible = _store.console_visible;
+    app->gui()->_sessionscontrol_visible = _store.sessionscontrol_visible;
+    Console::get_instance().set_log_level(_store.log_level);
+
+    update_ui_settings();
+}
+
+void Config::update_ui_settings()
 {
     apply_theme();
     // apply_font(); // https://github.com/ocornut/imgui/pull/3761
@@ -471,7 +475,7 @@ void Config::apply_font(float scale)
 
     io.Fonts->Clear();
 
-    int font_size = scale * 16;
+    int font_size = (store().ui_scale > 0 ? store().ui_scale : scale) * 16;
 
     ImFontConfig cfg;
     cfg.MergeMode = true;

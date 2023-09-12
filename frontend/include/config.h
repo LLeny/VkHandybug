@@ -156,6 +156,7 @@ struct ConfigStore
     std::string theme = "dark";
     std::string last_rom_folder = ".";
     std::string lynx_rom_file = "./lynxboot.img";
+    float ui_scale = 0;
     bool break_on_undocumented_opcode = false;
     int main_window_x_pos = 10, main_window_y_pos = 10;
     int main_window_width = 800, main_window_height = 600;
@@ -176,6 +177,7 @@ struct ConfigStore
         archive(CEREAL_NVP(last_rom_folder));
         archive(CEREAL_NVP(lynx_rom_file));
         archive(CEREAL_NVP(break_on_undocumented_opcode));
+        archive(CEREAL_NVP(ui_scale));
         archive(CEREAL_NVP(main_window_x_pos));
         archive(CEREAL_NVP(main_window_y_pos));
         archive(CEREAL_NVP(main_window_width));
@@ -209,7 +211,8 @@ class Config
     void apply_font(float scale);
     void load_recents(App *app);
     void save_recents(App *app);
-    void initialize();
+    void initialize(App *app);
+    void update_ui_settings();
 
     void save_sessions(std::vector<std::shared_ptr<SessionGUI>> sessions);
     void load_session(std::shared_ptr<SessionGUI> session);

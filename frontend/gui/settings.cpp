@@ -15,7 +15,7 @@ Settings::~Settings()
 
 bool Settings::render()
 {
-    ImGui::AlignTextToFramePadding();
+        ImGui::AlignTextToFramePadding();
 
     if (ImGui::BeginTable("#settingstable", 2, ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_SizingStretchProp))
     {
@@ -32,6 +32,16 @@ bool Settings::render()
         else
         {
             Config::get_instance().store().theme = "light";
+        }
+
+        ImGui::TableNextColumn();
+        ImGui::Text("UI Scale");
+        
+        ImGui::TableNextColumn();
+        float scale = Config::get_instance().store().ui_scale;
+        if (ImGui::SliderFloat("float", &scale, 0.0f, 10.0f, "%.1f"))
+        {
+            Config::get_instance().store().ui_scale = scale;
         }
 
         ImGui::TableNextColumn();
