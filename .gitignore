@@ -4,3 +4,5 @@ frontend/configure.h
 .flatpak-builder/
 flatpak/
 flatpak-export/
+
+**/.DS_Store
