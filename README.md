@@ -50,12 +50,25 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
+
 #### AppImage
 ```
 cmake --build . --target=vkhandybug.AppImage
 ```
 
-The binary should be created in the folder ```./bin```
+The binary should be created in the folder ```./bin```   
+
+### OSX
+```
+git clone https://github.com/LLeny/VkHandybug.git
+cd VkHandybug
+mkdir build
+cd build
+cmake -G Xcode -DCMAKE_BUILD_TYPE=Release ..
+```
+Open the generated ```vkhandybug.xcodeproj``` with XCode   
+Select ```vkhandybug``` scheme  
+Run / build   
 
 # Dependencies
 - [cereal](https://uscilab.github.io/cereal/)
