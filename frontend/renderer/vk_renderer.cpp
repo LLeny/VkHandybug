@@ -53,7 +53,7 @@ void VulkanRenderer::setup_vulkan(const char **extensions, uint32_t extensions_c
                         .add_validation_feature_enable(VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT)
                         .add_validation_feature_enable(VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT)
 #endif
-                        .require_api_version(1, 0, 0)
+                        .require_api_version(1, 2, 0)
                         .build();
 
     if (!inst_ret)
@@ -69,8 +69,23 @@ void VulkanRenderer::setup_vulkan(const char **extensions, uint32_t extensions_c
 
     VK_CHECK(glfwCreateWindowSurface(_instance, _mainWindow, _allocationCallbacks, &_surface));
 
+    VkPhysicalDeviceFeatures features{};
+    features.shaderInt16 = true;
+    VkPhysicalDeviceVulkan11Features features11{};
+    features11.storageBuffer16BitAccess = true;
+    features11.uniformAndStorageBuffer16BitAccess = true;
+    VkPhysicalDeviceVulkan12Features features12{};
+    features12.shaderInt8 = true;
+    features12.uniformAndStorageBuffer8BitAccess = true;
+    
     vkb::PhysicalDeviceSelector selector{vkb_inst};
-    auto phys_ret = selector.set_minimum_version(1, 0).set_surface(_surface).select();
+    auto phys_ret = selector
+                    .set_minimum_version(1, 2)
+                    .set_required_features(features)
+                    .set_required_features_11(features11)
+                    .set_required_features_12(features12)
+                    .set_surface(_surface)
+                    .select();
     if (!phys_ret)
     {
         LOG(LOGLEVEL_ERROR) << "Failed to select Vulkan Physical Device. Error: " << phys_ret.error().message();
