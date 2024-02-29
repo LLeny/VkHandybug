@@ -27,8 +27,8 @@ FetchContent_Declare(
 FetchContent_Declare(
   vkmemalloc
   GIT_REPOSITORY       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-  GIT_TAG              2f382df218d7e8516dee3b3caccb819a62b571a2
-  GIT_SHALLOW          TRUE
+  GIT_TAG              d802b362c6c4e0494a05facabad7368df1359272
+#  GIT_SHALLOW          TRUE
   GIT_PROGRESS         TRUE
 )
 
@@ -36,7 +36,7 @@ FetchContent_Declare(
   vkbootstrap
   GIT_REPOSITORY       https://github.com/charles-lunarg/vk-bootstrap
   GIT_TAG              61f77612c70dd49a59157fe139a7d248a90e206a
-  GIT_SHALLOW          TRUE
+#  GIT_SHALLOW          TRUE
   GIT_PROGRESS         TRUE
 )
 
@@ -44,7 +44,7 @@ FetchContent_Declare(
   zlib
   GIT_REPOSITORY       https://github.com/madler/zlib.git
   GIT_TAG              04f42ceca40f73e2978b50e93806c2a18c1281fc
-  GIT_SHALLOW          TRUE
+#  GIT_SHALLOW          TRUE
   GIT_PROGRESS         TRUE
 )
 
